@@ -69,6 +69,10 @@
             --textarea-focus-border: #667eea;
             --copy-button-bg: #4299e1;
             --copy-button-hover-bg: #3182ce;
+
+            /* GitHub Link */
+            --github-link-color: #4a5568;
+            --github-link-hover-color: #667eea;
         }
 
         /* Dark Mode */
@@ -130,6 +134,10 @@
             --textarea-focus-border: #4299e1;
             --copy-button-bg: #63b3ed;
             --copy-button-hover-bg: #4299e1;
+
+            /* GitHub Link Dark Mode */
+            --github-link-color: #e2e8f0;
+            --github-link-hover-color: #63b3ed;
         }
 
         body {
@@ -817,6 +825,31 @@
             transform: translateY(-1px);
         }
 
+        .github-link-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--container-shadow);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .github-link-section a {
+            color: var(--github-link-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: color 0.2s ease, transform 0.2s ease;
+            display: inline-block; /* Allows transform */
+        }
+
+        .github-link-section a:hover {
+            color: var(--github-link-hover-color);
+            transform: translateY(-2px);
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -892,10 +925,7 @@
                 <div class="checklist-item">
                     <input type="checkbox" class="input" data-tag="volume" id="volume-spike" data-strategies="momentum" data-risk="0.7" data-reward="1.3">
                     <label for="volume-spike" data-info="A sudden increase in volume (volume spike) often confirms the strength of a price move, indicating strong participation.">Volume spike confirms push</label>
-                    <div class="strategy-badges">
-                        <span class="strategy-badge momentum">Momentum</span>
-                    </div>
-                    <button class="edit-criteria-btn" onclick="editCriteria('volume-spike', 'volume')" title="Edit this criteria">✏️</button>
+                    <div class="strategy-btn" onclick="editCriteria('volume-spike', 'volume')" title="Edit this criteria">✏️</button>
                     <button class="delete-criteria-btn" onclick="deleteCriteria('volume-spike', 'volume')" title="Delete this criteria">x</button>
                 </div>
                 <div class="checklist-item">
@@ -1206,6 +1236,12 @@
         <div class="notes-section">
             <h2>📝 Trade Setup Notes</h2>
             <textarea id="trade-notes" placeholder="Document your trade setup, key levels, and observations here..."></textarea>
+        </div>
+
+        <div class="github-link-section">
+            <a href="https://github.com/jmsykes83/Futures-Trading-Checklist.git" target="_blank" rel="noopener noreferrer">
+                View Source Code on GitHub
+            </a>
         </div>
     </div>
 
@@ -2258,7 +2294,7 @@
         /**
          * Applies a filter to the checklist items based on strategy.
          * Only shows items tagged with the specified strategy or all items if 'all' is selected.
-         * @param {string} filterStrategyId The ID of the strategy to filter by, or 'all'.
+         * @param {string} filterStrategyId  The ID of the strategy to filter by, or 'all'.
          */
         function applyStrategyFilter(filterStrategyId) {
             currentFilter = filterStrategyId; // Update current filter
