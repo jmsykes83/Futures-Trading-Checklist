@@ -6,6 +6,23 @@ Website: https://jmsykes83.github.io/Futures-Trading-Checklist/
 
 ---
 
+## 🧾 Futures Trade Checklist UI
+
+![Futures Trade Checklist](assets/checklist-ui.png)
+
+![Futures Trade Checklist](assets/checklist-ui2.png)
+
+## 📊 Risk Management Panel
+
+![Risk Management](assets/risk-management-ui.png)
+
+## ✍️ Trade Setup Notes Panel
+
+![Trade Setup Notes](assets/trade-setup-ui.png)
+
+
+---
+
 ## ✨ Features
 
 - **Customizable Criteria**: Add, edit, and delete your own trade criteria within different categories.
