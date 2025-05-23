@@ -1,0 +1,2449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced Futures Trade Checklist</title>
+    <style>
+        /* Global Box-Sizing for consistent layout across browsers */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* CSS Variables for theming */
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --container-bg: rgba(255, 255, 255, 0.95);
+            --container-shadow: rgba(0,0,0,0.1);
+            --category-bg-gradient-start: #f8f9ff;
+            --category-bg-gradient-end: #e8f0ff;
+            --category-border: #e0e8ff;
+            --heading-color: #4a5568;
+            --text-color: #2d3748;
+            --label-color: #2d3748;
+            --input-accent-color: #667eea;
+            --checklist-item-hover-bg: rgba(255,255,255,0.7);
+            --notes-border: #e2e8f0;
+            --notes-focus-border: #667eea;
+            --notes-focus-shadow: rgba(102, 126, 234, 0.1);
+            --risk-card-bg-gradient-start: #f0f7ff;
+            --risk-card-bg-gradient-end: #e0f0ff;
+            --risk-card-border-left: #667eea;
+            --risk-reward-display-bg-gradient-start: #e6fffa;
+            --risk-reward-display-bg-gradient-end: #b2f5ea;
+            --risk-reward-display-border: #81e6d9;
+            --good-ratio-color: #38a169;
+            --bad-ratio-color: #e53e3e;
+            --filter-button-bg: #cbd5e0;
+            --filter-button-color: #2d3748;
+            --filter-button-hover-bg: #a0aec0;
+            --filter-button-active-bg: #667eea;
+            --filter-button-active-color: white;
+            --filter-button-active-shadow: rgba(102, 126, 234, 0.3);
+            --details-bg: rgba(255, 255, 255, 0.6);
+            --details-border: #e0e8ff;
+            --details-open-bg: rgba(255, 255, 255, 0.8);
+            --details-open-shadow: rgba(0,0,0,0.08);
+
+            /* Modal specific colors */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --modal-content-bg: white;
+            --modal-border-color: #e2e8f0;
+            --modal-title-color: #2d3748;
+            --modal-message-color: #4a5568;
+            --modal-button-confirm-bg: #38a169;
+            --modal-button-confirm-hover-bg: #2f855a;
+            --modal-button-cancel-bg: #e53e3e;
+            --modal-button-cancel-hover-bg: #c53030;
+            --modal-button-ok-bg: #4299e1;
+            --modal-button-ok-hover-bg: #3182ce;
+
+            /* Share/Import Modal Specific */
+            --tab-button-bg: #e2e8f0;
+            --tab-button-color: #2d3748;
+            --tab-button-active-bg: #667eea;
+            --tab-button-active-color: white;
+            --tab-content-bg: #f7fafc;
+            --textarea-border: #cbd5e0;
+            --textarea-focus-border: #667eea;
+            --copy-button-bg: #4299e1;
+            --copy-button-hover-bg: #3182ce;
+        }
+
+        /* Dark Mode */
+        body.dark-mode {
+            --bg-gradient-start: #2d3748;
+            --bg-gradient-end: #1a202c;
+            --container-bg: rgba(45, 55, 72, 0.95);
+            --container-shadow: rgba(0,0,0,0.5);
+            --category-bg-gradient-start: #4a5568;
+            --category-bg-gradient-end: #2d3748;
+            --category-border: #2c374e;
+            --heading-color: #e2e8f0;
+            --text-color: #e2e8f0;
+            --label-color: #e2e8f0;
+            --input-accent-color: #4299e1;
+            --checklist-item-hover-bg: rgba(74,85,104,0.7);
+            --notes-border: #4a5568;
+            --notes-focus-border: #4299e1;
+            --notes-focus-shadow: rgba(66, 153, 225, 0.2);
+            --risk-card-bg-gradient-start: #2d3748;
+            --risk-card-bg-gradient-end: #1a202c;
+            --risk-card-border-left: #4299e1;
+            --risk-reward-display-bg-gradient-start: #2a4365;
+            --risk-reward-display-bg-gradient-end: #1a365d;
+            --risk-reward-display-border: #4299e1;
+            --good-ratio-color: #68d391;
+            --bad-ratio-color: #fc8181;
+            --filter-button-bg: #4a5568;
+            --filter-button-color: #e2e8f0;
+            --filter-button-hover-bg: #667eea;
+            --filter-button-active-bg: #4299e1;
+            --filter-button-active-color: white;
+            --filter-button-active-shadow: rgba(66, 153, 225, 0.3);
+            --details-bg: rgba(45, 55, 72, 0.6);
+            --details-border: #2c374e;
+            --details-open-bg: rgba(45, 55, 72, 0.8);
+            --details-open-shadow: rgba(0,0,0,0.2);
+
+            /* Modal specific colors for dark mode */
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7);
+            --modal-content-bg: #2d3748;
+            --modal-border-color: #4a5568;
+            --modal-title-color: #e2e8f0;
+            --modal-message-color: #cbd5e0;
+            --modal-button-confirm-bg: #48bb78;
+            --modal-button-confirm-hover-bg: #38a169;
+            --modal-button-cancel-bg: #fc8181;
+            --modal-button-cancel-hover-bg: #e53e3e;
+            --modal-button-ok-bg: #63b3ed;
+            --modal-button-ok-hover-bg: #4299e1;
+
+            /* Share/Import Modal Specific Dark Mode */
+            --tab-button-bg: #4a5568;
+            --tab-button-color: #e2e8f0;
+            --tab-button-active-bg: #4299e1;
+            --tab-button-active-color: white;
+            --tab-content-bg: #1a202c;
+            --textarea-border: #4a5568;
+            --textarea-focus-border: #4299e1;
+            --copy-button-bg: #63b3ed;
+            --copy-button-hover-bg: #4299e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color); /* Apply base text color */
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .checklist-container {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px var(--container-shadow);
+            margin-bottom: 20px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .category {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(145deg, var(--category-bg-gradient-start), var(--category-bg-gradient-end));
+            border: 1px solid var(--category-border);
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .category:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--container-shadow);
+        }
+        
+        .category h3 {
+            margin: 0 0 12px 0;
+            color: var(--heading-color);
+            font-size: 1.2em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-criteria-mini {
+            background: var(--input-accent-color);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .add-criteria-mini:hover {
+            background: var(--filter-button-active-bg); /* Use active filter color for hover */
+            transform: scale(1.1);
+        }
+        
+        .category-icon {
+            font-size: 1.1em;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+            position: relative; /* Needed for absolute positioning of delete button */
+        }
+        
+        .checklist-item:hover {
+            background-color: var(--checklist-item-hover-bg);
+        }
+        
+        .checklist-item input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: var(--input-accent-color);
+            transition: accent-color 0.3s ease;
+        }
+
+        /* Animation for checkbox check/uncheck */
+        .checklist-item input[type="checkbox"] {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .checklist-item input[type="checkbox"]::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            border-radius: 4px;
+            transition: background-color 0.2s ease-out;
+        }
+
+        .checklist-item input[type="checkbox"]:checked::before {
+            background-color: var(--input-accent-color);
+            transform: scale(1.1); /* Slight pop effect */
+            opacity: 0.2;
+        }
+        
+        .checklist-item label {
+            cursor: pointer;
+            flex-grow: 1;
+            font-weight: 500;
+            color: var(--label-color);
+            transition: color 0.3s ease;
+        }
+        
+        .strategy-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-left: auto;
+        }
+        
+        .strategy-badge {
+            background: var(--input-accent-color); /* Default badge color */
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 500;
+        }
+        
+        .strategy-badge.reversal {
+            background: #e53e3e;
+        }
+        
+        .strategy-badge.momentum {
+            background: #38a169;
+        }
+        
+        .strategy-badge.both {
+            background: linear-gradient(45deg, #e53e3e, #38a169);
+        }
+        .strategy-badge.scalping { background: #9F7AEA; } /* Purple */
+        .strategy-badge.swing { background: #3182CE; } /* Blue */
+        .strategy-badge.breakout { background: #DD6B20; } /* Orange */
+        
+        .result {
+            font-size: 1.3em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            color: var(--text-color);
+        }
+        
+        .result.waiting {
+            background: linear-gradient(145deg, var(--category-bg-gradient-start), var(--category-bg-gradient-end));
+            color: var(--heading-color);
+            border: 2px solid var(--category-border);
+        }
+        
+        .result.ready {
+            background: linear-gradient(145deg, var(--good-ratio-color), #9ae6b4); /* Adjusted for dark mode */
+            color: var(--text-color); /* Adjusted for dark mode */
+            border: 2px solid var(--good-ratio-color);
+            animation: pulse 2s infinite;
+        }
+        
+        .result.warning {
+            background: linear-gradient(145deg, var(--bad-ratio-color), #feb2b2); /* Adjusted for dark mode */
+            color: var(--text-color); /* Adjusted for dark mode */
+            border: 2px solid var(--bad-ratio-color);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .notes-section {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px var(--container-shadow);
+            margin-top: 20px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .notes-section h2 {
+            color: var(--heading-color);
+            margin-bottom: 15px;
+            transition: color 0.3s ease;
+        }
+        
+        .notes-section textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            font-size: 1em;
+            border: 2px solid var(--notes-border);
+            border-radius: 12px;
+            resize: vertical;
+            font-family: inherit;
+            transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+            background-color: transparent; /* Allow background to show through */
+            color: var(--text-color);
+        }
+        
+        .notes-section textarea:focus {
+            outline: none;
+            border-color: var(--notes-focus-border);
+            box-shadow: 0 0 0 3px var(--notes-focus-shadow);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center; /* Center buttons */
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center; /* Center filter buttons */
+        }
+
+        .filter-button {
+            background: var(--filter-button-bg);
+            color: var(--filter-button-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+        }
+
+        .filter-button:hover {
+            background: var(--filter-button-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .filter-button.active {
+            background: var(--filter-button-active-bg);
+            color: var(--filter-button-active-color);
+            box-shadow: 0 4px 10px var(--filter-button-active-shadow);
+        }
+
+        .add-criteria-btn {
+            background: linear-gradient(145deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .add-criteria-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--filter-button-active-shadow);
+        }
+        
+        .custom-criteria {
+            background: linear-gradient(145deg, #fff5f5, #ffe5e5); /* Keep distinct light background for custom */
+            border: 1px solid #feb2b2;
+        }
+        body.dark-mode .custom-criteria {
+            background: linear-gradient(145deg, #3a2a2a, #4a3a3a); /* Dark mode for custom criteria */
+            border: 1px solid #a00000;
+        }
+        
+        .risk-management {
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 10px 30px var(--container-shadow);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .risk-management h2 {
+            color: var(--heading-color);
+            transition: color 0.3s ease;
+        }
+
+        .risk-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .risk-card {
+            background: linear-gradient(145deg, var(--risk-card-bg-gradient-start), var(--risk-card-bg-gradient-end));
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--risk-card-border-left);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        .risk-card h4 {
+            margin: 0 0 8px 0;
+            color: var(--heading-color);
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+        
+        .risk-card p {
+            margin: 0;
+            color: var(--label-color);
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .delete-criteria-btn, .edit-criteria-btn {
+            background: #e53e3e; /* Red for delete */
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            margin-left: 10px; /* Space from badges */
+            flex-shrink: 0;
+        }
+        .edit-criteria-btn {
+            background: #4299e1; /* Blue for edit */
+            margin-left: 5px; /* Closer to the item */
+        }
+
+        .delete-criteria-btn:hover {
+            background: #c53030; /* Darker red on hover */
+            transform: scale(1.1);
+        }
+        .edit-criteria-btn:hover {
+            background: #3182ce; /* Darker blue on hover */
+            transform: scale(1.1);
+        }
+
+        .risk-reward-display {
+            background: linear-gradient(145deg, var(--risk-reward-display-bg-gradient-start), var(--risk-reward-display-bg-gradient-end));
+            color: var(--text-color);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            box-shadow: 0 8px 25px var(--container-shadow);
+            border: 2px solid var(--risk-reward-display-border);
+            transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+        }
+        .risk-reward-display span {
+            color: var(--good-ratio-color); /* Green for good ratio */
+            font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+        .risk-reward-display.bad-ratio span {
+            color: var(--bad-ratio-color); /* Red for bad ratio */
+        }
+
+        details {
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--details-bg);
+            border-radius: 8px;
+            border: 1px solid var(--details-border);
+            transition: all 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+        }
+        details[open] {
+            background: var(--details-open-bg);
+            box-shadow: 0 4px 15px var(--details-open-shadow);
+        }
+        summary {
+            font-weight: 600;
+            color: var(--heading-color);
+            cursor: pointer;
+            padding: 5px 0;
+            outline: none;
+            list-style: none; /* Remove default arrow */
+            display: flex;
+            align-items: center;
+            transition: color 0.3s ease;
+        }
+        summary::-webkit-details-marker {
+            display: none; /* Remove default arrow for Webkit browsers */
+        }
+        summary::before {
+            content: '▶'; /* Custom arrow */
+            margin-right: 8px;
+            transition: transform 0.2s ease;
+        }
+        details[open] summary::before {
+            content: '▼'; /* Custom arrow when open */
+            transform: rotate(0deg);
+        }
+
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--filter-button-bg);
+            color: var(--filter-button-color);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .dark-mode-toggle:hover {
+            background: var(--filter-button-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Custom Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none; /* Disable interactions when hidden */
+        }
+        .modal-content {
+            background: var(--modal-content-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--modal-border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .modal-content h3 {
+            color: var(--modal-title-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            transition: color 0.3s ease;
+        }
+        .modal-content p {
+            color: var(--modal-message-color);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            transition: color 0.3s ease;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .modal-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .modal-button.confirm {
+            background-color: var(--modal-button-confirm-bg);
+        }
+        .modal-button.confirm:hover {
+            background-color: var(--modal-button-confirm-hover-bg);
+            transform: translateY(-1px);
+        }
+        .modal-button.cancel {
+            background-color: var(--modal-button-cancel-bg);
+        }
+        .modal-button.cancel:hover {
+            background-color: var(--modal-button-cancel-hover-bg);
+            transform: translateY(-1px);
+        }
+        .modal-button.ok {
+            background-color: var(--modal-button-ok-bg);
+        }
+        .modal-button.ok:hover {
+            background-color: var(--modal-button-ok-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        /* Tooltip Styles */
+        .tooltip-box {
+            position: absolute;
+            background-color: var(--modal-content-bg);
+            color: var(--text-color);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            max-width: 250px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            pointer-events: none; /* Allows clicks through the tooltip */
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            transform: translateY(5px);
+            border: 1px solid var(--modal-border-color);
+            text-align: left;
+        }
+
+        .tooltip-box.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip-box::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid var(--modal-content-bg);
+            top: -8px;
+            left: 15px;
+        }
+        body.dark-mode .tooltip-box::before {
+            border-bottom-color: var(--modal-content-bg);
+        }
+
+        /* Share/Import Modal Styles */
+        .share-import-modal .modal-content {
+            max-width: 600px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex-grow: 1;
+            padding: 10px 15px;
+            background-color: var(--tab-button-bg);
+            color: var(--tab-button-color);
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .tab-button:hover {
+            background-color: var(--filter-button-hover-bg);
+        }
+
+        .tab-button.active {
+            background-color: var(--tab-button-active-bg);
+            color: var(--tab-button-active-color);
+        }
+
+        .tab-content {
+            background-color: var(--tab-content-bg);
+            padding: 20px;
+            border-radius: 0 0 15px 15px;
+            border: 1px solid var(--modal-border-color);
+            text-align: left;
+            min-height: 150px;
+            display: none; /* Hidden by default */
+        }
+        .tab-content.active {
+            display: block; /* Show active tab */
+        }
+
+        .tab-content label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--label-color);
+        }
+
+        .tab-content textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid var(--textarea-border);
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9em;
+            resize: vertical;
+            background-color: transparent; /* Allow background to show through */
+            color: var(--text-color);
+            transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+        .tab-content textarea:focus {
+            outline: none;
+            border-color: var(--textarea-focus-border);
+            box-shadow: 0 0 0 2px var(--notes-focus-shadow);
+        }
+
+        .tab-content button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: white;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .tab-content button.generate-button {
+            background-color: var(--copy-button-bg);
+        }
+        .tab-content button.generate-button:hover {
+            background-color: var(--copy-button-hover-bg);
+            transform: translateY(-1px);
+        }
+        .tab-content button.copy-button {
+            background-color: var(--copy-button-bg);
+            margin-left: 10px;
+        }
+        .tab-content button.copy-button:hover {
+            background-color: var(--copy-button-hover-bg);
+            transform: translateY(-1px);
+        }
+        .tab-content button.import-button {
+            background-color: var(--modal-button-confirm-bg);
+        }
+        .tab-content button.import-button:hover {
+            background-color: var(--modal-button-confirm-hover-bg);
+            transform: translateY(-1px);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="dark-mode-toggle" id="darkModeToggle">
+            ☀️ Light Mode
+        </button>
+
+        <h1>🎯 Futures Trade Checklist</h1>
+
+        <div class="checklist-container">
+            <div class="action-buttons">
+                <button class="add-criteria-btn" onclick="manageStrategies()" style="background: linear-gradient(145deg, #ed8936, #dd6b20);">⚙️ Manage Strategies</button>
+                <button class="add-criteria-btn" onclick="openShareImportModal()">🔗 Share/Import Settings</button>
+                <button class="add-criteria-btn" onclick="resetChecklist()">🔄 Reset Checklist</button>
+            </div>
+
+            <div class="filter-buttons" id="strategy-filters">
+                </div>
+            
+            <div class="category" data-group="levels">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">📊</span>Levels
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('levels')" title="Add criteria to Levels">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="levels" id="sr-level" data-strategies="both" data-risk="1" data-reward="1">
+                    <label for="sr-level" data-info="S/R (Support/Resistance) levels are price points where the price trend is expected to pause or reverse. VAH/VAL (Value Area High/Low) are key levels from volume profile. IB (Initial Balance) refers to the first hour's trading range.">Price at major S/R, VAH/VAL, or IB range</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge both">Both</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('sr-level', 'levels')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('sr-level', 'levels')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="levels" id="vah-val" data-strategies="reversal" data-risk="0.8" data-reward="1.2">
+                    <label for="vah-val" data-info="VAH (Value Area High) and VAL (Value Area Low) are derived from Volume Profile, representing the upper and lower boundaries of where the majority of trading volume occurred.">At VAH/VAL key level</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('vah-val', 'levels')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('vah-val', 'levels')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="levels" id="ib-range" data-strategies="both" data-risk="1" data-reward="1">
+                    <label for="ib-range" data-info="IB (Initial Balance) is the trading range established during the first hour of a trading session, often used to gauge initial market sentiment and potential range expansion.">Within IB Range boundary</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge both">Both</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('ib-range', 'levels')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('ib-range', 'levels')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="volume">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">📈</span>Volume Analysis
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('volume')" title="Add criteria to Volume Analysis">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="volume" id="weak-volume" data-strategies="reversal" data-risk="1.5" data-reward="0.7">
+                    <label for="weak-volume" data-info="Weakening volume into a level suggests that the current price movement is losing conviction, often preceding a reversal.">Volume weakening into level</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('weak-volume', 'volume')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('weak-volume', 'volume')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="volume" id="volume-spike" data-strategies="momentum" data-risk="0.7" data-reward="1.3">
+                    <label for="volume-spike" data-info="A sudden increase in volume (volume spike) often confirms the strength of a price move, indicating strong participation.">Volume spike confirms push</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('volume-spike', 'volume')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('volume-spike', 'volume')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="volume" id="breakout-volume" data-strategies="momentum,breakout" data-risk="0.6" data-reward="1.4">
+                    <label for="breakout-volume" data-info="A breakout with significant volume indicates strong conviction behind the move, increasing the likelihood of continuation.">Breakout above IBH/VAL/VAH with volume</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('breakout-volume', 'volume')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('breakout-volume', 'volume')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="volume" id="scalping-volume-confirm" data-strategies="scalping" data-risk="0.9" data-reward="1.1">
+                    <label for="scalping-volume-confirm" data-info="For scalping, high volume at entry/exit points confirms liquidity and order flow, crucial for quick trades.">High volume confirms scalping entry/exit</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge scalping">Scalping</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('scalping-volume-confirm', 'volume')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('scalping-volume-confirm', 'volume')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="volume" id="swing-volume-confirmation" data-strategies="swing" data-risk="1.0" data-reward="1.5">
+                    <label for="swing-volume-confirmation" data-info="Volume confirmation at swing lows/highs indicates strong support or resistance, validating potential swing trade entries.">Volume confirmation on swing lows/highs</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge swing">Swing</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('swing-volume-confirmation', 'volume')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('swing-volume-confirmation', 'volume')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="timeframe">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">⏱️</span>Timeframe Alignment
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('timeframe')" title="Add criteria to Timeframe Alignment">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="timeframe" id="trend-align" data-strategies="momentum,swing" data-risk="0.7" data-reward="1.3">
+                    <label for="trend-align" data-info="VWAP (Volume Weighted Average Price) and EMAs (Exponential Moving Averages) are indicators used to confirm trend direction and dynamic support/resistance.">Trend aligns (VWAP, EMA, 200EMA support)</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge swing">Swing</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('trend-align', 'timeframe')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('trend-align', 'timeframe')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="timeframe" id="micro-pullback" data-strategies="momentum,scalping" data-risk="0.8" data-reward="1.2">
+                    <label for="micro-pullback" data-info="A micro pullback is a small, temporary reversal within a strong trend, offering an opportunity to join the trend at a better price.">Micro pullback to VWAP/EMA/VAL</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge scalping">Scalping</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('micro-pullback', 'timeframe')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('micro-pullback', 'timeframe')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="timeframe" id="stall-curl" data-strategies="reversal" data-risk="1.2" data-reward="0.8">
+                    <label for="stall-curl" data-info="A stall or curl on a lower timeframe (e.g., 15s) indicates a loss of momentum in the current move, often preceding a reversal.">15s shows stall/curl or failed push</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('stall-curl', 'timeframe')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('stall-curl', 'timeframe')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="timeframe" id="swing-daily-chart" data-strategies="swing" data-risk="0.9" data-reward="1.5">
+                    <label for="swing-daily-chart" data-info="For swing trades, confirming the broader trend on a daily chart helps align with larger market movements, improving trade probability.">Daily chart confirms broader trend for swing</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge swing">Swing</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('swing-daily-chart', 'timeframe')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('swing-daily-chart', 'timeframe')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="oscillators">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">📊</span>Oscillator Signals
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('oscillators')" title="Add criteria to Oscillator Signals">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="oscillators" id="oscillator-divergence" data-strategies="reversal,swing" data-risk="1.1" data-reward="0.9">
+                    <label for="oscillator-divergence" data-info="Divergence occurs when price makes a new high/low, but an oscillator (like MACD or RSI) does not, often signaling a potential reversal.">Oscillator divergence or flattening</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                        <span class="strategy-badge swing">Swing</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('oscillator-divergence', 'oscillators')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('oscillator-divergence', 'oscillators')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="oscillators" id="oscillator-trend" data-strategies="momentum,breakout" data-risk="0.8" data-reward="1.2">
+                    <label for="oscillator-trend" data-info="An oscillator confirming the trend (e.g., staying above 0 for MACD in an uptrend) indicates sustained momentum.">Oscillator confirms trend direction</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('oscillator-trend', 'oscillators')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('oscillator-trend', 'oscillators')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="oscillators" id="rsi-overbought-oversold" data-strategies="reversal" data-risk="1.0" data-reward="1.0">
+                    <label for="rsi-overbought-oversold" data-info="RSI (Relative Strength Index) measures the speed and change of price movements. Overbought (above 70) or oversold (below 30) signals can indicate potential reversals.">RSI Overbought/Oversold signal</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('rsi-overbought-oversold', 'oscillators')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('rsi-overbought-oversold', 'oscillators')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="tape">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">📋</span>Tape Reading
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('tape')" title="Add criteria to Tape Reading">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="tape" id="absorption" data-strategies="reversal" data-risk="1.2" data-reward="0.8">
+                    <label for="absorption" data-info="Absorption occurs when large orders are being filled by aggressive buyers/sellers without significant price movement, indicating strong supply/demand at a level.">Large passive order + absorption</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('absorption', 'tape')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('absorption', 'tape')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="tape" id="aggressive-orders" data-strategies="momentum,scalping,breakout" data-risk="0.7" data-reward="1.3">
+                    <label for="aggressive-orders" data-info="Aggressive orders (market orders) indicate strong conviction and can drive price quickly in a particular direction.">Aggressive orders pushing</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge scalping">Scalping</span>
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('aggressive-orders', 'tape')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('aggressive-orders', 'tape')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="tape" id="slowed-prints" data-strategies="reversal" data-risk="1.3" data-reward="0.7">
+                    <label for="slowed-prints" data-info="T&S (Time & Sales) shows individual trades. Slowed prints and lack of aggression indicate waning momentum, often preceding a reversal.">T&S: Slowed prints, lack of aggression</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('slowed-prints', 'tape')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('slowed-prints', 'tape')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="tape" id="speed-increasing" data-strategies="momentum,scalping,breakout" data-risk="0.6" data-reward="1.4">
+                    <label for="speed-increasing" data-info="Increasing speed and size of prints on Time & Sales indicates strong order flow and momentum.">T&S: Speed + size increasing</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge scalping">Scalping</span>
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('speed-increasing', 'tape')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('speed-increasing', 'tape')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="l2">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">🎚️</span>Level 2
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('l2')" title="Add criteria to Level 2">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="l2" id="thin-liquidity" data-strategies="momentum,breakout" data-risk="0.9" data-reward="1.1">
+                    <label for="thin-liquidity" data-info="L2 (Level 2) shows the order book depth. Thin liquidity in the direction of a breakout means less resistance for price to move.">L2: Thin liquidity in breakout path</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge momentum">Momentum</span>
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('thin-liquidity', 'l2')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('thin-liquidity', 'l2')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="l2" id="no-gaps" data-strategies="reversal" data-risk="0.8" data-reward="1.2">
+                    <label for="no-gaps" data-info="Liquidity gaps on Level 2 mean there are no large orders to absorb selling/buying pressure, which can lead to rapid price movement.">L2: No major liquidity gaps behind you</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge reversal">Reversal</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('no-gaps', 'l2')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('no-gaps', 'l2')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="l2" id="scalping-l2-depth" data-strategies="scalping" data-risk="0.9" data-reward="1.1">
+                    <label for="scalping-l2-depth" data-info="For scalping, sufficient depth on Level 2 ensures there are enough orders to fill your entry and exit quickly without significant slippage.">L2: Sufficient depth for scalping entry/exit</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge scalping">Scalping</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('scalping-l2-depth', 'l2')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('scalping-l2-depth', 'l2')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="strategy-specific">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">⭐</span>Strategy Specific
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('strategy-specific')" title="Add criteria to Strategy Specific">+</button>
+                </h3>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="strategy-specific" id="scalping-tight-stop" data-strategies="scalping" data-risk="0.5" data-reward="0.5">
+                    <label for="scalping-tight-stop" data-info="Scalping involves taking very small profits with tight stop-losses, requiring precise entries and exits.">Scalping: Tight stop-loss and quick profit target</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge scalping">Scalping</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('scalping-tight-stop', 'strategy-specific')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('scalping-tight-stop', 'strategy-specific')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="strategy-specific" id="swing-overnight-risk" data-strategies="swing" data-risk="1.2" data-reward="1.8">
+                    <label for="swing-overnight-risk" data-info="Swing trading involves holding positions for several days or weeks, exposing trades to overnight market movements and news.">Swing: Comfortable with overnight risk</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge swing">Swing</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('swing-overnight-risk', 'strategy-specific')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('swing-overnight-risk', 'strategy-specific')" title="Delete this criteria">x</button>
+                </div>
+                <div class="checklist-item">
+                    <input type="checkbox" class="input" data-tag="strategy-specific" id="breakout-retest-entry" data-strategies="breakout" data-risk="0.7" data-reward="1.3">
+                    <label for="breakout-retest-entry" data-info="After a breakout, price often retests the broken level before continuing in the breakout direction, offering a lower-risk entry.">Breakout: Waiting for retest of broken level for entry</label>
+                    <div class="strategy-badges">
+                        <span class="strategy-badge breakout">Breakout</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('breakout-retest-entry', 'strategy-specific')" title="Edit this criteria">✏️</button>
+                    <button class="delete-criteria-btn" onclick="deleteCriteria('breakout-retest-entry', 'strategy-specific')" title="Delete this criteria">x</button>
+                </div>
+            </div>
+
+            <div class="category" data-group="chart-patterns">
+                <h3>
+                    <div class="category-header">
+                        <span class="category-icon">📈</span>Chart Patterns
+                    </div>
+                    <button class="add-criteria-mini" onclick="addCriteriaToCategory('chart-patterns')" title="Add criteria to Chart Patterns">+</button>
+                </h3>
+                <details>
+                    <summary>Click to expand/collapse Chart Pattern criteria</summary>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="input" data-tag="chart-patterns" id="double-top-bottom" data-strategies="reversal,swing" data-risk="1.0" data-reward="1.5">
+                        <label for="double-top-bottom" data-info="Double Top/Bottom are reversal patterns indicating a potential change in trend after two failed attempts to break a resistance/support level.">Double Top/Bottom identified</label>
+                        <div class="strategy-badges">
+                            <span class="strategy-badge reversal">Reversal</span>
+                            <span class="strategy-badge swing">Swing</span>
+                        </div>
+                        <button class="edit-criteria-btn" onclick="editCriteria('double-top-bottom', 'chart-patterns')" title="Edit this criteria">✏️</button>
+                        <button class="delete-criteria-btn" onclick="deleteCriteria('double-top-bottom', 'chart-patterns')" title="Delete this criteria">x</button>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="input" data-tag="chart-patterns" id="head-shoulders" data-strategies="reversal,swing" data-risk="1.1" data-reward="1.6">
+                        <label for="head-shoulders" data-info="Head & Shoulders (or inverse) is a classic reversal pattern, characterized by three peaks/troughs with the middle one being the highest/lowest.">Head & Shoulders (or inverse) pattern</label>
+                        <div class="strategy-badges">
+                            <span class="strategy-badge reversal">Reversal</span>
+                            <span class="strategy-badge swing">Swing</span>
+                        </div>
+                        <button class="edit-criteria-btn" onclick="editCriteria('head-shoulders', 'chart-patterns')" title="Edit this criteria">✏️</button>
+                        <button class="delete-criteria-btn" onclick="deleteCriteria('head-shoulders', 'chart-patterns')" title="Delete this criteria">x</button>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" class="input" data-tag="chart-patterns" id="flags-pennants" data-strategies="momentum,breakout" data-risk="0.8" data-reward="1.2">
+                        <label for="flags-pennants" data-info="Flags and Pennants are continuation patterns that form after a sharp price move, indicating a temporary pause before the trend resumes.">Flags/Pennants confirming continuation</label>
+                        <div class="strategy-badges">
+                            <span class="strategy-badge momentum">Momentum</span>
+                            <span class="strategy-badge breakout">Breakout</span>
+                        </div>
+                        <button class="edit-criteria-btn" onclick="editCriteria('flags-pennants', 'chart-patterns')" title="Edit this criteria">✏️</button>
+                        <button class="delete-criteria-btn" onclick="deleteCriteria('flags-pennants', 'chart-patterns')" title="Delete this criteria">x</button>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <div class="result waiting" id="result">Select criteria to identify your trade setup...</div>
+        <div class="risk-reward-display" id="risk-reward-display">Risk:Reward Ratio: <span>N/A</span></div>
+
+        <div class="risk-management">
+            <h2>🎯 Risk Management</h2>
+            <div class="risk-info">
+                <div class="risk-card">
+                    <h4>Calculated Risk (Sum of Checked Criteria)</h4>
+                    <p id="calculated-risk">N/A</p>
+                </div>
+                <div class="risk-card">
+                    <h4>Calculated Reward (Sum of Checked Criteria)</h4>
+                    <p id="calculated-reward">N/A</p>
+                </div>
+                <div class="risk-card">
+                    <h4>Suggested Stop (Dominant Strategy)</h4>
+                    <p id="suggested-stop">Based on selected criteria</p>
+                </div>
+                <div class="risk-card">
+                    <h4>Suggested Target (Dominant Strategy)</h4>
+                    <p id="suggested-target">Based on selected criteria</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="notes-section">
+            <h2>📝 Trade Setup Notes</h2>
+            <textarea id="trade-notes" placeholder="Document your trade setup, key levels, and observations here..."></textarea>
+        </div>
+    </div>
+
+    <div id="customModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle"></h3>
+            <p id="modalMessage"></p>
+            <div class="modal-buttons">
+                <button id="modalConfirmBtn" class="modal-button confirm">Confirm</button>
+                <button id="modalCancelBtn" class="modal-button cancel">Cancel</button>
+                <button id="modalOkBtn" class="modal-button ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="shareImportModal" class="modal-overlay hidden share-import-modal">
+        <div class="modal-content">
+            <div class="tab-buttons">
+                <button class="tab-button active" data-tab="export">Export Settings</button>
+                <button class="tab-button" data-tab="import">Import Settings</button>
+            </div>
+            
+            <div id="exportTab" class="tab-content active">
+                <p>Generate a code to share your current custom strategies, custom criteria, and checked items.</p>
+                <button class="generate-button" id="generateCodeBtn">Generate Share Code</button>
+                <textarea id="shareCodeOutput" readonly placeholder="Your share code will appear here..."></textarea>
+                <button class="copy-button" id="copyCodeBtn">Copy Code</button>
+            </div>
+            
+            <div id="importTab" class="tab-content">
+                <p>Paste a share code here to load new settings. This will **overwrite** your current custom strategies, custom criteria, and checked items.</p>
+                <textarea id="importCodeInput" placeholder="Paste share code here..."></textarea>
+                <button class="import-button" id="importCodeBtn">Import Settings</button>
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="modal-button cancel" onclick="closeShareImportModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="tooltipBox" class="tooltip-box"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
+    <script>
+        let customCriteriaCount = 0; 
+        
+        // Built-in strategies with default risk management details
+        let strategies = {
+            'reversal': { name: 'Reversal', color: '#e53e3e', icon: '🔄', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Price action failure at level', defaultTarget: 'Previous swing low/high' },
+            'momentum': { name: 'Momentum', color: '#38a169', icon: '🚀', defaultRisk: 0.5, defaultReward: 1.5, defaultStop: 'Bar trail / VWAP break', defaultTarget: 'Gas out (L2/T&S slowdown)' },
+            'both': { name: 'Both', color: 'linear-gradient(45deg, #e53e3e, #38a169)', icon: '⚖️', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Hybrid approach (consider tightest stop)', defaultTarget: 'Hybrid approach (consider nearest target)' },
+            'scalping': { name: 'Scalping', color: '#9F7AEA', icon: '⚡', defaultRisk: 0.3, defaultReward: 0.6, defaultStop: 'Tick-based / Immediate invalidation', defaultTarget: 'Few ticks profit / L2 fill' },
+            'swing': { name: 'Swing', color: '#3182CE', icon: '📈', defaultRisk: 1.5, defaultReward: 3.0, defaultStop: 'Key structural break / Daily close below', defaultTarget: 'Major resistance / Multi-day move' },
+            'breakout': { name: 'Breakout', color: '#DD6B20', icon: '💥', defaultRisk: 0.7, defaultReward: 1.8, defaultStop: 'Retest failure / Volume exhaustion', defaultTarget: 'Measured move / Next major level' }
+        };
+        
+        // Custom strategies will be loaded/saved here
+        let customStrategies = {};
+        // Custom criteria will be loaded/saved here
+        let customCriteria = {}; 
+        
+        // Variable to keep track of the currently active filter
+        let currentFilter = 'all'; 
+
+        /**
+         * Shows a custom modal dialog.
+         * @param {string} title The title of the modal.
+         * @param {string} message The message content of the modal.
+         * @param {Function} onConfirm Callback function for the confirm action.
+         * @param {Function} onCancel Callback function for the cancel action.
+         * @param {boolean} showCancelButton Whether to show the cancel button.
+         * @param {boolean} showOkButton Whether to show a single OK button (for alerts).
+         */
+        function showModal(title, message, onConfirm, onCancel, showCancelButton = true, showOkButton = false) {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').textContent = message;
+
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+            const okBtn = document.getElementById('modalOkBtn');
+
+            // Reset event listeners to prevent multiple calls
+            confirmBtn.onclick = null;
+            cancelBtn.onclick = null;
+            okBtn.onclick = null;
+
+            if (showOkButton) {
+                confirmBtn.style.display = 'none';
+                cancelBtn.style.display = 'none';
+                okBtn.style.display = 'inline-block';
+                okBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    if (onConfirm) onConfirm();
+                };
+            } else {
+                confirmBtn.style.display = 'inline-block';
+                cancelBtn.style.display = showCancelButton ? 'inline-block' : 'none';
+                okBtn.style.display = 'none';
+
+                confirmBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    if (onConfirm) onConfirm();
+                };
+                cancelBtn.onclick = () => {
+                    modal.classList.add('hidden');
+                    if (onCancel) onCancel();
+                };
+            }
+            modal.classList.remove('hidden');
+        }
+
+        /**
+         * Saves the current state of the checklist to localStorage.
+         * This includes checked inputs, custom strategies, custom criteria, and notes.
+         */
+        function saveState() {
+            const state = {
+                checkedInputs: [],
+                customStrategies: customStrategies,
+                customCriteria: customCriteria,
+                notes: document.getElementById('trade-notes').value,
+                darkMode: document.body.classList.contains('dark-mode')
+            };
+
+            // Collect IDs of all currently checked inputs
+            document.querySelectorAll('.input').forEach(input => {
+                if (input.checked) {
+                    state.checkedInputs.push(input.id);
+                }
+            });
+
+            localStorage.setItem('futuresChecklistState', JSON.stringify(state));
+            console.log('Checklist state saved to localStorage:', state); // Debugging
+        }
+
+        /**
+         * Loads the saved state from localStorage and restores the checklist.
+         */
+        function loadState() {
+            const savedState = localStorage.getItem('futuresChecklistState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                console.log('Checklist state loaded from localStorage:', state); // Debugging
+
+                applyLoadedState(state, false); // Do not clear existing, just update/add
+            } else {
+                // Default to light mode if no state is saved
+                document.body.classList.remove('dark-mode');
+                document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
+            }
+            // Always evaluate the checklist state after loading
+            evaluate(); 
+            // Apply the default filter (show all) after loading
+            applyStrategyFilter(currentFilter);
+        }
+
+        /**
+         * Applies a loaded state object to the checklist.
+         * Used by both loadState and importSettings.
+         * @param {object} state The state object to apply.
+         * @param {boolean} clearExistingData If true, clears all custom strategies and criteria before applying.
+         */
+        function applyLoadedState(state, clearExistingData) {
+            if (clearExistingData) {
+                // Clear existing custom strategies and criteria from memory
+                customStrategies = {};
+                customCriteria = {};
+
+                // Clear all custom criteria from DOM
+                document.querySelectorAll('.category.custom-criteria').forEach(el => el.remove());
+
+                // Uncheck all existing checkboxes
+                document.querySelectorAll('.input').forEach(input => {
+                    input.checked = false;
+                });
+            }
+
+            // Restore custom strategies
+            for (const id in state.customStrategies) {
+                customStrategies[id] = state.customStrategies[id];
+                addStrategyCSS(id, customStrategies[id].color);
+            }
+
+            // Restore custom criteria
+            for (const category in state.customCriteria) {
+                if (!customCriteria[category]) {
+                    customCriteria[category] = [];
+                }
+                state.customCriteria[category].forEach(item => {
+                    // Only add if it doesn't already exist to prevent duplicates on partial loads
+                    if (!document.getElementById(item.id)) {
+                        customCriteria[category].push(item);
+                        createCustomCriteriaElement(category, item.id, item.name, item.strategies, item.risk || 1.0, item.reward || 1.0, item.info || '');
+                    }
+                });
+            }
+
+            // Re-create filter buttons (important after strategies are loaded)
+            createFilterButtons();
+
+            // Restore checked inputs (after all criteria, including custom, are in the DOM)
+            // Ensure inputs are only checked if they exist in the current DOM
+            document.querySelectorAll('.input').forEach(input => {
+                input.checked = false; // Uncheck all first before applying new checked state
+            });
+            state.checkedInputs.forEach(id => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.checked = true;
+                }
+            });
+
+            // Restore notes only if not clearing data, or if specifically desired in import
+            if (!clearExistingData) { // Notes are generally not part of sharable configuration
+                document.getElementById('trade-notes').value = state.notes || '';
+            }
+
+            // Restore dark mode preference
+            if (state.darkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeToggle').textContent = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('dark-mode');
+                document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
+            }
+            
+            // Re-attach event listeners to all inputs after they potentially get re-rendered/checked
+            document.querySelectorAll(".input").forEach(input => {
+                input.removeEventListener("change", evaluate); // Avoid duplicate listeners
+                input.removeEventListener("change", saveState);
+                input.addEventListener("change", evaluate);
+                input.addEventListener("change", saveState);
+            });
+
+            // Re-attach tooltip listeners after criteria are loaded/re-rendered
+            document.querySelectorAll('label[data-info]').forEach(label => {
+                label.removeEventListener('mouseover', showTooltip);
+                label.removeEventListener('mouseout', hideTooltip);
+                label.addEventListener('mouseover', showTooltip);
+                label.addEventListener('mouseout', hideTooltip);
+            });
+
+            evaluate(); // Re-evaluate the checklist state after loading
+            applyStrategyFilter(currentFilter); // Re-apply the current filter
+        }
+
+        /**
+         * Resets all checkboxes to unchecked and clears the notes textarea.
+         * Saves the cleared state to localStorage.
+         */
+        function resetChecklist() {
+            showModal(
+                "Confirm Reset",
+                "Are you sure you want to reset all checklist items and notes? This will NOT delete your custom strategies or criteria.",
+                () => { // onConfirm
+                    document.querySelectorAll('.input').forEach(input => {
+                        input.checked = false;
+                    });
+                    document.getElementById('trade-notes').value = '';
+                    saveState(); // Save the cleared state
+                    evaluate(); // Update the result display
+                },
+                () => { /* onCancel - do nothing */ },
+                true // showCancelButton
+            );
+        }
+
+        /**
+         * Prompts the user to add a new custom strategy and saves it.
+         * @returns {string|null} The ID of the new strategy, or null if cancelled/invalid.
+         */
+        function addNewStrategy() {
+            const strategyId = prompt("Enter strategy ID (lowercase, no spaces, e.g., 'scalping', 'breakout'):");
+            if (!strategyId || strategyId.includes(' ')) {
+                showModal("Invalid ID", "Strategy ID must be lowercase with no spaces and not empty.", null, null, false, true);
+                return null; 
+            }
+            
+            if (strategies[strategyId] || customStrategies[strategyId]) {
+                showModal("Strategy Exists", "Strategy already exists!", null, null, false, true);
+                return null;
+            }
+            
+            const strategyName = prompt("Enter strategy display name (e.g., 'Scalping', 'Breakout'):");
+            if (!strategyName) return null;
+            
+            const strategyColor = prompt("Enter hex color (e.g., '#3182ce' for blue):", '#3182ce');
+            const strategyIcon = prompt("Enter emoji icon (e.g., '⚡', '📊'):", '📊');
+            const defaultRisk = parseFloat(prompt("Enter default risk value for this strategy (e.g., 1.0):", "1.0"));
+            if (isNaN(defaultRisk)) { showModal("Invalid Input", "Invalid default risk value. Please enter a number.", null, null, false, true); return null; }
+            const defaultReward = parseFloat(prompt("Enter default reward value for this strategy (e.g., 1.0):", "1.0"));
+            if (isNaN(defaultReward)) { showModal("Invalid Input", "Invalid default reward value. Please enter a number.", null, null, false, true); return null; }
+            const defaultStop = prompt("Enter default stop description for this strategy:", "Dynamic stop based on strategy");
+            const defaultTarget = prompt("Enter default target description for this strategy:", "Dynamic target based on strategy");
+
+            customStrategies[strategyId] = {
+                name: strategyName,
+                color: strategyColor,
+                icon: strategyIcon,
+                defaultRisk: defaultRisk,
+                defaultReward: defaultReward,
+                defaultStop: defaultStop,
+                defaultTarget: defaultTarget
+            };
+            
+            addStrategyCSS(strategyId, strategyColor);
+            createFilterButtons(); // Re-create filter buttons to include new strategy
+            saveState(); // Save state after adding a new strategy
+            return strategyId;
+        }
+        
+        /**
+         * Creates a new strategy based on user input for an unrecognized strategy name.
+         * @param {string} strategyInput The raw input string for the new strategy.
+         * @returns {string|null} The ID of the new strategy, or null if cancelled/invalid.
+         */
+        function createNewStrategyFromInput(strategyInput) {
+            const strategyName = prompt(`"${strategyInput}" is a new strategy. Enter display name:`, strategyInput);
+            if (!strategyName) return null;
+            
+            const strategyColor = prompt("Enter hex color (e.g., '#3182ce' for blue):", '#3182ce');
+            const strategyIcon = prompt("Enter emoji icon (e.g., '⚡', '📊'):", '📊');
+            const defaultRisk = parseFloat(prompt("Enter default risk value for this strategy (e.g., 1.0):", "1.0"));
+            if (isNaN(defaultRisk)) { showModal("Invalid Input", "Invalid default risk value. Please enter a number.", null, null, false, true); return null; }
+            const defaultReward = parseFloat(prompt("Enter default reward value for this strategy (e.g., 1.0):", "1.0"));
+            if (isNaN(defaultReward)) { showModal("Invalid Input", "Invalid default reward value. Please enter a number.", null, null, false, true); return null; }
+            const defaultStop = prompt("Enter default stop description for this strategy:", "Dynamic stop based on strategy");
+            const defaultTarget = prompt("Enter default target description for this strategy:", "Dynamic target based on strategy");
+            
+            const strategyId = strategyInput.toLowerCase().replace(/\s+/g, ''); // Ensure ID is clean
+            
+            customStrategies[strategyId] = {
+                name: strategyName,
+                color: strategyColor,
+                icon: strategyIcon,
+                defaultRisk: defaultRisk,
+                defaultReward: defaultReward,
+                defaultStop: defaultStop,
+                defaultTarget: defaultTarget
+            };
+            
+            addStrategyCSS(strategyId, strategyColor);
+            createFilterButtons(); // Re-create filter buttons to include new strategy
+            saveState(); // Save state after creating a new strategy
+            return strategyId;
+        }
+        
+        /**
+         * Adds a new criteria item to a specified category.
+         * Prompts for criteria name and associated strategies.
+         * @param {string} category The data-group of the category to add to.
+         */
+        function addCriteriaToCategory(category) {
+            // Use Date.now() for unique ID for new criteria
+            const itemId = `custom-${Date.now()}`; 
+            const criteriaName = prompt(`Enter new criteria for ${category.toUpperCase()}:`);
+            if (!criteriaName) return;
+
+            // Build strategy options for the prompt
+            let strategyOptions = "Available strategies (or type new one):\n\n";
+            Object.entries(strategies).forEach(([id, strategy]) => {
+                strategyOptions += `${strategy.icon} ${id} - ${strategy.name}\n`;
+            });
+            Object.entries(customStrategies).forEach(([id, strategy]) => {
+                strategyOptions += `${strategy.icon} ${id} - ${strategy.name}\n`;
+            });
+            strategyOptions += "\nEnter strategies separated by commas (e.g., 'reversal,momentum' or 'scalping,newstrategy').\n";
+            strategyOptions += "If you type a new strategy name, you'll be prompted to set it up:";
+            
+            const strategiesInput = prompt(strategyOptions);
+            if (!strategiesInput) return;
+            
+            const inputStrategies = strategiesInput.split(',').map(s => s.trim().toLowerCase());
+            let validStrategies = [];
+            
+            // Process each strategy input, creating new ones if necessary
+            for (let strategyInput of inputStrategies) {
+                if (strategies[strategyInput] || customStrategies[strategyInput]) {
+                    validStrategies.push(strategyInput);
+                } else {
+                    const newStrategyId = createNewStrategyFromInput(strategyInput);
+                    if (newStrategyId) {
+                        validStrategies.push(newStrategyId);
+                    }
+                }
+            }
+            
+            if (validStrategies.length === 0) {
+                showModal("No Strategies", "No valid strategies selected or created!", null, null, false, true);
+                return;
+            }
+
+            const riskInput = parseFloat(prompt("Enter risk value for this criteria (e.g., 1.0):", "1.0"));
+            if (isNaN(riskInput)) { showModal("Invalid Input", "Invalid risk value. Please enter a number.", null, null, false, true); return; }
+            const rewardInput = parseFloat(prompt("Enter reward value for this criteria (e.g., 1.0):", "1.0"));
+            if (isNaN(rewardInput)) { showModal("Invalid Input", "Invalid reward value. Please enter a number.", null, null, false, true); return; }
+
+            const tooltipInfo = prompt("Enter tooltip information for this criteria (optional):", "");
+
+
+            // Store custom criteria data in the `customCriteria` object
+            if (!customCriteria[category]) {
+                customCriteria[category] = [];
+            }
+            customCriteria[category].push({
+                id: itemId,
+                name: criteriaName,
+                strategies: validStrategies,
+                risk: riskInput,
+                reward: rewardInput,
+                info: tooltipInfo // Store tooltip information
+            });
+            
+            // Create the actual DOM element for the new criteria
+            createCustomCriteriaElement(category, itemId, criteriaName, validStrategies, riskInput, rewardInput, tooltipInfo);
+            saveState(); // Save state after adding new criteria
+        }
+
+        /**
+         * Creates and appends a custom criteria HTML element to the specified category.
+         * This function is used both when adding new criteria and when loading from storage.
+         * @param {string} category The data-group of the category.
+         * @param {string} id The unique ID for the input element.
+         * @param {string} name The display name of the criteria.
+         * @param {Array<string>} strategies An array of strategy IDs associated with this criteria.
+         * @param {number} risk The risk value for this criteria.
+         * @param {number} reward The reward value for this criteria.
+         * @param {string} info The tooltip information for this criteria.
+         */
+        function createCustomCriteriaElement(category, id, name, strategies, risk, reward, info) {
+            let targetCategory = document.querySelector(`.category[data-group="${category}"]`);
+            
+            // If the category doesn't exist (e.g., a custom category added by user), create it
+            if (!targetCategory) {
+                const checklistContainer = document.querySelector('.checklist-container');
+                const newCategoryDiv = document.createElement('div');
+                newCategoryDiv.className = 'category custom-criteria'; // Add custom-criteria class for styling
+                newCategoryDiv.setAttribute('data-group', category);
+                let categoryHtml = `
+                    <h3>
+                        <div class="category-header">
+                            <span class="category-icon">✨</span>${category.charAt(0).toUpperCase() + category.slice(1)}
+                        </div>
+                        <button class="add-criteria-mini" onclick="addCriteriaToCategory('${category}')" title="Add criteria to ${category.charAt(0).toUpperCase() + category.slice(1)}">+</button>
+                    </h3>
+                `;
+                // Add details tag for chart-patterns category
+                if (category === 'chart-patterns') {
+                    categoryHtml += `<details><summary>Click to expand/collapse Chart Pattern criteria</summary></details>`;
+                }
+                newCategoryDiv.innerHTML = categoryHtml;
+                checklistContainer.appendChild(newCategoryDiv);
+                targetCategory = newCategoryDiv; // Update targetCategory reference
+            }
+
+            const newItem = document.createElement('div');
+            newItem.className = 'checklist-item';
+            
+            // Check if the item already exists and is checked (important for loadState)
+            const existingInput = document.getElementById(id);
+            const isChecked = existingInput ? existingInput.checked : false;
+
+            // Add data-info attribute to the label if info is provided
+            const infoAttribute = info ? `data-info="${info}"` : '';
+
+            newItem.innerHTML = `
+                <input type="checkbox" class="input" data-tag="${category}" id="${id}" data-strategies="${strategies.join(',')}" data-risk="${risk}" data-reward="${reward}" ${isChecked ? 'checked' : ''}>
+                <label for="${id}" ${infoAttribute}>${name}</label>
+                <div class="strategy-badges"></div>
+                <button class="edit-criteria-btn" onclick="editCriteria('${id}', '${category}')" title="Edit this criteria">✏️</button>
+                <button class="delete-criteria-btn" onclick="deleteCriteria('${id}', '${category}')" title="Delete this criteria">x</button>
+            `;
+            
+            const badges = newItem.querySelector('.strategy-badges');
+            updateBadgeDisplay(badges, strategies);
+            
+            // If the category is 'chart-patterns', append to the details element
+            if (category === 'chart-patterns') {
+                const detailsElement = targetCategory.querySelector('details');
+                if (detailsElement) {
+                    detailsElement.appendChild(newItem);
+                } else {
+                    // Fallback if details tag is somehow missing (shouldn't happen with current structure)
+                    targetCategory.appendChild(newItem);
+                }
+            } else {
+                targetCategory.appendChild(newItem);
+            }
+            
+            // Add event listeners to the newly created checkbox
+            newItem.querySelector('input').addEventListener("change", evaluate);
+            newItem.querySelector('input').addEventListener("change", saveState); 
+
+            // Attach tooltip event listeners to the newly created label
+            const newLabel = newItem.querySelector('label');
+            if (newLabel && newLabel.hasAttribute('data-info')) {
+                newLabel.addEventListener('mouseover', showTooltip);
+                newLabel.addEventListener('mouseout', hideTooltip);
+            }
+
+            // Re-apply current filter to the newly added item
+            applyStrategyFilter(currentFilter);
+        }
+        
+        /**
+         * Deletes a criteria item from the checklist.
+         * @param {string} itemId The ID of the criteria item to delete.
+         * @param {string} category The category the item belongs to.
+         */
+        function deleteCriteria(itemId, category) {
+            showModal(
+                "Confirm Deletion",
+                `Are you sure you want to delete this criteria? This cannot be undone.`,
+                () => { // onConfirm
+                    // Remove from DOM
+                    const itemToRemove = document.getElementById(itemId);
+                    if (itemToRemove && itemToRemove.parentElement) {
+                        itemToRemove.parentElement.remove();
+                    }
+
+                    // Remove from customCriteria object if it's a custom item
+                    if (customCriteria[category]) {
+                        customCriteria[category] = customCriteria[category].filter(item => item.id !== itemId);
+                        if (customCriteria[category].length === 0) {
+                            delete customCriteria[category]; // Remove category if empty
+                            // Optionally remove the category div from DOM if it was a custom one
+                            const categoryDiv = document.querySelector(`.category[data-group="${category}"]`);
+                            if (categoryDiv && categoryDiv.classList.contains('custom-criteria')) {
+                                categoryDiv.remove();
+                            }
+                        }
+                    }
+                    saveState(); // Save state after deletion
+                    evaluate(); // Re-evaluate the checklist
+                },
+                () => { /* onCancel - do nothing */ },
+                true // showCancelButton
+            );
+        }
+
+        /**
+         * Edits an existing criteria item's name and strategies.
+         * @param {string} itemId The ID of the criteria item to edit.
+         * @param {string} category The category the item belongs to.
+         */
+        function editCriteria(itemId, category) {
+            const inputElement = document.getElementById(itemId);
+            if (!inputElement) {
+                showModal("Error", "Criteria not found!", null, null, false, true);
+                return;
+            }
+
+            const currentLabel = inputElement.nextElementSibling;
+            const currentName = currentLabel.textContent;
+            const currentStrategies = inputElement.getAttribute('data-strategies') ? inputElement.getAttribute('data-strategies').split(',') : [];
+            const currentRisk = parseFloat(inputElement.getAttribute('data-risk'));
+            const currentReward = parseFloat(inputElement.getAttribute('data-reward'));
+            const currentInfo = currentLabel.getAttribute('data-info') || ''; // Get current tooltip info
+
+            // Prompt for new name
+            const newName = prompt(`Edit criteria name for "${currentName}":`, currentName);
+            if (newName === null) return; // User cancelled
+
+            // Build strategy options for the prompt
+            let strategyOptions = "Available strategies (or type new one):\n\n";
+            Object.entries(strategies).forEach(([id, strategy]) => {
+                strategyOptions += `${strategy.icon} ${id} - ${strategy.name}\n`;
+            });
+            Object.entries(customStrategies).forEach(([id, strategy]) => {
+                strategyOptions += `${strategy.icon} ${id} - ${strategy.name}\n`;
+            });
+            strategyOptions += "\nEnter strategies separated by commas (e.g., 'reversal,momentum' or 'scalping,newstrategy').\n";
+            strategyOptions += `Current strategies: ${currentStrategies.join(', ')}\n`;
+            strategyOptions += "If you type a new strategy name, you'll be prompted to set it up:";
+            
+            const strategiesInput = prompt(strategyOptions, currentStrategies.join(','));
+            if (strategiesInput === null) return; // User cancelled
+
+            const inputStrategies = strategiesInput.split(',').map(s => s.trim().toLowerCase());
+            let validStrategies = [];
+            
+            for (let strategyInput of inputStrategies) {
+                if (strategyInput === '') continue; // Skip empty strings from extra commas
+                if (strategies[strategyInput] || customStrategies[strategyInput]) {
+                    validStrategies.push(strategyInput);
+                } else {
+                    const newStrategyId = createNewStrategyFromInput(strategyInput);
+                    if (newStrategyId) {
+                        validStrategies.push(newStrategyId);
+                    }
+                }
+            }
+
+            if (validStrategies.length === 0) {
+                showModal("Invalid Strategies", "No valid strategies selected or created! Criteria must have at least one strategy.", null, null, false, true);
+                return;
+            }
+
+            const newRisk = parseFloat(prompt("Enter new risk value:", currentRisk));
+            if (isNaN(newRisk)) { showModal("Invalid Input", "Invalid risk value. Please enter a number.", null, null, false, true); return; }
+            const newReward = parseFloat(prompt("Enter new reward value:", currentReward));
+            if (isNaN(newReward)) { showModal("Invalid Input", "Invalid reward value. Please enter a number.", null, null, false, true); return; }
+
+            const newInfo = prompt("Edit tooltip information:", currentInfo); // Prompt for new tooltip info
+
+            // Update DOM elements
+            currentLabel.textContent = newName; // Update label text
+            inputElement.setAttribute('data-strategies', validStrategies.join(',')); // Update data attribute
+            inputElement.setAttribute('data-risk', newRisk);
+            inputElement.setAttribute('data-reward', newReward);
+            
+            // Update data-info attribute on the label
+            if (newInfo) {
+                currentLabel.setAttribute('data-info', newInfo);
+                // Re-attach tooltip listeners in case it was removed or added
+                currentLabel.removeEventListener('mouseover', showTooltip);
+                currentLabel.removeEventListener('mouseout', hideTooltip);
+                currentLabel.addEventListener('mouseover', showTooltip);
+                currentLabel.addEventListener('mouseout', hideTooltip);
+            } else {
+                currentLabel.removeAttribute('data-info');
+                currentLabel.removeEventListener('mouseover', showTooltip);
+                currentLabel.removeEventListener('mouseout', hideTooltip);
+            }
+
+            updateBadgeDisplay(inputElement.parentElement.querySelector('.strategy-badges'), validStrategies); // Update badges
+
+            // Update customCriteria object if it's a custom item
+            if (customCriteria[category]) {
+                const itemIndex = customCriteria[category].findIndex(item => item.id === itemId);
+                if (itemIndex !== -1) {
+                    customCriteria[category][itemIndex].name = newName;
+                    customCriteria[category][itemIndex].strategies = validStrategies;
+                    customCriteria[category][itemIndex].risk = newRisk;
+                    customCriteria[category][itemIndex].reward = newReward;
+                    customCriteria[category][itemIndex].info = newInfo; // Update tooltip info in data
+                }
+            }
+            
+            saveState(); // Save state after editing
+            evaluate(); // Re-evaluate the checklist
+            showModal("Success", "Criteria updated successfully!", null, null, false, true);
+        }
+
+
+        /**
+         * Adds or updates CSS rules for a given strategy ID and color.
+         * Prevents duplicate style tags on subsequent loads/updates.
+         * @param {string} strategyId The ID of the strategy.
+         * @param {string} color The CSS color value (hex or linear-gradient).
+         */
+        function addStrategyCSS(strategyId, color) {
+            let style = document.getElementById(`style-${strategyId}`);
+            if (!style) {
+                style = document.createElement('style');
+                style.id = `style-${strategyId}`;
+                document.head.appendChild(style);
+            }
+            // Update the content of the style tag
+            style.textContent = `.strategy-badge.${strategyId} { background: ${color}; }`;
+        }
+        
+        /**
+         * Manages custom strategies (add, delete, edit).
+         * Prompts the user for action and performs it.
+         */
+        function manageStrategies() {
+            let strategyList = "Current Strategies:\n\n";
+            
+            // List built-in strategies
+            Object.entries(strategies).forEach(([id, strategy]) => {
+                strategyList += `${strategy.icon} ${strategy.name} (${id}) - Built-in\n`;
+            });
+            
+            // List custom strategies
+            Object.entries(customStrategies).forEach(([id, strategy]) => {
+                strategyList += `${strategy.icon} ${strategy.name} (${id}) - Custom\n`;
+            });
+            
+            strategyList += "\nOptions:\n";
+            strategyList += "1. Type 'add' to create a new custom strategy\n";
+            strategyList += "2. Type 'delete [strategy_id]' to remove a custom strategy\n";
+            strategyList += "3. Type 'edit [strategy_id]' to modify a custom strategy\n";
+            strategyList += "4. Just click OK to close\n";
+            
+            const action = prompt(strategyList);
+            
+            if (action && action.toLowerCase() === 'add') {
+                addNewStrategy();
+            } else if (action && action.startsWith('delete ')) {
+                const strategyId = action.split(' ')[1];
+                if (customStrategies[strategyId]) {
+                    showModal(
+                        "Confirm Deletion",
+                        `Are you sure you want to delete the custom strategy "${customStrategies[strategyId].name}"? This cannot be undone.`,
+                        () => { // onConfirm
+                            delete customStrategies[strategyId];
+                            updateCriteriaAfterStrategyDelete(strategyId); // Update criteria that used this strategy
+                            // Remove the dynamically added style tag for the deleted strategy
+                            const styleTag = document.getElementById(`style-${strategyId}`);
+                            if (styleTag) {
+                                styleTag.remove();
+                            }
+                            createFilterButtons(); // Re-create filter buttons after deletion
+                            showModal("Success", `Strategy "${strategyId}" deleted successfully!`, null, null, false, true);
+                            saveState(); // Save state after deleting a strategy
+                            evaluate(); // Re-evaluate after deletion
+                        },
+                        () => { /* onCancel - do nothing */ },
+                        true // showCancelButton
+                    );
+                } else {
+                    showModal("Error", "Strategy not found or cannot delete built-in strategies!", null, null, false, true);
+                }
+            } else if (action && action.startsWith('edit ')) {
+                const strategyId = action.split(' ')[1];
+                if (customStrategies[strategyId]) {
+                    editStrategy(strategyId);
+                    createFilterButtons(); // Re-create filter buttons after edit
+                    saveState(); // Save state after editing a strategy
+                } else {
+                    showModal("Error", "Strategy not found or cannot edit built-in strategies!", null, null, false, true);
+                }
+            }
+        }
+        
+        /**
+         * Edits an existing custom strategy's name, color, and icon.
+         * @param {string} strategyId The ID of the strategy to edit.
+         */
+        function editStrategy(strategyId) {
+            const strategy = customStrategies[strategyId];
+            const newName = prompt("Enter new strategy name:", strategy.name);
+            const newColor = prompt("Enter new hex color:", strategy.color);
+            const newIcon = prompt("Enter new emoji icon:", strategy.icon);
+            const newDefaultRisk = parseFloat(prompt("Enter new default risk value:", strategy.defaultRisk));
+            if (isNaN(newDefaultRisk)) { showModal("Invalid Input", "Invalid default risk value. Please enter a number.", null, null, false, true); return; }
+            const newDefaultReward = parseFloat(prompt("Enter new default reward value:", strategy.defaultReward));
+            if (isNaN(newDefaultReward)) { showModal("Invalid Input", "Invalid default reward value. Please enter a number.", null, null, false, true); return; }
+            const newDefaultStop = prompt("Enter new default stop description:", strategy.defaultStop);
+            const newDefaultTarget = prompt("Enter new default target description:", strategy.defaultTarget);
+            
+            if (newName) strategy.name = newName;
+            if (newColor) strategy.color = newColor;
+            if (newIcon) strategy.icon = newIcon;
+            strategy.defaultRisk = newDefaultRisk;
+            strategy.defaultReward = newDefaultReward;
+            if (newDefaultStop) strategy.defaultStop = newDefaultStop;
+            if (newDefaultTarget) strategy.defaultTarget = newDefaultTarget;
+            
+            addStrategyCSS(strategyId, strategy.color); // Update CSS
+            
+            // Update existing badges in the DOM to reflect changes
+            document.querySelectorAll(`.strategy-badge.${strategyId}`).forEach(badge => {
+                badge.textContent = strategy.name;
+                // Handle linear-gradient vs solid color for background
+                if (strategy.color.startsWith('linear-gradient')) {
+                     badge.style.background = strategy.color;
+                } else {
+                    badge.style.backgroundColor = strategy.color;
+                }
+            });
+            
+            showModal("Success", "Strategy updated successfully!", null, null, false, true);
+        }
+        
+        /**
+         * Updates criteria items after a strategy has been deleted.
+         * Removes the deleted strategy from criteria's data-strategies attribute.
+         * If a criteria has no strategies left, it's removed from the DOM and `customCriteria`.
+         * @param {string} deletedStrategyId The ID of the strategy that was deleted.
+         */
+        function updateCriteriaAfterStrategyDelete(deletedStrategyId) {
+            // Update the customCriteria object first
+            for (const category in customCriteria) {
+                customCriteria[category] = customCriteria[category].filter(item => {
+                    item.strategies = item.strategies.filter(s => s !== deletedStrategyId);
+                    return item.strategies.length > 0; // Keep criteria only if it still has strategies
+                });
+                // If a category becomes empty, remove it from customCriteria
+                if (customCriteria[category].length === 0) {
+                    delete customCriteria[category];
+                }
+            }
+
+            // Update the DOM elements
+            document.querySelectorAll(`.checklist-item input[data-strategies*="${deletedStrategyId}"]`).forEach(input => {
+                const currentStrategies = input.getAttribute('data-strategies').split(',').filter(s => s !== deletedStrategyId);
+                if (currentStrategies.length > 0) {
+                    input.setAttribute('data-strategies', currentStrategies.join(','));
+                    const badges = input.parentElement.querySelector('.strategy-badges');
+                    updateBadgeDisplay(badges, currentStrategies);
+                } else {
+                    // If no strategies left, remove the entire criteria item from DOM
+                    input.parentElement.remove();
+                }
+            });
+            // Re-evaluate to update the result display
+            evaluate();
+        }
+        
+        /**
+         * Updates the display of strategy badges for a given checklist item.
+         * @param {HTMLElement} badgesContainer The div element containing the badges.
+         * @param {Array<string>} strategiesList An array of strategy IDs to display.
+         */
+        function updateBadgeDisplay(badgesContainer, strategiesList) {
+            badgesContainer.innerHTML = ''; // Clear existing badges
+            strategiesList.forEach(strategyId => {
+                const strategy = strategies[strategyId] || customStrategies[strategyId];
+                if (strategy) {
+                    const badge = document.createElement('span');
+                    badge.className = `strategy-badge ${strategyId}`;
+                    badge.textContent = strategy.name;
+                    // Apply color directly or via CSS class if it's a built-in
+                    if (strategy.color.startsWith('linear-gradient')) {
+                         badge.style.background = strategy.color;
+                    } else {
+                        badge.style.backgroundColor = strategy.color;
+                    }
+                    badgesContainer.appendChild(badge);
+                }
+            });
+        }
+
+        /**
+         * Evaluates the checked criteria and updates the trade setup result.
+         */
+        function evaluate() {
+            const allInputs = document.querySelectorAll('.input:checked');
+            const checkedItems = Array.from(allInputs);
+            
+            let totalRisk = 0;
+            let totalReward = 0;
+
+            if (checkedItems.length === 0) {
+                updateResult("Select criteria to identify your trade setup...", "waiting");
+                updateRiskRewardDisplay(0, 0); // Reset R:R
+                // Reset suggested stop/target when no items are checked
+                document.getElementById('calculated-risk').textContent = 'N/A';
+                document.getElementById('calculated-reward').textContent = 'N/A';
+                document.getElementById('suggested-stop').textContent = 'Based on selected criteria';
+                document.getElementById('suggested-target').textContent = 'Based on selected criteria';
+                return;
+            }
+
+            let strategyCounts = {};
+            let hasLevels = false;
+            let hasVolumeOrTape = false;
+
+            // Initialize counts for all strategies (built-in and custom)
+            Object.keys(strategies).forEach(key => strategyCounts[key] = 0);
+            Object.keys(customStrategies).forEach(key => strategyCounts[key] = 0);
+
+            checkedItems.forEach(input => {
+                const inputStrategiesAttr = input.getAttribute('data-strategies');
+                const group = input.getAttribute('data-tag');
+                
+                if (group === 'levels') hasLevels = true;
+                if (group === 'volume' || group === 'tape') hasVolumeOrTape = true;
+                
+                // Get strategies from data-strategies attribute
+                const strategyList = inputStrategiesAttr ? inputStrategiesAttr.split(',') : [];
+                strategyList.forEach(strategy => {
+                    const trimmedStrategy = strategy.trim();
+                    if (strategyCounts.hasOwnProperty(trimmedStrategy)) {
+                        strategyCounts[trimmedStrategy]++;
+                    }
+                });
+
+                // Accumulate risk and reward values
+                const risk = parseFloat(input.getAttribute('data-risk')) || 0;
+                const reward = parseFloat(input.getAttribute('data-reward')) || 0;
+                totalRisk += risk;
+                totalReward += reward;
+            });
+
+            let dominantStrategy = '';
+            let maxCount = 0;
+            let ties = [];
+            
+            // Determine the dominant strategy based on counts
+            Object.entries(strategyCounts).forEach(([strategy, count]) => {
+                if (count > maxCount) {
+                    maxCount = count;
+                    dominantStrategy = strategy;
+                    ties = [strategy];
+                } else if (count === maxCount && count > 0) {
+                    ties.push(strategy);
+                }
+            });
+
+            let tradeType = "";
+            let resultClass = "ready";
+            
+            // Check for essential criteria
+            if (!hasLevels) {
+                updateResult("⚠️ Missing Level Analysis - Add price level criteria", "warning");
+                updateRiskRewardDisplay(totalRisk, totalReward);
+                return;
+            }
+            
+            if (!hasVolumeOrTape) {
+                updateResult("⚠️ Missing Volume/Tape Analysis - Add market flow criteria", "warning");
+                updateRiskRewardDisplay(totalRisk, totalReward);
+                return;
+            }
+
+            // Determine the trade type message
+            if (ties.length > 1 && !ties.includes('both')) {
+                // Multiple strategies tied, not including 'both'
+                const tiedNames = ties.map(s => {
+                    const strategy = strategies[s] || customStrategies[s];
+                    return `${strategy.icon} ${strategy.name}`;
+                }).join(' + ');
+                tradeType = `⚖️ Mixed Setup: ${tiedNames}`;
+                resultClass = "warning";
+            } else if (dominantStrategy && dominantStrategy !== 'both') {
+                // Single dominant strategy
+                const strategy = strategies[dominantStrategy] || customStrategies[dominantStrategy];
+                tradeType = `${strategy.icon} ${strategy.name} Setup Ready`;
+            } else if (dominantStrategy === 'both') {
+                // 'Both' strategy is dominant or tied
+                tradeType = "⚖️ Multi-Strategy Setup";
+            } else {
+                // No clear dominant strategy, or very few checked items
+                tradeType = "📊 General Setup Identified";
+            }
+
+            // Add confidence level based on total criteria checked
+            const totalCriteria = checkedItems.length;
+            if (totalCriteria >= 5) {
+                tradeType += " - High Confidence";
+            } else if (totalCriteria >= 3) {
+                tradeType += " - Medium Confidence";
+            } else {
+                tradeType += " - Low Confidence";
+                resultClass = "warning"; // Low confidence implies warning
+            }
+
+            // Show strategy breakdown
+            const activeStrategies = Object.entries(strategyCounts)
+                .filter(([_, count]) => count > 0)
+                .map(([strategy, count]) => {
+                    const strategyObj = strategies[strategy] || customStrategies[strategy];
+                    return `${strategyObj.name}: ${count}`;
+                }).join(' | ');
+            
+            if (activeStrategies) {
+                tradeType += `\n📊 Breakdown: ${activeStrategies}`;
+            }
+
+            updateResult(`✅ ${tradeType}`, resultClass);
+            updateRiskRewardDisplay(totalRisk, totalReward);
+
+            // Update risk management section details based on dominant strategy
+            const calculatedRiskElement = document.getElementById('calculated-risk');
+            const calculatedRewardElement = document.getElementById('calculated-reward');
+            const suggestedStopElement = document.getElementById('suggested-stop');
+            const suggestedTargetElement = document.getElementById('suggested-target');
+
+            calculatedRiskElement.textContent = totalRisk.toFixed(2);
+            calculatedRewardElement.textContent = totalReward.toFixed(2);
+
+            if (dominantStrategy) {
+                const strategyObj = strategies[dominantStrategy] || customStrategies[dominantStrategy];
+                suggestedStopElement.textContent = strategyObj.defaultStop;
+                suggestedTargetElement.textContent = strategyObj.defaultTarget;
+            } else {
+                suggestedStopElement.textContent = 'Based on selected criteria';
+                suggestedTargetElement.textContent = 'Based on selected criteria';
+            }
+        }
+
+        /**
+         * Updates the text content and CSS class of the result display.
+         * @param {string} text The text to display.
+         * @param {string} className The CSS class to apply ('waiting', 'ready', 'warning').
+         */
+        function updateResult(text, className) {
+            const result = document.getElementById("result");
+            result.textContent = text;
+            result.className = `result ${className}`;
+        }
+
+        /**
+         * Updates the risk:reward display.
+         * @param {number} totalRisk The sum of risk values from checked criteria.
+         * @param {number} totalReward The sum of reward values from checked criteria.
+         */
+        function updateRiskRewardDisplay(totalRisk, totalReward) {
+            const rrDisplay = document.getElementById('risk-reward-display');
+            const rrSpan = rrDisplay.querySelector('span');
+
+            if (totalRisk === 0 && totalReward === 0) {
+                rrSpan.textContent = 'N/A';
+                rrDisplay.className = 'risk-reward-display'; // Reset class
+            } else if (totalRisk === 0) {
+                rrSpan.textContent = '∞'; // Infinite reward with no risk
+                rrDisplay.className = 'risk-reward-display';
+            } else {
+                const ratio = (totalReward / totalRisk).toFixed(2);
+                rrSpan.textContent = `1:${ratio}`;
+                if (ratio >= 2) { // Example: Good ratio is 1:2 or better
+                    rrDisplay.className = 'risk-reward-display'; // Default good color
+                } else {
+                    rrDisplay.className = 'risk-reward-display bad-ratio'; // Indicate a less favorable ratio
+                }
+            }
+        }
+
+
+        /**
+         * Dynamically creates and updates the strategy filter buttons.
+         */
+        function createFilterButtons() {
+            const filterContainer = document.getElementById('strategy-filters');
+            filterContainer.innerHTML = ''; // Clear existing buttons
+
+            // Add "All Strategies" button
+            const allButton = document.createElement('button');
+            allButton.className = `filter-button ${currentFilter === 'all' ? 'active' : ''}`;
+            allButton.textContent = 'All Strategies';
+            allButton.onclick = () => applyStrategyFilter('all');
+            filterContainer.appendChild(allButton);
+
+            // Add buttons for built-in strategies
+            for (const id in strategies) {
+                if (id !== 'both') { // 'Both' is a special case, handled by 'All Strategies' or individual
+                    const button = document.createElement('button');
+                    button.className = `filter-button ${currentFilter === id ? 'active' : ''}`;
+                    button.textContent = `${strategies[id].icon} ${strategies[id].name}`;
+                    button.onclick = () => applyStrategyFilter(id);
+                    filterContainer.appendChild(button);
+                }
+            }
+
+            // Add buttons for custom strategies
+            for (const id in customStrategies) {
+                const button = document.createElement('button');
+                button.className = `filter-button ${currentFilter === id ? 'active' : ''}`;
+                button.textContent = `${customStrategies[id].icon} ${customStrategies[id].name}`;
+                button.onclick = () => applyStrategyFilter(id);
+                filterContainer.appendChild(button);
+            }
+        }
+
+        /**
+         * Applies a filter to the checklist items based on strategy.
+         * Only shows items tagged with the specified strategy or all items if 'all' is selected.
+         * @param {string} filterStrategyId The ID of the strategy to filter by, or 'all'.
+         */
+        function applyStrategyFilter(filterStrategyId) {
+            currentFilter = filterStrategyId; // Update current filter
+            createFilterButtons(); // Re-render buttons to update active state
+
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const input = item.querySelector('.input');
+                // Ensure itemStrategies is an array, even if data-strategies is empty or null
+                const itemStrategies = input.getAttribute('data-strategies') ? input.getAttribute('data-strategies').split(',') : [];
+                
+                if (filterStrategyId === 'all') {
+                    item.style.display = 'flex'; // Show all items
+                } else {
+                    // Show if it explicitly matches the filter or is tagged 'both'
+                    if (itemStrategies.includes(filterStrategyId) || itemStrategies.includes('both')) {
+                        item.style.display = 'flex'; 
+                    } else {
+                        item.style.display = 'none'; // Hide otherwise
+                    }
+                }
+            });
+        }
+
+        // --- Dark Mode Toggle Functionality ---
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            document.getElementById('darkModeToggle').textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+            saveState(); // Save the dark mode preference
+        }
+
+        // --- Tooltip Functionality ---
+        let tooltipTimeout;
+        const tooltipBox = document.getElementById('tooltipBox');
+
+        function showTooltip(event) {
+            const label = event.target;
+            const infoText = label.getAttribute('data-info');
+
+            if (infoText) {
+                tooltipBox.textContent = infoText;
+                tooltipBox.classList.add('visible');
+
+                // Position the tooltip
+                const labelRect = label.getBoundingClientRect();
+                const containerRect = document.querySelector('.container').getBoundingClientRect(); // Get container for relative positioning
+                
+                let top = labelRect.bottom + window.scrollY + 10; // 10px below label
+                let left = labelRect.left + window.scrollX;
+
+                // Adjust if tooltip goes off screen to the right
+                if (left + tooltipBox.offsetWidth > containerRect.right) {
+                    left = containerRect.right - tooltipBox.offsetWidth - 20; // 20px padding from right edge
+                }
+                // Adjust if tooltip goes off screen to the left
+                if (left < containerRect.left) {
+                    left = containerRect.left + 20; // 20px padding from left edge
+                }
+
+                tooltipBox.style.top = `${top}px`;
+                tooltipBox.style.left = `${left}px`;
+            }
+        }
+
+        function hideTooltip() {
+            tooltipBox.classList.remove('visible');
+        }
+
+        // --- Share/Import Settings Modal Functions ---
+        const shareImportModal = document.getElementById('shareImportModal');
+        const exportTabButton = shareImportModal.querySelector('[data-tab="export"]');
+        const importTabButton = shareImportModal.querySelector('[data-tab="import"]');
+        const exportTabContent = document.getElementById('exportTab');
+        const importTabContent = document.getElementById('importTab');
+        const generateCodeBtn = document.getElementById('generateCodeBtn');
+        const shareCodeOutput = document.getElementById('shareCodeOutput');
+        const copyCodeBtn = document.getElementById('copyCodeBtn');
+        const importCodeInput = document.getElementById('importCodeInput');
+        const importCodeBtn = document.getElementById('importCodeBtn');
+
+        function openShareImportModal() {
+            shareImportModal.classList.remove('hidden');
+            showTab('export'); // Default to export tab when opening
+        }
+
+        function closeShareImportModal() {
+            shareImportModal.classList.add('hidden');
+            shareCodeOutput.value = ''; // Clear output on close
+            importCodeInput.value = ''; // Clear input on close
+        }
+
+        function showTab(tabName) {
+            // Deactivate all tab buttons and content
+            shareImportModal.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            shareImportModal.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activate the selected tab
+            shareImportModal.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+        }
+
+        // Event listeners for tab switching
+        exportTabButton.addEventListener('click', () => showTab('export'));
+        importTabButton.addEventListener('click', () => showTab('import'));
+
+        generateCodeBtn.addEventListener('click', generateShareCode);
+        copyCodeBtn.addEventListener('click', copyShareCode);
+        importCodeBtn.addEventListener('click', triggerImportSettings);
+
+        function generateShareCode() {
+            const shareableState = {
+                customStrategies: customStrategies,
+                customCriteria: customCriteria,
+                // Only include checked inputs if they are from existing elements (not custom ones which are recreated)
+                // This will share the *current configuration of checked items*
+                checkedInputs: Array.from(document.querySelectorAll('.input:checked')).map(input => input.id)
+            };
+            const jsonString = JSON.stringify(shareableState);
+            // Use LZString to compress and then encode
+            const compressed = LZString.compressToBase64(jsonString);
+            shareCodeOutput.value = compressed;
+            shareCodeOutput.select(); // Select the text for easy copying
+            shareCodeOutput.setSelectionRange(0, 99999); // For mobile devices
+            showModal("Share Code Generated", "Your share code is ready. Copy it from the text area above.", null, null, false, true);
+        }
+
+        function copyShareCode() {
+            shareCodeOutput.select();
+            shareCodeOutput.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                showModal("Copied!", "Share code copied to clipboard.", null, null, false, true);
+            } catch (err) {
+                showModal("Error", "Failed to copy code. Please copy manually.", null, null, false, true);
+            }
+        }
+
+        function triggerImportSettings() {
+            const encodedString = importCodeInput.value.trim();
+            if (!encodedString) {
+                showModal("No Code", "Please paste a share code to import.", null, null, false, true);
+                return;
+            }
+
+            showModal(
+                "Confirm Import",
+                "Are you sure you want to import these settings? This will **overwrite** your current custom strategies, custom criteria, and checked items. Your notes will remain.",
+                () => { // onConfirm
+                    try {
+                        const decompressed = LZString.decompressFromBase64(encodedString);
+                        if (!decompressed) {
+                            throw new Error("Decompression failed. Invalid or corrupt code.");
+                        }
+                        const loadedState = JSON.parse(decompressed);
+                        
+                        // Basic validation for structure (optional but good practice)
+                        if (!loadedState || typeof loadedState.customStrategies === 'undefined' || typeof loadedState.customCriteria === 'undefined' || typeof loadedState.checkedInputs === 'undefined') {
+                            throw new Error("Invalid share code structure.");
+                        }
+
+                        applyLoadedState(loadedState, true); // Clear existing data and apply new state
+                        saveState(); // Persist the imported state
+                        showModal("Import Successful!", "Your checklist has been updated with the shared settings.", null, null, false, true);
+                        closeShareImportModal();
+                    } catch (error) {
+                        console.error("Error importing settings:", error);
+                        showModal("Import Failed", `Could not import settings: ${error.message || 'Invalid code.'} Please check the code and try again.`, null, null, false, true);
+                    }
+                },
+                () => { /* onCancel - do nothing */ },
+                true // showCancelButton
+            );
+        }
+
+        // --- Event Listeners for initial setup and persistence ---
+        document.addEventListener("DOMContentLoaded", function () {
+            // Load the saved state when the page first loads
+            loadState();
+
+            // Add event listener to the notes textarea for saving on input
+            document.getElementById('trade-notes').addEventListener('input', saveState);
+
+            // Add event listener for dark mode toggle
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+        });
+    </script>
+</body>
+</html>
