@@ -1,6 +1,8 @@
 # 🎯 Futures Trade Checklist
 
-This is a dynamic and interactive **Futures Trade Checklist** designed to help traders systematically evaluate their trade setups, manage risk, and document their observations. It's a single-page HTML application that runs entirely in your browser, leveraging local storage for persistence and offering a unique feature to share custom settings via a generated code.
+This is a dynamic and interactive **Futures Trade Checklist** designed to help traders systematically evaluate their trade setups, manage risk, and document their observations. It's a single-page HTML application that runs entirely in your browser, leveraging local storage for persistence and offering a unique feature to share custom settings via a generated code. 
+
+Website: https://splendorous-griffin-851bcc.netlify.app/
 
 ---
 
