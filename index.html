@@ -234,6 +234,7 @@
         .checklist-item {
             display: flex;
             align-items: center;
+            flex-wrap: wrap; /* Added this to allow items to wrap */
             margin: 8px 0;
             padding: 8px;
             border-radius: 8px;
@@ -925,7 +926,9 @@
                 <div class="checklist-item">
                     <input type="checkbox" class="input" data-tag="volume" id="volume-spike" data-strategies="momentum" data-risk="0.7" data-reward="1.3">
                     <label for="volume-spike" data-info="A sudden increase in volume (volume spike) often confirms the strength of a price move, indicating strong participation.">Volume spike confirms push</label>
-                    <div class="strategy-btn" onclick="editCriteria('volume-spike', 'volume')" title="Edit this criteria">✏️</button>
+                    <div class="strategy-badges"> <span class="strategy-badge momentum">Momentum</span>
+                    </div>
+                    <button class="edit-criteria-btn" onclick="editCriteria('volume-spike', 'volume')" title="Edit this criteria">✏️</button>
                     <button class="delete-criteria-btn" onclick="deleteCriteria('volume-spike', 'volume')" title="Delete this criteria">x</button>
                 </div>
                 <div class="checklist-item">
