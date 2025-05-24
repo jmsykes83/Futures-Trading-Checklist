@@ -132,7 +132,8 @@ This is a dynamic and interactive Futures Trade Checklist designed to help trade
 3. **Enable GitHub Pages**:
    - Settings > Pages
    - Deploy from branch: `main` and root (`/`)
-4. **Access Checklist**:
+4. **Access Checklist**:  
+   - Visit: [https://jmsykes83.github.io/Futures-Trading-Checklist/](https://jmsykes83.github.io/Futures-Trading-Checklist/)
 
 ## 🤝 Contributing
 

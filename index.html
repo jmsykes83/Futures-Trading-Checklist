@@ -171,8 +171,23 @@
             text-align: center;
             color: white;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            margin-bottom: 30px;
+            margin-bottom: 15px; /* Adjusted margin for affirmation display */
             font-size: 2.5em;
+        }
+
+        /* New style for affirmation display */
+        #affirmation-display {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            min-height: 2.5em; /* Ensure it takes up space even when empty */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            transition: opacity 2s ease-in-out; /* Slow transition for fade effect */
+            opacity: 1;
         }
         
         .checklist-container {
@@ -1121,6 +1136,7 @@
         </button>
 
         <h1>🎯 Futures Trade Checklist</h1>
+        <div id="affirmation-display"></div>
 
         <div class="page-navigation">
             <button class="page-nav-button active" id="mainChecklistNavBtn" onclick="showPage('main-checklist-page')">Trade Setup</button>
@@ -3794,6 +3810,63 @@
             );
         }
 
+        // --- Rolling Affirmations ---
+        const affirmations = [
+            "🧠 Mindset & Discipline: I trade with clarity, discipline, and confidence.",
+            "🧠 Mindset & Discipline: I follow my trading plan without hesitation or fear.",
+            "🧠 Mindset & Discipline: Every trade is a lesson — win or lose, I grow stronger and smarter.",
+            "📊 Execution & Strategy: I wait patiently for high-probability setups — I do not chase the market.",
+            "📊 Execution & Strategy: My edge is real, and I trust it fully.",
+            "📊 Execution & Strategy: I cut losses quickly and let profits run according to my plan.",
+            "🕰️ Focus & Presence: I stay present and focused in each moment, not past trades or future outcomes.",
+            "🕰️ Focus & Presence: I trade what I see, not what I hope.",
+            "🕰️ Focus & Presence: The next trade is always just another opportunity — not revenge, not validation.",
+            "⚖️ Emotional Control: I am calm under pressure — my emotions do not control my actions.",
+            "⚖️ Emotional Control: FOMO has no place in my strategy.",
+            "⚖️ Emotional Control: Losses are part of the game. I don’t fear them; I manage them.",
+            "💼 Professional Identity: I treat trading like a business, not a gamble.",
+            "💼 Professional Identity: I am a consistent, adaptable, and resilient trader.",
+            "💼 Professional Identity: Each day, I refine my skills and strengthen my mindset."
+        ];
+        let currentAffirmationIndex = 0;
+        let affirmationDisplayElement;
+
+        /**
+         * Displays the current affirmation with a fade-in/fade-out effect.
+         */
+        function displayAffirmation() {
+            if (!affirmationDisplayElement) {
+                affirmationDisplayElement = document.getElementById('affirmation-display');
+                if (!affirmationDisplayElement) {
+                    console.error("Affirmation display element not found.");
+                    return;
+                }
+            }
+
+            // Fade out current affirmation
+            affirmationDisplayElement.style.opacity = 0;
+
+            setTimeout(() => {
+                // Update text after fade-out
+                affirmationDisplayElement.textContent = affirmations[currentAffirmationIndex];
+                
+                // Fade in new affirmation
+                affirmationDisplayElement.style.opacity = 1;
+
+                currentAffirmationIndex = (currentAffirmationIndex + 1) % affirmations.length;
+            }, 2000); // Wait for 2 seconds (CSS transition duration) before changing text and fading in
+        }
+
+        /**
+         * Starts the affirmation rotation.
+         * Displays the first affirmation immediately, then rotates every 5 minutes.
+         */
+        function startAffirmationRotation() {
+            displayAffirmation(); // Display initial affirmation
+            // Rotate every 5 minutes (300,000 milliseconds)
+            setInterval(displayAffirmation, 300000); 
+        }
+
 
         // --- Event Listeners for initial setup and persistence ---
         document.addEventListener("DOMContentLoaded", function () {
@@ -3822,6 +3895,9 @@
 
             // Initial page display (default to main checklist)
             showPage('main-checklist-page');
+
+            // Start rolling affirmations
+            startAffirmationRotation();
         });
     </script>
 </body>
