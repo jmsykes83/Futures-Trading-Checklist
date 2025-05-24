@@ -667,6 +667,44 @@
             border: 1px solid var(--modal-border-color);
             transition: background 0.3s ease, border-color 0.3s ease;
         }
+        /* Style for the PDF content modal specifically */
+        #pdfContentModal .modal-content {
+            max-width: 800px; /* Wider for better content readability */
+            text-align: left; /* Align text left */
+            padding: 20px 40px; /* More padding */
+            max-height: 90vh; /* Limit height */
+            overflow-y: auto; /* Enable scrolling */
+        }
+
+        #pdfContentModal .modal-content h3 {
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #pdfContentModal .modal-content h4 {
+            font-size: 1.2em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: var(--heading-color);
+        }
+        #pdfContentModal .modal-content ul {
+            list-style: none; /* Remove default bullets */
+            padding: 0;
+            margin: 0;
+        }
+        #pdfContentModal .modal-content ul li::before {
+            content: '✓'; /* Custom bullet */
+            position: absolute;
+            left: 0;
+            color: var(--input-accent-color);
+            font-weight: bold;
+        }
+        #pdfContentModal .modal-content p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+
         .modal-content h3 {
             color: var(--modal-title-color);
             margin-top: 0;
@@ -979,6 +1017,101 @@
             position: relative; /* For tooltip positioning */
         }
 
+        /* Styles for the new page navigation */
+        .page-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .page-nav-button {
+            background: var(--filter-button-bg);
+            color: var(--filter-button-color);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1em;
+        }
+
+        .page-nav-button:hover {
+            background: var(--filter-button-hover-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--filter-button-active-shadow);
+        }
+
+        .page-nav-button.active {
+            background: var(--filter-button-active-bg);
+            color: var(--filter-button-active-color);
+            box-shadow: 0 4px 10px var(--filter-button-active-shadow);
+        }
+
+        /* Styles for the new Trading Docs Checklist page */
+        #trading-docs-page {
+            display: none; /* Hidden by default */
+            background: var(--container-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px var(--container-shadow);
+            margin-bottom: 20px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            min-height: 500px; /* Ensure it has some height */
+        }
+
+        #trading-docs-page .category {
+            cursor: default; /* Not draggable */
+        }
+
+        #trading-docs-page .category:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        #trading-docs-page .category h3 {
+            justify-content: flex-start; /* Align title to start */
+        }
+
+        #trading-docs-page .add-criteria-mini {
+            display: none; /* Hide add criteria button in docs checklist */
+        }
+
+        #trading-docs-page .checklist-item .edit-criteria-btn,
+        #trading-docs-page .checklist-item .delete-criteria-btn {
+            display: none; /* Hide edit/delete buttons in docs checklist */
+        }
+
+        #trading-docs-page .checklist-item label {
+            flex-grow: 1; /* Allow label to take available space */
+        }
+
+        /* Specific styling for the two-column layout in docs checklist */
+        .docs-two-column {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 768px) {
+            .docs-two-column {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .docs-two-column .category-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* Space between checklist items within a column */
+        }
+        .docs-two-column .checklist-item {
+            margin: 0; /* Remove default margin from checklist-item */
+            padding: 0; /* Remove default padding */
+        }
+        .docs-two-column .checklist-item label {
+            line-height: 1.3; /* Adjust line height for better readability */
+        }
+
     </style>
 </head>
 <body>
@@ -989,81 +1122,249 @@
 
         <h1>🎯 Futures Trade Checklist</h1>
 
-        <div class="checklist-container">
-            <div class="action-buttons">
-                <button class="add-criteria-btn" onclick="openManageStrategiesModal()" style="background: linear-gradient(145deg, #ed8936, #dd6b20);">⚙️ Manage Strategies</button>
-                <button class="add-criteria-btn" onclick="openManageCategoriesModal()" style="background: linear-gradient(145deg, #4299e1, #3182ce);">🗄️ Manage Categories</button>
-                <button class="add-criteria-btn" onclick="openManageLayoutsModal()">🗂️ Manage Layouts</button>
-                <button class="add-criteria-btn" onclick="resetCheckedCriteria()" style="background: linear-gradient(145deg, #f56565, #e53e3e);">🔄 Reset Checks</button>
-            </div>
-
-            <details class="filter-details">
-                <summary>Filter Strategies</summary>
-                <div class="filter-buttons" id="strategy-filters">
-                </div>
-            </details>
-            
-            <!-- 
-            <div class="category" data-group="levels" draggable="true">
-                <h3> ... </h3>
-                <div class="checklist-item"> ... </div>
-            </div>
-            -->
+        <div class="page-navigation">
+            <button class="page-nav-button active" id="mainChecklistNavBtn" onclick="showPage('main-checklist-page')">Trade Setup</button>
+            <button class="page-nav-button" id="tradingDocsNavBtn" onclick="showPage('trading-docs-page')">Daily Prep</button>
         </div>
 
-        <div class="result waiting" id="result">Select criteria to identify your trade setup...</div>
-        <div class="risk-reward-display" id="risk-reward-display">Risk:Reward Ratio: <span>N/A</span></div>
+        <div id="main-checklist-page" class="active-page">
+            <div class="checklist-container">
+                <div class="action-buttons">
+                    <button class="add-criteria-btn" onclick="openManageStrategiesModal()" style="background: linear-gradient(145deg, #ed8936, #dd6b20);">⚙️ Manage Strategies</button>
+                    <button class="add-criteria-btn" onclick="openManageCategoriesModal()" style="background: linear-gradient(145deg, #4299e1, #3182ce);">🗄️ Manage Categories</button>
+                    <button class="add-criteria-btn" onclick="openManageLayoutsModal()">🗂️ Manage Layouts</button>
+                    <button class="add-criteria-btn" onclick="resetCheckedCriteria()" style="background: linear-gradient(145deg, #f56565, #e53e3e);">🔄 Reset Checks</button>
+                </div>
 
-        <div class="risk-management">
-            <h2>🎯 Risk Management</h2>
-            <div class="risk-info">
-                <div class="risk-card">
-                    <h4>Calculated Risk (Sum of Checked Criteria)</h4>
-                    <p id="calculated-risk" data-info="This is the sum of the 'Risk Value' for all checked criteria. It represents the total relative risk points for your trade setup.">N/A</p>
+                <details class="filter-details">
+                    <summary>Filter Strategies</summary>
+                    <div class="filter-buttons" id="strategy-filters">
+                    </div>
+                </details>
+                
                 </div>
-                <div class="risk-card">
-                    <h4>Calculated Reward (Sum of Checked Criteria)</h4>
-                    <p id="calculated-reward" data-info="This is the sum of the 'Reward Value' for all checked criteria. It represents the total relative reward points for your trade setup.">N/A</p>
+
+            <div class="result waiting" id="result">Select criteria to identify your trade setup...</div>
+            <div class="risk-reward-display" id="risk-reward-display">Risk:Reward Ratio: <span>N/A</span></div>
+
+            <div class="risk-management">
+                <h2>🎯 Risk Management</h2>
+                <div class="risk-info">
+                    <div class="risk-card">
+                        <h4>Calculated Risk (Sum of Checked Criteria)</h4>
+                        <p id="calculated-risk" data-info="This is the sum of the 'Risk Value' for all checked criteria. It represents the total relative risk points for your trade setup.">N/A</p>
+                    </div>
+                    <div class="risk-card">
+                        <h4>Calculated Reward (Sum of Checked Criteria)</h4>
+                        <p id="calculated-reward" data-info="This is the sum of the 'Reward Value' for all checked criteria. It represents the total relative reward points for your trade setup.">N/A</p>
+                    </div>
+                    <div class="risk-card">
+                        <h4>Suggested Stop (Dominant Strategy)</h4>
+                        <p id="suggested-stop">Based on selected criteria</p>
+                    </div>
+                    <div class="risk-card">
+                        <h4>Suggested Target (Dominant Strategy)</h4>
+                        <p id="suggested-target">Based on selected criteria</p>
+                    </div>
                 </div>
-                <div class="risk-card">
-                    <h4>Suggested Stop (Dominant Strategy)</h4>
-                    <p id="suggested-stop">Based on selected criteria</p>
-                </div>
-                <div class="risk-card">
-                    <h4>Suggested Target (Dominant Strategy)</h4>
-                    <p id="suggested-target">Based on selected criteria</p>
+                <div class="notes-section" style="padding: 20px; margin-top: 20px;">
+                    <h2>💵 P&L Calculation</h2>
+                    <div class="modal-form-grid">
+                        <div class="input-group">
+                            <label for="tradeSize">Trade Size (Contracts/Lots):</label>
+                            <input type="number" id="tradeSize" value="1" min="0.1" step="0.1" oninput="saveState(); updateChecklistState();">
+                        </div>
+                        <div class="input-group">
+                            <label for="tickValue">Tick Value (per contract):</label>
+                            <input type="number" id="tickValue" value="5.00" min="0.01" step="0.01" oninput="saveState(); updateChecklistState();">
+                        </div>
+                        <div class="input-group">
+                            <label for="futuresTickSize">Futures Tick Size (points):</label>
+                            <input type="number" id="futuresTickSize" value="0.25" min="0.01" step="0.01" oninput="saveState(); updateChecklistState();">
+                        </div>
+                        <div class="input-group">
+                            <label for="entryPrice">Entry Price (for context):</label>
+                            <input type="number" id="entryPrice" value="0.00" min="0" step="0.01" oninput="saveState(); updateChecklistState();">
+                        </div>
+                    </div>
+                    <div class="pnl-display">
+                        <p>Potential Loss: <span id="potentialLoss" class="loss">N/A</span></p>
+                        <p>Potential Profit: <span id="potentialProfit" class="profit">N/A</span></p>
+                    </div>
                 </div>
             </div>
-            <div class="notes-section" style="padding: 20px; margin-top: 20px;">
-                <h2>💵 P&L Calculation</h2>
-                <div class="modal-form-grid">
-                    <div class="input-group">
-                        <label for="tradeSize">Trade Size (Contracts/Lots):</label>
-                        <input type="number" id="tradeSize" value="1" min="0.1" step="0.1" oninput="saveState(); updateChecklistState();">
-                    </div>
-                    <div class="input-group">
-                        <label for="tickValue">Tick Value (per contract):</label>
-                        <input type="number" id="tickValue" value="5.00" min="0.01" step="0.01" oninput="saveState(); updateChecklistState();">
-                    </div>
-                    <div class="input-group">
-                        <label for="futuresTickSize">Futures Tick Size (points):</label>
-                        <input type="number" id="futuresTickSize" value="0.25" min="0.01" step="0.01" oninput="saveState(); updateChecklistState();">
-                    </div>
-                    <div class="input-group">
-                        <label for="entryPrice">Entry Price (for context):</label>
-                        <input type="number" id="entryPrice" value="0.00" min="0" step="0.01" oninput="saveState(); updateChecklistState();">
-                    </div>
-                </div>
-                <div class="pnl-display">
-                    <p>Potential Loss: <span id="potentialLoss" class="loss">N/A</span></p>
-                    <p>Potential Profit: <span id="potentialProfit" class="profit">N/A</span></p>
-                </div>
+
+            <div class="notes-section">
+                <h2>📝 Trade Setup Notes</h2>
+                <textarea id="trade-notes" placeholder="Document your trade setup, key levels, and observations here..."></textarea>
             </div>
         </div>
+        
+        <div id="trading-docs-page">
+            <h2>📚 Trading Checklists</h2>
+            <div class="action-buttons" style="margin-bottom: 20px;">
+                <button class="add-criteria-btn" onclick="clearDocsChecklist()" style="background: linear-gradient(145deg, #f56565, #e53e3e);">🔄 Clear All Docs Checks</button>
+            </div>
 
-        <div class="notes-section">
-            <h2>📝 Trade Setup Notes</h2>
-            <textarea id="trade-notes" placeholder="Document your trade setup, key levels, and observations here..."></textarea>
+            <div class="category" data-group="morning-checklist">
+                <h3><span class="category-icon"></span>MORNING CHECKLIST <span class="completion-indicator"></span></h3>
+                <div class="docs-two-column">
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-morning-routine">
+                            <label for="docs-morning-routine">Morning Routine Complete</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-pre-market-research-main">
+                            <label for="docs-pre-market-research-main">Pre-Market Research</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-trading-plan-review">
+                            <label for="docs-trading-plan-review">Trading Plan Review</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-test-platform-connection">
+                            <label for="docs-test-platform-connection">Test Your Trading Platform & Internet Connection</label>
+                        </div>
+                    </div>
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-trading-strategy-review">
+                            <label for="docs-trading-strategy-review">Trading Strategy Review</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-trading-journal-review">
+                            <label for="docs-trading-journal-review">Trading Journal Review</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-prep-workstation">
+                            <label for="docs-prep-workstation">Prep Workstation</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category" data-group="pre-market-research-details">
+                <h3><span class="category-icon"></span>PRE-MARKET RESEARCH <span class="completion-indicator"></span></h3>
+                <div class="docs-two-column">
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-market">
+                            <label for="docs-market">Market: What market are you trading?</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-trend">
+                            <label for="docs-trend">Trend: What direction is the underlying trend of the market?</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-day-settlement">
+                            <label for="docs-previous-day-settlement">Previous Day Settlement: What was yesterday's closing cost?</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-day-net-change">
+                            <label for="docs-previous-day-net-change">Previous Day Net Change: How much higher/lower was the market yesterday?</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-volume">
+                            <label for="docs-volume">Volume</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-open-interest">
+                            <label for="docs-open-interest">Open Interest</label>
+                        </div>
+                    </div>
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-week-high">
+                            <label for="docs-previous-week-high">Previous Week High</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-week-low">
+                            <label for="docs-previous-week-low">Previous Week Low</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-3-day-high">
+                            <label for="docs-3-day-high">3-Day High</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-3-day-low">
+                            <label for="docs-3-day-low">3-Day Low</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-day-high">
+                            <label for="docs-previous-day-high">Previous Day High</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-previous-day-low">
+                            <label for="docs-previous-day-low">Previous Day Low</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-10-day-moving-avg">
+                            <label for="docs-10-day-moving-avg">10-Day Moving Avg</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-20-day-moving-avg">
+                            <label for="docs-20-day-moving-avg">20-Day Moving Avg</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-50-day-moving-avg">
+                            <label for="docs-50-day-moving-avg">50-Day Moving Avg</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-identify-chart-patterns">
+                            <label for="docs-identify-chart-patterns">Identify Chart Patterns</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category" data-group="post-market-checklist">
+                <h3><span class="category-icon"></span>POST-MARKET CHECKLIST</h3>
+                <div class="docs-two-column">
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-review-trades">
+                            <label for="docs-review-trades">Review Trades</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-get-plenty-of-rest">
+                            <label for="docs-get-plenty-of-rest">Get Plenty of Rest</label>
+                        </div>
+                    </div>
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-update-trading-journal">
+                            <label for="docs-update-trading-journal">Update Trading Journal</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="category" data-group="trading-psychology-resources">
+                <h3><span class="category-icon"></span>TRADING PSYCHOLOGY RESOURCES</h3>
+                <div class="docs-two-column">
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-dont-overtrade">
+                            <label for="docs-dont-overtrade">Don't Overtrade</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-dont-trade-impulsively">
+                            <label for="docs-dont-trade-impulsively">Don't Trade Impulsively</label>
+                        </div>
+                    </div>
+                    <div class="category-section">
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-dont-trade-out-of-fomo">
+                            <label for="docs-dont-trade-out-of-fomo">Don't Trade Out of FOMO</label>
+                        </div>
+                        <div class="checklist-item">
+                            <input type="checkbox" class="docs-input" id="docs-dont-trade-angry">
+                            <label for="docs-dont-trade-angry">Don't Trade Angry</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="github-link-section">
@@ -1264,7 +1565,6 @@
         </div>
     </div>
 
-
     <div id="tooltipBox" class="tooltip-box"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js"></script>
@@ -1304,7 +1604,7 @@
         };
         
         // Custom strategies will be loaded/saved here
-        let customStrategies = {};
+        let customStrategies = {}; 
         // Custom criteria will be loaded/saved here
         let customCriteria = {}; 
         // New: Array to store IDs of default criteria that have been deleted by the user
@@ -1449,7 +1749,7 @@
          * This includes checked inputs, custom strategies, custom criteria, notes, P&L inputs, and category order.
          */
         function saveState() {
-            const state = {
+            const mainChecklistState = {
                 checkedInputs: [],
                 customStrategies: customStrategies,
                 customCriteria: customCriteria,
@@ -1465,24 +1765,36 @@
                 categoryOrder: categoryOrder // Save the category order
             };
 
-            document.querySelectorAll('.input').forEach(input => {
+            document.querySelectorAll('#main-checklist-page .input').forEach(input => {
                 if (input.checked) {
-                    state.checkedInputs.push(input.id);
+                    mainChecklistState.checkedInputs.push(input.id);
                 }
             });
 
-            localStorage.setItem('futuresChecklistState', JSON.stringify(state));
-            console.log('Checklist state saved to localStorage:', state); 
+            localStorage.setItem('futuresChecklistState', JSON.stringify(mainChecklistState));
+            console.log('Main Checklist state saved to localStorage:', mainChecklistState); 
+            
+            // Save state for the Trading Docs Checklist
+            const docsChecklistState = {
+                checkedInputs: []
+            };
+            document.querySelectorAll('#trading-docs-page .docs-input').forEach(input => {
+                if (input.checked) {
+                    docsChecklistState.checkedInputs.push(input.id);
+                }
+            });
+            localStorage.setItem('tradingDocsChecklistState', JSON.stringify(docsChecklistState));
+            console.log('Trading Docs Checklist state saved to localStorage:', docsChecklistState);
         }
 
         /**
          * Loads the saved state from localStorage and restores the checklist.
          */
         function loadState() {
-            const savedState = localStorage.getItem('futuresChecklistState');
-            if (savedState) {
-                const state = JSON.parse(savedState);
-                console.log('Checklist state loaded from localStorage:', state); 
+            const savedMainState = localStorage.getItem('futuresChecklistState');
+            if (savedMainState) {
+                const state = JSON.parse(savedMainState);
+                console.log('Main Checklist state loaded from localStorage:', state); 
 
                 savedLayouts = state.savedLayouts || {};
                 deletedDefaultCriteria = state.deletedDefaultCriteria || [];
@@ -1527,6 +1839,27 @@
             });
             updateChecklistState(); 
             applyStrategyFilter(currentFilter);
+
+            // Load state for the Trading Docs Checklist
+            const savedDocsState = localStorage.getItem('tradingDocsChecklistState');
+            if (savedDocsState) {
+                const docsState = JSON.parse(savedDocsState);
+                docsState.checkedInputs.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.checked = true;
+                    }
+                });
+            }
+            // Attach event listeners for docs checklist items
+            document.querySelectorAll('#trading-docs-page .docs-input').forEach(input => {
+                input.addEventListener('change', () => {
+                    saveState();
+                    updateDocsSectionCompletion(); // Call new function on change
+                    updateChecklistState(); // Also trigger main checklist update
+                });
+            });
+            updateDocsSectionCompletion(); // Initial call to set completion status
         }
 
 
@@ -1584,7 +1917,7 @@
             }
             // Ensure all current categories are in the order, adding new ones to the end if necessary
             const currentCategoryIds = Object.keys(categories);
-            categoryOrder = categoryOrder.filter(id => currentCategoryIds.includes(id)); // Keep only existing
+            categoryOrder = currentCategoryIds.filter(id => categoryOrder.includes(id)); // Keep only existing categories
             currentCategoryIds.forEach(id => { // Add any new categories not in the loaded order
                 if (!categoryOrder.includes(id)) {
                     categoryOrder.push(id);
@@ -1613,7 +1946,7 @@
             createFilterButtons();
             recreateAllCriteriaElements(); // This will respect the categoryOrder
 
-            document.querySelectorAll('.input').forEach(input => {
+            document.querySelectorAll('#main-checklist-page .input').forEach(input => {
                 input.checked = false; 
             });
             state.checkedInputs.forEach(id => {
@@ -1637,7 +1970,7 @@
                 document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
             }
             
-            document.querySelectorAll(".input").forEach(input => {
+            document.querySelectorAll("#main-checklist-page .input").forEach(input => {
                 input.removeEventListener("change", updateChecklistState); 
                 input.removeEventListener("change", saveState);
                 input.addEventListener("change", updateChecklistState);
@@ -1686,7 +2019,7 @@
                 "Confirm Reset Checks",
                 "Are you sure you want to uncheck all criteria items? Your notes and P&L inputs will remain unchanged.",
                 () => { // onConfirm
-                    document.querySelectorAll('.input').forEach(input => {
+                    document.querySelectorAll('#main-checklist-page .input').forEach(input => {
                         input.checked = false;
                     });
                     saveState(); // Save the cleared checks
@@ -2070,7 +2403,7 @@
                 customCriteria[criteriaCategory] = [];
             }
             customCriteria[criteriaCategory].push({ id: itemId, name: criteriaName, strategies: validStrategies, risk: criteriaRisk, reward: criteriaReward, info: criteriaInfo });
-            createCustomCriteriaElement(criteriaCategory, itemId, criteriaName, validStrategies, criteriaRisk, criteriaReward, criteriaInfo);
+            createCustomCriteriaElement(criteriaCategory, itemId, criteriaName, validStrategies, criteriaRisk, criteriaReward, info);
             saveState();
             updateChecklistState();
             closeAddEditStrategyModal(); 
@@ -2132,14 +2465,8 @@
             inputElement.setAttribute('data-reward', reward);
             if (info) {
                 labelElement.setAttribute('data-info', info);
-                labelElement.removeEventListener('mouseover', showTooltip); 
-                labelElement.removeEventListener('mouseout', hideTooltip);
-                labelElement.addEventListener('mouseover', showTooltip);
-                labelElement.addEventListener('mouseout', hideTooltip);
             } else {
                 labelElement.removeAttribute('data-info');
-                labelElement.removeEventListener('mouseover', showTooltip);
-                labelElement.removeEventListener('mouseout', hideTooltip);
             }
             updateBadgeDisplay(badgesContainer, validStrategies);
 
@@ -2268,8 +2595,8 @@
          * Recreates all criteria elements in the DOM, respecting the categoryOrder.
          */
         function recreateAllCriteriaElements() {
-            const checkedIds = Array.from(document.querySelectorAll('.input:checked')).map(input => input.id);
-            const checklistContainer = document.querySelector('.checklist-container');
+            const checkedIds = Array.from(document.querySelectorAll('#main-checklist-page .input:checked')).map(input => input.id);
+            const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
             
             // Temporarily detach action buttons and filter details to re-append them later
             const actionButtons = checklistContainer.querySelector('.action-buttons');
@@ -2305,7 +2632,8 @@
                 if (customCriteria[categoryId]) {
                     customCriteria[categoryId].forEach(item => {
                         createCustomCriteriaElement(categoryId, item.id, item.name, item.strategies, item.risk, item.reward, item.info);
-                    });
+                    }
+                );
                 }
             });
 
@@ -2316,13 +2644,13 @@
                 }
             });
 
-            document.querySelectorAll(".input").forEach(input => {
+            document.querySelectorAll("#main-checklist-page .input").forEach(input => {
                 input.removeEventListener("change", updateChecklistState);
                 input.removeEventListener("change", saveState);
                 input.addEventListener("change", updateChecklistState);
                 input.addEventListener("change", saveState);
             });
-            document.querySelectorAll('label[data-info]').forEach(label => {
+            document.querySelectorAll('#main-checklist-page label[data-info]').forEach(label => {
                 label.removeEventListener('mouseover', showTooltip);
                 label.removeEventListener('mouseout', hideTooltip);
                 label.addEventListener('mouseover', showTooltip);
@@ -2341,8 +2669,8 @@
          * @returns {HTMLElement} The created or existing category div.
          */
         function addCategoryDivToDOM(categoryId, name, icon, isDefault) {
-            let categoryDiv = document.querySelector(`.category[data-group="${categoryId}"]`);
-            const checklistContainer = document.querySelector('.checklist-container'); 
+            let categoryDiv = document.querySelector(`#main-checklist-page .category[data-group="${categoryId}"]`);
+            const checklistContainer = document.querySelector('#main-checklist-page .checklist-container'); 
 
             if (!categoryDiv) {
                 categoryDiv = document.createElement('div');
@@ -2389,7 +2717,7 @@
          * @param {string} info The tooltip information.
          */
         function createCustomCriteriaElement(categoryId, itemId, name, itemStrategies, risk, reward, info) { // Renamed strategies to itemStrategies
-            let categoryDiv = document.querySelector(`.category[data-group="${categoryId}"]`);
+            let categoryDiv = document.querySelector(`#main-checklist-page .category[data-group="${categoryId}"]`);
             if (!categoryDiv) {
                 const categoryData = categories[categoryId] || { name: categoryId.charAt(0).toUpperCase() + categoryId.slice(1).replace('-', ' '), icon: '❓', isDefault: false };
                 categoryDiv = addCategoryDivToDOM(categoryId, categoryData.name, categoryData.icon, categoryData.isDefault);
@@ -2486,11 +2814,29 @@
          * updateChecklistState the checked criteria and updates the trade setup result.
          */
         function updateChecklistState() {
-            const allInputs = document.querySelectorAll('.input:checked');
+            const allInputs = document.querySelectorAll('#main-checklist-page .input:checked');
             const checkedItems = Array.from(allInputs);
             
             let totalRisk = 0;
             let totalReward = 0;
+            let preparationBonusActive = false;
+
+            // Check if Morning Checklist and Pre-Market Research are completed in Trading Docs
+            const morningChecklistDiv = document.querySelector('#trading-docs-page .category[data-group="morning-checklist"]');
+            const preMarketResearchDiv = document.querySelector('#trading-docs-page .category[data-group="pre-market-research-details"]');
+
+            const morningCheckboxes = morningChecklistDiv ? morningChecklistDiv.querySelectorAll('.docs-input') : [];
+            const checkedMorningCheckboxes = morningChecklistDiv ? morningChecklistDiv.querySelectorAll('.docs-input:checked') : [];
+            const preMarketCheckboxes = preMarketResearchDiv ? preMarketResearchDiv.querySelectorAll('.docs-input') : [];
+            const checkedPreMarketCheckboxes = preMarketResearchDiv ? preMarketResearchDiv.querySelectorAll('.docs-input:checked') : [];
+
+            const isMorningChecklistComplete = morningCheckboxes.length > 0 && morningCheckboxes.length === checkedMorningCheckboxes.length;
+            const isPreMarketResearchComplete = preMarketCheckboxes.length > 0 && preMarketCheckboxes.length === checkedPreMarketCheckboxes.length;
+
+            if (isMorningChecklistComplete && isPreMarketResearchComplete) {
+                preparationBonusActive = true;
+            }
+
 
             if (checkedItems.length === 0) {
                 updateResult("Select criteria to identify your trade setup...", "waiting");
@@ -2572,8 +2918,6 @@
             } else if (dominantStrategy && dominantStrategy !== 'both') {
                 const strategy = strategies[dominantStrategy] || customStrategies[dominantStrategy];
                 tradeType = `${strategy.icon} ${strategy.name} Setup Ready`;
-            } else if (dominantStrategy === 'both') {
-                tradeType = "⚖️ Multi-Strategy Setup";
             } else {
                 tradeType = "📊 General Setup Identified";
             }
@@ -2599,8 +2943,15 @@
                 tradeType += `\n📊 Breakdown: ${activeStrategies}`;
             }
 
-            updateResult(`✅ ${tradeType}`, resultClass);
-            updateRiskRewardDisplay(totalRisk, totalReward);
+            let displayReward = totalReward;
+            let bonusMessage = '';
+            if (preparationBonusActive) {
+                displayReward = totalReward * 1.10; // Apply 10% bonus
+                bonusMessage = ' ✨ Preparation Bonus Active! (+10% Reward)';
+            }
+
+            updateResult(`✅ ${tradeType}${bonusMessage}`, resultClass);
+            updateRiskRewardDisplay(totalRisk, displayReward); // Use displayReward here
 
             const calculatedRiskElement = document.getElementById('calculated-risk');
             const calculatedRewardElement = document.getElementById('calculated-reward');
@@ -2608,10 +2959,10 @@
             const suggestedTargetElement = document.getElementById('suggested-target');
 
             calculatedRiskElement.textContent = totalRisk.toFixed(2);
-            calculatedRewardElement.textContent = totalReward.toFixed(2);
+            calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
 
             calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
-            calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.`);
+            calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
 
 
             if (dominantStrategy) {
@@ -2623,7 +2974,7 @@
                 suggestedTargetElement.textContent = 'Based on selected criteria';
             }
 
-            calculatePnL(totalRisk, totalReward);
+            calculatePnL(totalRisk, displayReward); // Use displayReward here
         }
 
         /**
@@ -2631,7 +2982,7 @@
          * @param {number} totalRisk The sum of risk values from checked criteria.
          * @param {number} totalReward The sum of reward values from checked criteria.
          */
-        function calculatePnL(totalRisk, totalReward) {
+        function calculatePnL(totalRisk, totalReward) { // totalReward here is already the potentially bonus-adjusted value
             const tradeSize = parseFloat(document.getElementById('tradeSize').value);
             const tickValue = parseFloat(document.getElementById('tickValue').value);
             const futuresTickSize = parseFloat(document.getElementById('futuresTickSize').value); 
@@ -2684,6 +3035,8 @@
             potentialLossElement.className = loss > 0 ? 'loss' : '';
             potentialProfitElement.className = profit > 0 ? 'profit' : '';
 
+            // The data-info for potentialLoss and potentialProfit should reflect the *actual* totalRisk and totalReward values passed in
+            // which for totalReward, will now be the bonus-adjusted value.
             if (loss > 0) {
                 potentialLossElement.setAttribute('data-info', `Calculation: (Total Risk / Futures Tick Size) * Tick Value * Trade Size\n= (${totalRisk.toFixed(2)} / ${futuresTickSize.toFixed(2)}) * ${tickValue.toFixed(2)} * ${tradeSize.toFixed(2)}\n= $${loss.toFixed(2)}`);
             } else {
@@ -2728,7 +3081,7 @@
          * @param {number} totalRisk The sum of risk values from checked criteria.
          * @param {number} totalReward The sum of reward values from checked criteria.
          */
-        function updateRiskRewardDisplay(totalRisk, totalReward) {
+        function updateRiskRewardDisplay(totalRisk, totalReward) { // totalReward here is already the potentially bonus-adjusted value
             const rrDisplay = document.getElementById('risk-reward-display');
             const rrSpan = rrDisplay.querySelector('span');
 
@@ -2791,7 +3144,7 @@
             currentFilter = filterStrategyId; 
             createFilterButtons(); 
 
-            document.querySelectorAll('.checklist-item').forEach(item => {
+            document.querySelectorAll('#main-checklist-page .checklist-item').forEach(item => {
                 const input = item.querySelector('.input');
                 if (!input) return; // Skip if item doesn't have an input (e.g. headers in modals)
                 
@@ -2843,7 +3196,7 @@
                 }
                  // Adjust if tooltip goes off screen bottom
                 if (top + tooltipBox.offsetHeight > window.innerHeight + window.scrollY) {
-                    top = elementRect.top + window.scrollY - tooltipBox.offsetHeight - 10; // Position above
+                    top = element.top + window.scrollY - tooltipBox.offsetHeight - 10; // Position above
                      // Adjust arrow for above positioning (optional, more complex)
                 }
 
@@ -2948,7 +3301,7 @@
                 deletedDefaultCriteria: deletedDefaultCriteria, 
                 categories: categories, 
                 categoryOrder: categoryOrder, // Include category order
-                checkedInputs: Array.from(document.querySelectorAll('.input:checked')).map(input => input.id)
+                checkedInputs: Array.from(document.querySelectorAll('#main-checklist-page .input:checked')).map(input => input.id)
             };
             const jsonString = JSON.stringify(shareableState);
             const compressed = LZString.compressToBase64(jsonString);
@@ -3036,7 +3389,7 @@
                 (layoutName) => { 
                     if (layoutName && layoutName.trim() !== '') {
                         const stateToSave = {
-                            checkedInputs: Array.from(document.querySelectorAll('.input:checked')).map(input => input.id),
+                            checkedInputs: Array.from(document.querySelectorAll('#main-checklist-page .input:checked')).map(input => input.id),
                             customStrategies: customStrategies,
                             customCriteria: customCriteria,
                             deletedDefaultCriteria: deletedDefaultCriteria, 
@@ -3315,7 +3668,7 @@
             if (!draggedElement) return;
 
             const afterElement = getDragAfterElement(e.clientY);
-            const container = document.querySelector('.checklist-container');
+            const container = document.querySelector('#main-checklist-page .checklist-container');
             const actionButtons = container.querySelector('.action-buttons'); // Get action buttons to ensure placeholder isn't inserted before them
 
             if (afterElement == null) { // Dropping at the end
@@ -3340,7 +3693,7 @@
         
         function getDragAfterElement(y) {
             // Only consider .category elements for reordering, excluding the one being dragged and non-category elements like action buttons
-            const draggableElements = [...document.querySelectorAll('.checklist-container > .category:not(.dragging)')];
+            const draggableElements = [...document.querySelectorAll('#main-checklist-page .checklist-container > .category:not(.dragging)')];
             return draggableElements.reduce((closest, child) => {
                 const box = child.getBoundingClientRect();
                 const offset = y - box.top - box.height / 2;
@@ -3364,12 +3717,81 @@
             }
             
             const newOrder = [];
-            const categoryElements = document.querySelectorAll('.checklist-container > .category'); // Select only direct children categories
+            const categoryElements = document.querySelectorAll('#main-checklist-page .checklist-container > .category'); // Select only direct children categories
             categoryElements.forEach(catEl => {
                 newOrder.push(catEl.dataset.group);
             });
             categoryOrder = newOrder;
             saveState(); 
+        }
+
+        // --- Page Navigation Functions ---
+        function showPage(pageId) {
+            document.querySelectorAll('.active-page').forEach(page => {
+                page.classList.remove('active-page');
+                page.style.display = 'none';
+            });
+            document.querySelectorAll('.page-nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            document.getElementById(pageId).classList.add('active-page');
+            document.getElementById(pageId).style.display = 'block';
+
+            if (pageId === 'main-checklist-page') {
+                document.getElementById('mainChecklistNavBtn').classList.add('active');
+            } else if (pageId === 'trading-docs-page') {
+                document.getElementById('tradingDocsNavBtn').classList.add('active');
+                updateDocsSectionCompletion(); // Update completion status when showing this page
+            }
+            saveState(); // Save the current page view
+        }
+
+        // --- Update Docs Section Completion Function ---
+        function updateDocsSectionCompletion() {
+            const sectionsToTrack = ['morning-checklist', 'pre-market-research-details'];
+
+            sectionsToTrack.forEach(sectionId => {
+                const sectionDiv = document.querySelector(`#trading-docs-page .category[data-group="${sectionId}"]`);
+                if (!sectionDiv) return;
+
+                const checkboxes = sectionDiv.querySelectorAll('.docs-input');
+                const checkedCheckboxes = sectionDiv.querySelectorAll('.docs-input:checked');
+                const heading = sectionDiv.querySelector('h3');
+
+                let completionIndicator = heading.querySelector('.completion-indicator');
+                if (!completionIndicator) {
+                    completionIndicator = document.createElement('span');
+                    completionIndicator.className = 'completion-indicator';
+                    heading.appendChild(completionIndicator);
+                }
+
+                if (checkboxes.length > 0 && checkboxes.length === checkedCheckboxes.length) {
+                    completionIndicator.textContent = ' ✅ (Completed)';
+                    completionIndicator.style.color = 'var(--good-ratio-color)'; // Green color for completion
+                } else {
+                    completionIndicator.textContent = ''; // Clear if not completed
+                }
+            });
+        }
+
+        // --- Clear All Docs Checklist Function ---
+        function clearDocsChecklist() {
+            showModal(
+                "Confirm Clear Docs",
+                "Are you sure you want to uncheck all items in the Daily Prep checklist?",
+                () => { // onConfirm
+                    document.querySelectorAll('#trading-docs-page .docs-input').forEach(input => {
+                        input.checked = false;
+                    });
+                    saveState(); // Save the cleared checks for docs
+                    updateDocsSectionCompletion(); // Update completion status
+                    updateChecklistState(); // Re-evaluate main checklist for bonus removal
+                    showModal("Docs Cleared", "All Daily Prep checklist items have been unchecked.", null, null, false, true);
+                },
+                () => { /* onCancel - do nothing */ },
+                true // showCancelButton
+            );
         }
 
 
@@ -3380,23 +3802,26 @@
             document.getElementById('trade-notes').addEventListener('input', saveState);
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
 
-            savedLayoutsTabButton.addEventListener('click', () => showLayoutTab('saved'));
-            shareImportLayoutTabButton.addEventListener('click', () => showLayoutTab('share-import'));
-            defaultLayoutTabButton.addEventListener('click', () => showLayoutTab('default'));
+            // Event listeners for main checklist page navigation
+            document.getElementById('mainChecklistNavBtn').addEventListener('click', () => showPage('main-checklist-page'));
+            document.getElementById('tradingDocsNavBtn').addEventListener('click', () => showPage('trading-docs-page'));
 
-            // Corrected event listeners for layout share/import buttons
+            // Event listeners for layout share/import buttons
             if(generateCodeBtnLayout) generateCodeBtnLayout.addEventListener('click', generateShareCode);
             if(copyCodeBtnLayout) copyCodeBtnLayout.addEventListener('click', copyShareCode);
-            if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings);
+            if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings); /* FIX: Corrected typo from importCodeCodeBtnLayout */
 
             // Add dragover and drop to the main checklist container for category reordering
-            const checklistContainer = document.querySelector('.checklist-container');
+            const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
             if (checklistContainer) { // Ensure container exists before adding listeners
                 checklistContainer.addEventListener('dragover', handleDragOverContainer);
                 checklistContainer.addEventListener('drop', handleDropOnContainer);
             } else {
                 console.error("Checklist container not found on DOMContentLoaded.");
             }
+
+            // Initial page display (default to main checklist)
+            showPage('main-checklist-page');
         });
     </script>
 </body>
