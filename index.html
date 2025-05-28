@@ -202,6 +202,16 @@
             min-height: 100px; /* Example to ensure drop area exists */
         }
         
+        .category {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(145deg, var(--category-bg-gradient-start), var(--category-bg-gradient-end));
+            border: 1px solid var(--category-border);
+            border-radius: 12px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+            /* cursor: grab; Removed draggable cursor */
+        }
+        
         .category:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px var(--container-shadow);
@@ -1579,10 +1589,9 @@
         let currentEditingStrategyId = null;
         let currentEditingCategoryId = null; // New: For category editing
 
-        // New: For Drag and Drop
-        let categoryOrder = []; 
-        let draggedCategoryId = null; 
-        let placeholder = null; 
+        // New: For Drag and Drop - REMOVED
+        // let draggedCategoryId = null;
+        // let placeholder = null;
 
         // Built-in categories and their properties (name, icon, isDefault flag)
         let categories = {
@@ -1681,8 +1690,11 @@
          */
         function showModal(title, message, onConfirm, onCancel, showCancelButton = true, showOkButton = false, inputOptions = {}) {
             const modal = document.getElementById('customModal');
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalMessage').textContent = message;
+            if (!modal) return; // Defensive check
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            if (modalTitle) modalTitle.textContent = title;
+            if (modalMessage) modalMessage.textContent = message;
 
             const confirmBtn = document.getElementById('modalConfirmBtn');
             const cancelBtn = document.getElementById('modalCancelBtn');
@@ -1692,58 +1704,67 @@
             const modalInputLabel = document.getElementById('modalInputLabel');
 
             // Reset event listeners to prevent multiple calls
-            confirmBtn.onclick = null;
-            cancelBtn.onclick = null;
-            okBtn.onclick = null;
+            if (confirmBtn) confirmBtn.onclick = null;
+            if (cancelBtn) cancelBtn.onclick = null;
+            if (okBtn) okBtn.onclick = null;
 
             // Handle input field
             if (inputOptions.show) {
-                inputContainer.style.display = 'block';
-                modalInputLabel.textContent = inputOptions.label || '';
-                modalInput.placeholder = inputOptions.placeholder || '';
-                modalInput.value = inputOptions.defaultValue || '';
-                modalInput.focus(); // Focus the input field
-                // Allow pressing Enter in the input to trigger confirm
-                modalInput.onkeydown = (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault(); // Prevent form submission
-                        confirmBtn.click();
-                    }
-                };
+                if (inputContainer) inputContainer.style.display = 'block';
+                if (modalInputLabel) modalInputLabel.textContent = inputOptions.label || '';
+                if (modalInput) {
+                    modalInput.placeholder = inputOptions.placeholder || '';
+                    modalInput.value = inputOptions.defaultValue || '';
+                    modalInput.focus(); // Focus the input field
+                    // Allow pressing Enter in the input to trigger confirm
+                    modalInput.onkeydown = (event) => {
+                        if (event.key === 'Enter') {
+                            event.preventDefault(); // Prevent form submission
+                            if (confirmBtn) confirmBtn.click();
+                        }
+                    };
+                }
             } else {
-                inputContainer.style.display = 'none';
-                modalInput.value = '';
-                modalInput.onkeydown = null;
+                if (inputContainer) inputContainer.style.display = 'none';
+                if (modalInput) {
+                    modalInput.value = '';
+                    modalInput.onkeydown = null;
+                }
             }
 
             if (showOkButton) {
-                confirmBtn.style.display = 'none';
-                cancelBtn.style.display = 'none';
-                okBtn.style.display = 'inline-block';
-                okBtn.onclick = () => {
-                    modal.classList.add('hidden');
-                    if (onConfirm) onConfirm();
-                };
+                if (confirmBtn) confirmBtn.style.display = 'none';
+                if (cancelBtn) cancelBtn.style.display = 'none';
+                if (okBtn) {
+                    okBtn.style.display = 'inline-block';
+                    okBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        if (onConfirm) onConfirm();
+                    };
+                }
             } else {
-                confirmBtn.style.display = 'inline-block';
-                cancelBtn.style.display = showCancelButton ? 'inline-block' : 'none';
-                okBtn.style.display = 'none';
-
-                confirmBtn.onclick = () => {
-                    modal.classList.add('hidden');
-                    // Pass the input value to the onConfirm callback if an input was shown
-                    if (onConfirm) {
-                        if (inputOptions.show) {
-                            onConfirm(modalInput.value);
-                        } else {
-                            onConfirm();
+                if (confirmBtn) {
+                    confirmBtn.style.display = 'inline-block';
+                    confirmBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        // Pass the input value to the onConfirm callback if an input was shown
+                        if (onConfirm) {
+                            if (inputOptions.show && modalInput) {
+                                onConfirm(modalInput.value);
+                            } else {
+                                onConfirm();
+                            }
                         }
-                    }
-                };
-                cancelBtn.onclick = () => {
-                    modal.classList.add('hidden');
-                    if (onCancel) onCancel();
-                };
+                    };
+                }
+                if (cancelBtn) {
+                    cancelBtn.style.display = showCancelButton ? 'inline-block' : 'none';
+                    cancelBtn.onclick = () => {
+                        modal.classList.add('hidden');
+                        if (onCancel) onCancel();
+                    };
+                }
+                if (okBtn) okBtn.style.display = 'none';
             }
             modal.classList.remove('hidden');
         }
@@ -1753,17 +1774,23 @@
          * This includes checked inputs, custom strategies, custom criteria, notes, P&L inputs, and category order.
          */
         function saveState() {
+            const tradeNotesElement = document.getElementById('trade-notes');
+            const tradeSizeElement = document.getElementById('tradeSize');
+            const tickValueElement = document.getElementById('tickValue');
+            const futuresTickSizeElement = document.getElementById('futuresTickSize');
+            const entryPriceElement = document.getElementById('entryPrice');
+
             const mainChecklistState = {
                 checkedInputs: [],
                 customStrategies: customStrategies,
                 customCriteria: customCriteria,
                 deletedDefaultCriteria: deletedDefaultCriteria, 
-                notes: document.getElementById('trade-notes').value,
+                notes: tradeNotesElement ? tradeNotesElement.value : '',
                 darkMode: document.body.classList.contains('dark-mode'),
-                tradeSize: document.getElementById('tradeSize').value,
-                tickValue: document.getElementById('tickValue').value,
-                futuresTickSize: document.getElementById('futuresTickSize').value, 
-                entryPrice: document.getElementById('entryPrice').value,
+                tradeSize: tradeSizeElement ? tradeSizeElement.value : '1',
+                tickValue: tickValueElement ? tickValueElement.value : '5.00',
+                futuresTickSize: futuresTickSizeElement ? futuresTickSizeElement.value : '0.25', 
+                entryPrice: entryPriceElement ? entryPriceElement.value : '0.00',
                 savedLayouts: savedLayouts, 
                 categories: categories, 
                 categoryOrder: categoryOrder // Save the category order
@@ -1839,17 +1866,25 @@
 
                 applyLoadedState(state, false); 
             } else {
-                document.body.classList.remove('dark-mode');
-                document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                if (darkModeToggle) {
+                    document.body.classList.remove('dark-mode');
+                    darkModeToggle.textContent = '☀️ Light Mode';
+                }
                 // Initialize categoryOrder with default keys if no saved state
                 categoryOrder = Object.keys(categories); 
                 loadDefaultLayout(true); 
             }
+            const tradeSizeElement = document.getElementById('tradeSize');
+            const tickValueElement = document.getElementById('tickValue');
+            const futuresTickSizeElement = document.getElementById('futuresTickSize');
+            const entryPriceElement = document.getElementById('entryPrice');
+
             console.log('PNL inputs after loadState:', {
-                tradeSize: document.getElementById('tradeSize').value,
-                tickValue: document.getElementById('tickValue').value,
-                futuresTickSize: document.getElementById('futuresTickSize').value, 
-                entryPrice: document.getElementById('entryPrice').value,
+                tradeSize: tradeSizeElement ? tradeSizeElement.value : 'N/A',
+                tickValue: tickValueElement ? tickValueElement.value : 'N/A',
+                futuresTickSize: futuresTickSizeElement ? futuresTickSizeElement.value : 'N/A', 
+                entryPrice: entryPriceElement ? entryPriceElement.value : 'N/A',
             });
             // updateChecklistState(); // Removed from here, called by showPage()
             applyStrategyFilter(currentFilter);
@@ -1870,7 +1905,7 @@
                 input.addEventListener('change', () => {
                     saveState();
                     updateDocsSectionCompletion(); // Call new function on change
-                    updateChecklistState(); // Also trigger main checklist update
+                    // updateChecklistState(); // Removed from here, called by showPage()
                 });
             });
             updateDocsSectionCompletion(); // Initial call to set completion status
@@ -1978,25 +2013,32 @@
                 }
             });
 
-            document.getElementById('trade-notes').value = state.notes || '';
-            document.getElementById('tradeSize').value = state.tradeSize !== undefined ? state.tradeSize : '1';
-            document.getElementById('tickValue').value = state.tickValue !== undefined ? state.tickValue : '5.00';
-            document.getElementById('futuresTickSize').value = state.futuresTickSize !== undefined ? state.futuresTickSize : '0.25'; 
-            document.getElementById('entryPrice').value = state.entryPrice !== undefined ? state.entryPrice : '0.00';
+            const tradeNotesElement = document.getElementById('trade-notes');
+            const tradeSizeElement = document.getElementById('tradeSize');
+            const tickValueElement = document.getElementById('tickValue');
+            const futuresTickSizeElement = document.getElementById('futuresTickSize');
+            const entryPriceElement = document.getElementById('entryPrice');
 
+            if (tradeNotesElement) tradeNotesElement.value = state.notes || '';
+            if (tradeSizeElement) tradeSizeElement.value = state.tradeSize !== undefined ? state.tradeSize : '1';
+            if (tickValueElement) tickValueElement.value = state.tickValue !== undefined ? state.tickValue : '5.00';
+            if (futuresTickSizeElement) futuresTickSizeElement.value = state.futuresTickSize !== undefined ? state.futuresTickSize : '0.25'; 
+            if (entryPriceElement) entryPriceElement.value = state.entryPrice !== undefined ? state.entryPrice : '0.00';
+
+            const darkModeToggle = document.getElementById('darkModeToggle');
             if (state.darkMode) {
                 document.body.classList.add('dark-mode');
-                document.getElementById('darkModeToggle').textContent = '🌙 Dark Mode';
+                if (darkModeToggle) darkModeToggle.textContent = '🌙 Dark Mode';
             } else {
                 document.body.classList.remove('dark-mode');
-                document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
+                if (darkModeToggle) darkModeToggle.textContent = '☀️ Light Mode';
             }
             
             // Re-attach event listeners for P&L inputs (already done in loadState, but good to ensure)
-            document.getElementById('tradeSize').addEventListener('input', () => { saveState(); updateChecklistState(); });
-            document.getElementById('tickValue').addEventListener('input', () => { saveState(); updateChecklistState(); });
-            document.getElementById('futuresTickSize').addEventListener('input', () => { saveState(); updateChecklistState(); });
-            document.getElementById('entryPrice').addEventListener('input', () => { saveState(); updateChecklistState(); });
+            if (tradeSizeElement) tradeSizeElement.addEventListener('input', () => { saveState(); updateChecklistState(); });
+            if (tickValueElement) tickValueElement.addEventListener('input', () => { saveState(); updateChecklistState(); });
+            if (futuresTickSizeElement) futuresTickSizeElement.addEventListener('input', () => { saveState(); updateChecklistState(); });
+            if (entryPriceElement) entryPriceElement.addEventListener('input', () => { saveState(); updateChecklistState(); });
 
             document.querySelectorAll('label[data-info]').forEach(label => {
                 label.removeEventListener('mouseover', showTooltip);
@@ -2007,14 +2049,18 @@
 
             const calculatedRiskElement = document.getElementById('calculated-risk');
             const calculatedRewardElement = document.getElementById('calculated-reward');
-            calculatedRiskElement.removeEventListener('mouseover', showTooltip);
-            calculatedRiskElement.removeEventListener('mouseout', hideTooltip);
-            calculatedRewardElement.removeEventListener('mouseover', showTooltip);
-            calculatedRewardElement.removeEventListener('mouseout', hideTooltip);
-            calculatedRiskElement.addEventListener('mouseover', showTooltip);
-            calculatedRiskElement.addEventListener('mouseout', hideTooltip);
-            calculatedRewardElement.addEventListener('mouseover', showTooltip);
-            calculatedRewardElement.addEventListener('mouseout', hideTooltip);
+            if (calculatedRiskElement) {
+                calculatedRiskElement.removeEventListener('mouseover', showTooltip);
+                calculatedRiskElement.removeEventListener('mouseout', hideTooltip);
+                calculatedRiskElement.addEventListener('mouseover', showTooltip);
+                calculatedRiskElement.addEventListener('mouseout', hideTooltip);
+            }
+            if (calculatedRewardElement) {
+                calculatedRewardElement.removeEventListener('mouseover', showTooltip);
+                calculatedRewardElement.removeEventListener('mouseout', hideTooltip);
+                calculatedRewardElement.addEventListener('mouseover', showTooltip);
+                calculatedRewardElement.addEventListener('mouseout', hideTooltip);
+            }
 
             // updateChecklistState(); // Removed from here, called by showPage() or loadDefaultLayout()
             applyStrategyFilter(currentFilter); 
@@ -2047,6 +2093,7 @@
          */
         function openManageStrategiesModal() {
             const strategyListContainer = document.getElementById('strategyListContainer');
+            if (!strategyListContainer) return; // Defensive check
             strategyListContainer.innerHTML = ''; 
 
             const allStrategies = { ...strategies, ...customStrategies };
@@ -2065,30 +2112,46 @@
                 `;
                 strategyListContainer.appendChild(strategyDiv);
             }
-            document.getElementById('manageStrategiesModal').classList.remove('hidden');
+            const manageStrategiesModal = document.getElementById('manageStrategiesModal');
+            if (manageStrategiesModal) manageStrategiesModal.classList.remove('hidden');
         }
 
         function closeManageStrategiesModal() {
-            document.getElementById('manageStrategiesModal').classList.add('hidden');
+            const manageStrategiesModal = document.getElementById('manageStrategiesModal');
+            if (manageStrategiesModal) manageStrategiesModal.classList.add('hidden');
         }
 
         /**
          * Opens the modal to add a new strategy.
          */
         function openAddStrategyModal() {
-            document.getElementById('addEditStrategyTitle').textContent = 'Add New Strategy';
-            document.getElementById('strategyIdInput').value = '';
-            document.getElementById('strategyIdInput').readOnly = false; 
-            document.getElementById('strategyNameInput').value = '';
-            document.getElementById('strategyColorInput').value = '#3182ce'; 
-            document.getElementById('strategyIconInput').value = '📊'; 
-            document.getElementById('strategyDefaultRiskInput').value = '1.0';
-            document.getElementById('strategyDefaultRewardInput').value = '1.0';
-            document.getElementById('strategyDefaultStopInput').value = '';
-            document.getElementById('strategyDefaultTargetInput').value = '';
+            const addEditStrategyTitle = document.getElementById('addEditStrategyTitle');
+            const strategyIdInput = document.getElementById('strategyIdInput');
+            const strategyNameInput = document.getElementById('strategyNameInput');
+            const strategyColorInput = document.getElementById('strategyColorInput');
+            const strategyIconInput = document.getElementById('strategyIconInput');
+            const strategyDefaultRiskInput = document.getElementById('strategyDefaultRiskInput');
+            const strategyDefaultRewardInput = document.getElementById('strategyDefaultRewardInput');
+            const strategyDefaultStopInput = document.getElementById('strategyDefaultStopInput');
+            const strategyDefaultTargetInput = document.getElementById('strategyDefaultTargetInput');
+            const saveStrategyBtn = document.getElementById('saveStrategyBtn');
+            const addEditStrategyModal = document.getElementById('addEditStrategyModal');
+
+            if (addEditStrategyTitle) addEditStrategyTitle.textContent = 'Add New Strategy';
+            if (strategyIdInput) {
+                strategyIdInput.value = '';
+                strategyIdInput.readOnly = false; 
+            }
+            if (strategyNameInput) strategyNameInput.value = '';
+            if (strategyColorInput) strategyColorInput.value = '#3182ce'; 
+            if (strategyIconInput) strategyIconInput.value = '📊'; 
+            if (strategyDefaultRiskInput) strategyDefaultRiskInput.value = '1.0';
+            if (strategyDefaultRewardInput) strategyDefaultRewardInput.value = '1.0';
+            if (strategyDefaultStopInput) strategyDefaultStopInput.value = '';
+            if (strategyDefaultTargetInput) strategyDefaultTargetInput.value = '';
             
-            document.getElementById('saveStrategyBtn').onclick = saveNewStrategy;
-            document.getElementById('addEditStrategyModal').classList.remove('hidden');
+            if (saveStrategyBtn) saveStrategyBtn.onclick = saveNewStrategy;
+            if (addEditStrategyModal) addEditStrategyModal.classList.remove('hidden');
         }
 
         /**
@@ -2103,23 +2166,38 @@
             }
             currentEditingStrategyId = strategyId; 
 
-            document.getElementById('addEditStrategyTitle').textContent = `Edit Strategy: ${strategy.name}`;
-            document.getElementById('strategyIdInput').value = strategyId;
-            document.getElementById('strategyIdInput').readOnly = true; 
-            document.getElementById('strategyNameInput').value = strategy.name;
-            document.getElementById('strategyColorInput').value = strategy.color.startsWith('linear-gradient') ? '#3182ce' : strategy.color; 
-            document.getElementById('strategyIconInput').value = strategy.icon;
-            document.getElementById('strategyDefaultRiskInput').value = strategy.defaultRisk;
-            document.getElementById('strategyDefaultRewardInput').value = strategy.defaultReward;
-            document.getElementById('strategyDefaultStopInput').value = strategy.defaultStop;
-            document.getElementById('strategyDefaultTargetInput').value = strategy.defaultTarget;
+            const addEditStrategyTitle = document.getElementById('addEditStrategyTitle');
+            const strategyIdInput = document.getElementById('strategyIdInput');
+            const strategyNameInput = document.getElementById('strategyNameInput');
+            const strategyColorInput = document.getElementById('strategyColorInput');
+            const strategyIconInput = document.getElementById('strategyIconInput');
+            const strategyDefaultRiskInput = document.getElementById('strategyDefaultRiskInput');
+            const strategyDefaultRewardInput = document.getElementById('strategyDefaultRewardInput');
+            const strategyDefaultStopInput = document.getElementById('strategyDefaultStopInput');
+            const strategyDefaultTargetInput = document.getElementById('strategyDefaultTargetInput');
+            const saveStrategyBtn = document.getElementById('saveStrategyBtn');
+            const addEditStrategyModal = document.getElementById('addEditStrategyModal');
 
-            document.getElementById('saveStrategyBtn').onclick = saveEditedStrategy;
-            document.getElementById('addEditStrategyModal').classList.remove('hidden');
+            if (addEditStrategyTitle) addEditStrategyTitle.textContent = `Edit Strategy: ${strategy.name}`;
+            if (strategyIdInput) {
+                strategyIdInput.value = strategyId;
+                strategyIdInput.readOnly = true; 
+            }
+            if (strategyNameInput) strategyNameInput.value = strategy.name;
+            if (strategyColorInput) strategyColorInput.value = strategy.color.startsWith('linear-gradient') ? '#3182ce' : strategy.color; 
+            if (strategyIconInput) strategyIconInput.value = strategy.icon;
+            if (strategyDefaultRiskInput) strategyDefaultRiskInput.value = strategy.defaultRisk;
+            if (strategyDefaultRewardInput) strategyDefaultRewardInput.value = strategy.defaultReward;
+            if (strategyDefaultStopInput) strategyDefaultStopInput.value = strategy.defaultStop;
+            if (strategyDefaultTargetInput) strategyDefaultTargetInput.value = strategy.defaultTarget;
+
+            if (saveStrategyBtn) saveStrategyBtn.onclick = saveEditedStrategy;
+            if (addEditStrategyModal) addEditStrategyModal.classList.remove('hidden');
         }
 
         function closeAddEditStrategyModal() {
-            document.getElementById('addEditStrategyModal').classList.add('hidden');
+            const addEditStrategyModal = document.getElementById('addEditStrategyModal');
+            if (addEditStrategyModal) addEditStrategyModal.classList.add('hidden');
             currentEditingStrategyId = null;
             openManageStrategiesModal(); 
         }
@@ -2128,14 +2206,28 @@
          * Saves a new strategy from the modal inputs.
          */
         function saveNewStrategy() {
-            const id = document.getElementById('strategyIdInput').value.trim().toLowerCase().replace(/\s+/g, '');
-            const name = document.getElementById('strategyNameInput').value.trim();
-            const color = document.getElementById('strategyColorInput').value;
-            const icon = document.getElementById('strategyIconInput').value.trim();
-            const defaultRisk = parseFloat(document.getElementById('strategyDefaultRiskInput').value);
-            const defaultReward = parseFloat(document.getElementById('strategyDefaultRewardInput').value);
-            const defaultStop = document.getElementById('strategyDefaultStopInput').value.trim();
-            const defaultTarget = document.getElementById('strategyDefaultTargetInput').value.trim();
+            const strategyIdInput = document.getElementById('strategyIdInput');
+            const strategyNameInput = document.getElementById('strategyNameInput');
+            const strategyColorInput = document.getElementById('strategyColorInput');
+            const strategyIconInput = document.getElementById('strategyIconInput');
+            const strategyDefaultRiskInput = document.getElementById('strategyDefaultRiskInput');
+            const strategyDefaultRewardInput = document.getElementById('strategyDefaultRewardInput');
+            const strategyDefaultStopInput = document.getElementById('strategyDefaultStopInput');
+            const strategyDefaultTargetInput = document.getElementById('strategyDefaultTargetInput');
+
+            if (!strategyIdInput || !strategyNameInput || !strategyColorInput || !strategyIconInput || !strategyDefaultRiskInput || !strategyDefaultRewardInput || !strategyDefaultStopInput || !strategyDefaultTargetInput) {
+                showModal("Error", "One or more strategy input elements not found.", null, null, false, true);
+                return;
+            }
+
+            const id = strategyIdInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            const name = strategyNameInput.value.trim();
+            const color = strategyColorInput.value;
+            const icon = strategyIconInput.value.trim();
+            const defaultRisk = parseFloat(strategyDefaultRiskInput.value);
+            const defaultReward = parseFloat(strategyDefaultRewardInput.value);
+            const defaultStop = strategyDefaultStopInput.value.trim();
+            const defaultTarget = strategyDefaultTargetInput.value.trim();
 
             if (!id || !name) {
                 showModal("Validation Error", "Strategy ID and Display Name are required.", null, null, false, true);
@@ -2163,13 +2255,26 @@
          */
         function saveEditedStrategy() {
             const id = currentEditingStrategyId;
-            const name = document.getElementById('strategyNameInput').value.trim();
-            const color = document.getElementById('strategyColorInput').value;
-            const icon = document.getElementById('strategyIconInput').value.trim();
-            const defaultRisk = parseFloat(document.getElementById('strategyDefaultRiskInput').value);
-            const defaultReward = parseFloat(document.getElementById('strategyDefaultRewardInput').value);
-            const defaultStop = document.getElementById('strategyDefaultStopInput').value.trim();
-            const defaultTarget = document.getElementById('strategyDefaultTargetInput').value.trim();
+            const strategyNameInput = document.getElementById('strategyNameInput');
+            const strategyColorInput = document.getElementById('strategyColorInput');
+            const strategyIconInput = document.getElementById('strategyIconInput');
+            const strategyDefaultRiskInput = document.getElementById('strategyDefaultRiskInput');
+            const strategyDefaultRewardInput = document.getElementById('strategyDefaultRewardInput');
+            const strategyDefaultStopInput = document.getElementById('strategyDefaultStopInput');
+            const strategyDefaultTargetInput = document.getElementById('strategyDefaultTargetInput');
+
+            if (!strategyNameInput || !strategyColorInput || !strategyIconInput || !strategyDefaultRiskInput || !strategyDefaultRewardInput || !strategyDefaultStopInput || !strategyDefaultTargetInput) {
+                showModal("Error", "One or more strategy input elements not found during edit.", null, null, false, true);
+                return;
+            }
+
+            const name = strategyNameInput.value.trim();
+            const color = strategyColorInput.value;
+            const icon = strategyIconInput.value.trim();
+            const defaultRisk = parseFloat(strategyDefaultRiskInput.value);
+            const defaultReward = parseFloat(strategyDefaultRewardInput.value);
+            const defaultStop = strategyDefaultStopInput.value.trim();
+            const defaultTarget = strategyDefaultTargetInput.value.trim();
 
             if (!name) {
                 showModal("Validation Error", "Display Name is required.", null, null, false, true);
@@ -2194,7 +2299,11 @@
          * @param {string} strategyId The ID of the strategy to delete.
          */
         function confirmDeleteStrategy(strategyId) {
-            const strategyName = customStrategies[strategyId].name;
+            const strategyName = customStrategies[strategyId]?.name; // Use optional chaining
+            if (!strategyName) {
+                 showModal("Error", "Strategy not found for deletion.", null, null, false, true);
+                 return;
+            }
             showModal(
                 "Confirm Deletion",
                 `Are you sure you want to delete the custom strategy "${strategyName}"? This cannot be undone. All criteria using this strategy will be updated.`,
@@ -2221,20 +2330,34 @@
          * @param {string} category The category to pre-select.
          */
         function openAddCriteriaModal(category = '') {
-            document.getElementById('addEditCriteriaTitle').textContent = 'Add New Criteria';
+            const addEditCriteriaTitle = document.getElementById('addEditCriteriaTitle');
+            const criteriaNameInput = document.getElementById('criteriaNameInput');
+            const criteriaRiskInput = document.getElementById('criteriaRiskInput');
+            const criteriaRewardInput = document.getElementById('criteriaRewardInput');
+            const criteriaInfoInput = document.getElementById('criteriaInfoInput');
+            const criteriaStrategiesInput = document.getElementById('criteriaStrategiesInput');
+            const saveCriteriaBtn = document.getElementById('saveCriteriaBtn');
+            const addEditCriteriaModal = document.getElementById('addEditCriteriaModal');
+
+            if (!addEditCriteriaTitle || !criteriaNameInput || !criteriaRiskInput || !criteriaRewardInput || !criteriaInfoInput || !criteriaStrategiesInput || !saveCriteriaBtn || !addEditCriteriaModal) {
+                console.error("One or more criteria modal elements not found.");
+                return;
+            }
+
+            addEditCriteriaTitle.textContent = 'Add New Criteria';
             currentEditingCriteriaId = null; 
 
-            document.getElementById('criteriaNameInput').value = '';
-            document.getElementById('criteriaRiskInput').value = '1.0';
-            document.getElementById('criteriaRewardInput').value = '1.0';
-            document.getElementById('criteriaInfoInput').value = '';
+            criteriaNameInput.value = '';
+            criteriaRiskInput.value = '1.0';
+            criteriaRewardInput.value = '1.0';
+            criteriaInfoInput.value = '';
 
             populateCategorySelect(category);
             populateAvailableStrategiesHint();
-            document.getElementById('criteriaStrategiesInput').value = ''; 
+            criteriaStrategiesInput.value = ''; 
 
-            document.getElementById('saveCriteriaBtn').onclick = saveNewCriteria;
-            document.getElementById('addEditCriteriaModal').classList.remove('hidden');
+            saveCriteriaBtn.onclick = saveNewCriteria;
+            addEditCriteriaModal.classList.remove('hidden');
         }
 
         /**
@@ -2253,28 +2376,43 @@
             currentEditingCriteriaCategory = category;
 
             const currentLabel = inputElement.nextElementSibling;
-            const currentName = currentLabel.textContent;
+            const currentName = currentLabel ? currentLabel.textContent : '';
             const currentStrategies = inputElement.getAttribute('data-strategies') || '';
             const currentRisk = parseFloat(inputElement.getAttribute('data-risk')) || 1.0;
             const currentReward = parseFloat(inputElement.getAttribute('data-reward')) || 1.0;
-            const currentInfo = currentLabel.getAttribute('data-info') || '';
+            const currentInfo = currentLabel ? currentLabel.getAttribute('data-info') || '' : '';
 
-            document.getElementById('addEditCriteriaTitle').textContent = `Edit Criteria: ${currentName}`;
-            document.getElementById('criteriaNameInput').value = currentName;
-            document.getElementById('criteriaRiskInput').value = currentRisk;
-            document.getElementById('criteriaRewardInput').value = currentReward;
-            document.getElementById('criteriaInfoInput').value = currentInfo;
-            document.getElementById('criteriaStrategiesInput').value = currentStrategies;
+            const addEditCriteriaTitle = document.getElementById('addEditCriteriaTitle');
+            const criteriaNameInput = document.getElementById('criteriaNameInput');
+            const criteriaRiskInput = document.getElementById('criteriaRiskInput');
+            const criteriaRewardInput = document.getElementById('criteriaRewardInput');
+            const criteriaInfoInput = document.getElementById('criteriaInfoInput');
+            const criteriaStrategiesInput = document.getElementById('criteriaStrategiesInput');
+            const saveCriteriaBtn = document.getElementById('saveCriteriaBtn');
+            const addEditCriteriaModal = document.getElementById('addEditCriteriaModal');
+
+            if (!addEditCriteriaTitle || !criteriaNameInput || !criteriaRiskInput || !criteriaRewardInput || !criteriaInfoInput || !criteriaStrategiesInput || !saveCriteriaBtn || !addEditCriteriaModal) {
+                console.error("One or more criteria modal elements not found during edit.");
+                return;
+            }
+
+            addEditCriteriaTitle.textContent = `Edit Criteria: ${currentName}`;
+            criteriaNameInput.value = currentName;
+            criteriaRiskInput.value = currentRisk;
+            criteriaRewardInput.value = currentReward;
+            criteriaInfoInput.value = currentInfo;
+            criteriaStrategiesInput.value = currentStrategies;
 
             populateCategorySelect(category);
             populateAvailableStrategiesHint();
 
-            document.getElementById('saveCriteriaBtn').onclick = saveEditedCriteria;
-            document.getElementById('addEditCriteriaModal').classList.remove('hidden');
+            saveCriteriaBtn.onclick = saveEditedCriteria;
+            addEditCriteriaModal.classList.remove('hidden');
         }
 
         function closeAddEditCriteriaModal() {
-            document.getElementById('addEditCriteriaModal').classList.add('hidden');
+            const addEditCriteriaModal = document.getElementById('addEditCriteriaModal');
+            if (addEditCriteriaModal) addEditCriteriaModal.classList.add('hidden');
             currentEditingCriteriaId = null;
             currentEditingCriteriaCategory = null;
         }
@@ -2285,6 +2423,7 @@
          */
         function populateCategorySelect(selectedCategory = '') {
             const select = document.getElementById('criteriaCategorySelect');
+            if (!select) return; // Defensive check
             select.innerHTML = ''; 
 
             for (const id in categories) {
@@ -2307,6 +2446,7 @@
          */
         function populateAvailableStrategiesHint() {
             const hintSpan = document.getElementById('availableStrategiesHint');
+            if (!hintSpan) return; // Defensive check
             const allStrategyNames = Object.values(strategies).map(s => s.name)
                                     .concat(Object.values(customStrategies).map(s => s.name));
             hintSpan.textContent = allStrategyNames.join(', ');
@@ -2316,12 +2456,24 @@
          * Saves a new criteria from the modal inputs.
          */
         function saveNewCriteria() {
-            const name = document.getElementById('criteriaNameInput').value.trim();
-            const category = document.getElementById('criteriaCategorySelect').value;
-            const strategiesInput = document.getElementById('criteriaStrategiesInput').value.trim();
-            const risk = parseFloat(document.getElementById('criteriaRiskInput').value);
-            const reward = parseFloat(document.getElementById('criteriaRewardInput').value);
-            const info = document.getElementById('criteriaInfoInput').value.trim();
+            const criteriaNameInput = document.getElementById('criteriaNameInput');
+            const criteriaCategorySelect = document.getElementById('criteriaCategorySelect');
+            const criteriaStrategiesInput = document.getElementById('criteriaStrategiesInput');
+            const criteriaRiskInput = document.getElementById('criteriaRiskInput');
+            const criteriaRewardInput = document.getElementById('criteriaRewardInput');
+            const criteriaInfoInput = document.getElementById('criteriaInfoInput');
+
+            if (!criteriaNameInput || !criteriaCategorySelect || !criteriaStrategiesInput || !criteriaRiskInput || !criteriaRewardInput || !criteriaInfoInput) {
+                showModal("Error", "One or more criteria input elements not found.", null, null, false, true);
+                return;
+            }
+
+            const name = criteriaNameInput.value.trim();
+            const category = criteriaCategorySelect.value;
+            const strategiesInput = criteriaStrategiesInput.value.trim();
+            const risk = parseFloat(criteriaRiskInput.value);
+            const reward = parseFloat(criteriaRewardInput.value);
+            const info = criteriaInfoInput.value.trim();
 
             if (!name || !category || !strategiesInput) {
                 showModal("Validation Error", "Criteria Name, Category, and Strategies are required.", null, null, false, true);
@@ -2345,9 +2497,12 @@
                         () => {
                             closeAddEditCriteriaModal(); 
                             openAddStrategyModal();
-                            document.getElementById('strategyIdInput').value = strategyInput; 
-                            document.getElementById('strategyNameInput').value = strategyInput.charAt(0).toUpperCase() + strategyInput.slice(1); 
-                            document.getElementById('saveStrategyBtn').onclick = () => {
+                            const strategyIdInput = document.getElementById('strategyIdInput');
+                            const strategyNameInput = document.getElementById('strategyNameInput');
+                            if (strategyIdInput) strategyIdInput.value = strategyInput; 
+                            if (strategyNameInput) strategyNameInput.value = strategyInput.charAt(0).toUpperCase() + strategyInput.slice(1); 
+                            const saveStrategyBtn = document.getElementById('saveStrategyBtn');
+                            if (saveStrategyBtn) saveStrategyBtn.onclick = () => {
                                 saveNewStrategyAndContinueCriteria(strategyInput, name, category, strategiesInput, risk, reward, info);
                             };
                         },
@@ -2382,14 +2537,28 @@
          * Called from saveNewCriteria when a new strategy is detected and confirmed.
          */
         function saveNewStrategyAndContinueCriteria(newStrategyId, criteriaName, criteriaCategory, criteriaStrategiesInput, criteriaRisk, criteriaReward, criteriaInfo) {
-            const id = document.getElementById('strategyIdInput').value.trim().toLowerCase().replace(/\s+/g, '');
-            const name = document.getElementById('strategyNameInput').value.trim();
-            const color = document.getElementById('strategyColorInput').value;
-            const icon = document.getElementById('strategyIconInput').value.trim();
-            const defaultRisk = parseFloat(document.getElementById('strategyDefaultRiskInput').value);
-            const defaultReward = parseFloat(document.getElementById('strategyDefaultRewardInput').value);
-            const defaultStop = document.getElementById('strategyDefaultStopInput').value.trim();
-            const defaultTarget = document.getElementById('strategyDefaultTargetInput').value.trim();
+            const strategyIdInput = document.getElementById('strategyIdInput');
+            const strategyNameInput = document.getElementById('strategyNameInput');
+            const strategyColorInput = document.getElementById('strategyColorInput');
+            const strategyIconInput = document.getElementById('strategyIconInput');
+            const strategyDefaultRiskInput = document.getElementById('strategyDefaultRiskInput');
+            const strategyDefaultRewardInput = document.getElementById('strategyDefaultRewardInput');
+            const strategyDefaultStopInput = document.getElementById('strategyDefaultStopInput');
+            const strategyDefaultTargetInput = document.getElementById('strategyDefaultTargetInput');
+
+            if (!strategyIdInput || !strategyNameInput || !strategyColorInput || !strategyIconInput || !strategyDefaultRiskInput || !strategyDefaultRewardInput || !strategyDefaultStopInput || !strategyDefaultTargetInput) {
+                showModal("Error", "One or more strategy input elements not found in helper.", null, null, false, true);
+                return;
+            }
+
+            const id = strategyIdInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            const name = strategyNameInput.value.trim();
+            const color = strategyColorInput.value;
+            const icon = strategyIconInput.value.trim();
+            const defaultRisk = parseFloat(strategyDefaultRiskInput.value);
+            const defaultReward = parseFloat(strategyDefaultRewardInput.value);
+            const defaultStop = strategyDefaultStopInput.value.trim();
+            const defaultTarget = strategyDefaultTargetInput.value.trim();
 
             if (!id || !name || isNaN(defaultRisk) || isNaN(defaultReward)) {
                 showModal("Validation Error", "Failed to save new strategy. Please fill all required fields.", null, null, false, true);
@@ -2428,12 +2597,24 @@
             const itemId = currentEditingCriteriaId;
             const category = currentEditingCriteriaCategory;
 
-            const name = document.getElementById('criteriaNameInput').value.trim();
-            const newCategory = document.getElementById('criteriaCategorySelect').value;
-            const strategiesInput = document.getElementById('criteriaStrategiesInput').value.trim();
-            const risk = parseFloat(document.getElementById('criteriaRiskInput').value);
-            const reward = parseFloat(document.getElementById('criteriaRewardInput').value);
-            const info = document.getElementById('criteriaInfoInput').value.trim();
+            const criteriaNameInput = document.getElementById('criteriaNameInput');
+            const criteriaCategorySelect = document.getElementById('criteriaCategorySelect');
+            const criteriaStrategiesInput = document.getElementById('criteriaStrategiesInput');
+            const criteriaRiskInput = document.getElementById('criteriaRiskInput');
+            const criteriaRewardInput = document.getElementById('criteriaRewardInput');
+            const criteriaInfoInput = document.getElementById('criteriaInfoInput');
+
+            if (!criteriaNameInput || !criteriaCategorySelect || !criteriaStrategiesInput || !criteriaRiskInput || !criteriaRewardInput || !criteriaInfoInput) {
+                showModal("Error", "One or more criteria input elements not found during edit.", null, null, false, true);
+                return;
+            }
+
+            const name = criteriaNameInput.value.trim();
+            const newCategory = criteriaCategorySelect.value;
+            const strategiesInput = criteriaStrategiesInput.value.trim();
+            const risk = parseFloat(criteriaRiskInput.value);
+            const reward = parseFloat(criteriaRewardInput.value);
+            const info = criteriaInfoInput.value.trim();
 
             if (!name || !newCategory || !strategiesInput) {
                 showModal("Validation Error", "Criteria Name, Category, and Strategies are required.", null, null, false, true);
@@ -2534,6 +2715,7 @@
          * @param {Array<string>} strategiesList An array of strategy IDs to display.
          */
         function updateBadgeDisplay(badgesContainer, strategiesList) {
+            if (!badgesContainer) return; // Defensive check
             badgesContainer.innerHTML = ''; 
             strategiesList.forEach(strategyId => {
                 const strategy = strategies[strategyId] || customStrategies[strategyId]; 
@@ -2557,7 +2739,8 @@
         function recreateAllCriteriaElements() {
             const checkedIds = Array.from(document.querySelectorAll('#main-checklist-page .input:checked')).map(input => input.id);
             const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
-            
+            if (!checklistContainer) return; // Defensive check
+
             // Temporarily store action buttons and filter details
             const actionButtons = checklistContainer.querySelector('.action-buttons');
             const filterDetails = checklistContainer.querySelector('.filter-details');
@@ -2577,7 +2760,7 @@
                     let categoryDiv = document.createElement('div');
                     categoryDiv.className = `category ${categoryData.isDefault ? '' : 'custom-criteria'}`;
                     categoryDiv.setAttribute('data-group', categoryId);
-                    categoryDiv.setAttribute('draggable', true);
+                    // categoryDiv.setAttribute('draggable', true); // REMOVED DRAGGABLE
                     categoryDiv.innerHTML = `
                         <h3>
                             <div class="category-header">
@@ -2586,8 +2769,9 @@
                             <button class="add-criteria-mini" onclick="openAddCriteriaModal('${categoryId}')" title="Add criteria to ${categoryData.name}">+</button>
                         </h3>
                     `;
-                    categoryDiv.addEventListener('dragstart', handleDragStart);
-                    categoryDiv.addEventListener('dragend', handleDragEnd);
+                    // Removed dragstart and dragend listeners
+                    // categoryDiv.addEventListener('dragstart', handleDragStart);
+                    // categoryDiv.addEventListener('dragend', handleDragEnd);
                     fragment.appendChild(categoryDiv);
                 }
             });
@@ -2641,7 +2825,9 @@
                 const input = itemDiv.querySelector('input[type="checkbox"]');
                 // Check if it's a custom criteria based on its ID prefix
                 if (input && input.id.startsWith('custom-')) { 
-                    const categoryId = itemDiv.closest('.category').dataset.group; // Get category from parent
+                    const categoryId = itemDiv.closest('.category')?.dataset.group; // Use optional chaining
+                    if (!categoryId) return; // Defensive check
+
                     let editBtn = itemDiv.querySelector('.edit-criteria-btn');
                     let deleteBtn = itemDiv.querySelector('.delete-criteria-btn');
                     
@@ -2748,6 +2934,22 @@
          * updateChecklistState the checked criteria and updates the trade setup result.
          */
         function updateChecklistState() {
+            // Defensive checks for elements that might not be present on all pages or immediately
+            const resultElement = document.getElementById("result");
+            const riskRewardDisplayElement = document.getElementById('risk-reward-display');
+            const calculatedRiskElement = document.getElementById('calculated-risk');
+            const calculatedRewardElement = document.getElementById('calculated-reward');
+            const suggestedStopElement = document.getElementById('suggested-stop');
+            const suggestedTargetElement = document.getElementById('suggested-target');
+            const potentialLossElement = document.getElementById('potentialLoss');
+            const potentialProfitElement = document.getElementById('potentialProfit');
+
+            // If the main checklist display elements aren't present (e.g., on Daily Prep page), just return.
+            if (!resultElement || !riskRewardDisplayElement || !calculatedRiskElement || !calculatedRewardElement || !suggestedStopElement || !suggestedTargetElement || !potentialLossElement || !potentialProfitElement) {
+                console.log("updateChecklistState: Main checklist display elements not found, skipping update.");
+                return;
+            }
+
             const allInputs = document.querySelectorAll('#main-checklist-page .input:checked');
             const checkedItems = Array.from(allInputs);
             
@@ -2775,19 +2977,12 @@
 
 
             if (checkedItems.length === 0) {
-                // Ensure elements exist before trying to set their textContent
-                const calculatedRiskElement = document.getElementById('calculated-risk');
-                const calculatedRewardElement = document.getElementById('calculated-reward');
-                const suggestedStopElement = document.getElementById('suggested-stop');
-                const suggestedTargetElement = document.getElementById('suggested-target');
-
-                if (calculatedRiskElement) calculatedRiskElement.textContent = 'N/A';
-                if (calculatedRewardElement) calculatedRewardElement.textContent = 'N/A';
-                if (suggestedStopElement) suggestedStopElement.textContent = 'Based on selected criteria';
-                if (suggestedTargetElement) suggestedTargetElement.textContent = 'Based on selected criteria';
-
                 updateResult("Select criteria to identify your trade setup...", "waiting");
                 updateRiskRewardDisplay(0, 0); 
+                calculatedRiskElement.textContent = 'N/A';
+                calculatedRewardElement.textContent = 'N/A';
+                suggestedStopElement.textContent = 'Based on selected criteria';
+                suggestedTargetElement.textContent = 'Based on selected criteria';
                 updatePnLDisplay(0, 0); 
                 return;
             }
@@ -2896,25 +3091,20 @@
             updateResult(`✅ ${tradeType}${bonusMessage}`, resultClass);
             updateRiskRewardDisplay(totalRisk, displayReward); // Use displayReward here
 
-            const calculatedRiskElement = document.getElementById('calculated-risk');
-            const calculatedRewardElement = document.getElementById('calculated-reward');
-            const suggestedStopElement = document.getElementById('suggested-stop');
-            const suggestedTargetElement = document.getElementById('suggested-target');
+            calculatedRiskElement.textContent = totalRisk.toFixed(2);
+            calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
 
-            if (calculatedRiskElement) calculatedRiskElement.textContent = totalRisk.toFixed(2);
-            if (calculatedRewardElement) calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
-
-            if (calculatedRiskElement) calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
-            if (calculatedRewardElement) calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
+            calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
+            calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
 
 
             if (dominantStrategy) {
                 const strategyObj = strategies[dominantStrategy] || customStrategies[dominantStrategy];
-                if (suggestedStopElement) suggestedStopElement.textContent = strategyObj.defaultStop;
-                if (suggestedTargetElement) suggestedTargetElement.textContent = strategyObj.defaultTarget;
+                suggestedStopElement.textContent = strategyObj.defaultStop;
+                suggestedTargetElement.textContent = strategyObj.defaultTarget;
             } else {
-                if (suggestedStopElement) suggestedStopElement.textContent = 'Based on selected criteria';
-                if (suggestedTargetElement) suggestedTargetElement.textContent = 'Based on selected criteria';
+                suggestedStopElement.textContent = 'Based on selected criteria';
+                suggestedTargetElement.textContent = 'Based on selected criteria';
             }
 
             calculatePnL(totalRisk, displayReward); // Use displayReward here
@@ -2926,10 +3116,22 @@
          * @param {number} totalReward The sum of reward values from checked criteria.
          */
         function calculatePnL(totalRisk, totalReward) { // totalReward here is already the potentially bonus-adjusted value
-            const tradeSize = parseFloat(document.getElementById('tradeSize').value);
-            const tickValue = parseFloat(document.getElementById('tickValue').value);
-            const futuresTickSize = parseFloat(document.getElementById('futuresTickSize').value); 
-            const entryPrice = parseFloat(document.getElementById('entryPrice').value); 
+            const tradeSizeInput = document.getElementById('tradeSize');
+            const tickValueInput = document.getElementById('tickValue');
+            const futuresTickSizeInput = document.getElementById('futuresTickSize');
+            const entryPriceInput = document.getElementById('entryPrice');
+
+            // Defensive checks for P&L input elements
+            if (!tradeSizeInput || !tickValueInput || !futuresTickSizeInput || !entryPriceInput) {
+                console.log('calculatePnL: P&L input elements not found, skipping calculation.');
+                updatePnLDisplay(0, 0); // Reset display if inputs are missing
+                return;
+            }
+
+            const tradeSize = parseFloat(tradeSizeInput.value);
+            const tickValue = parseFloat(tickValueInput.value);
+            const futuresTickSize = parseFloat(futuresTickSizeInput.value); 
+            const entryPrice = parseFloat(entryPriceInput.value); 
 
             console.log('PNL Inputs (in calculatePnL):', { tradeSize, tickValue, futuresTickSize, entryPrice, totalRisk, totalReward });
 
@@ -3119,7 +3321,10 @@
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
-            document.getElementById('darkModeToggle').textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) {
+                darkModeToggle.textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+            }
             saveState(); 
         }
 
@@ -3132,11 +3337,13 @@
             const infoText = element.getAttribute('data-info');
 
             if (infoText) {
+                if (!tooltipBox) return; // Defensive check
                 tooltipBox.innerHTML = infoText.replace(/\n/g, '<br>'); // Replace newlines with <br> for multiline tooltips
                 tooltipBox.classList.add('visible');
 
                 const elementRect = element.getBoundingClientRect();
-                const containerRect = document.querySelector('.container').getBoundingClientRect(); 
+                const container = document.querySelector('.container');
+                const containerRect = container ? container.getBoundingClientRect() : {left: 0, right: window.innerWidth}; 
                 
                 let top = elementRect.bottom + window.scrollY + 10; 
                 let left = elementRect.left + window.scrollX;
@@ -3160,43 +3367,53 @@
         }
 
         function hideTooltip() {
-            tooltipBox.classList.remove('visible');
+            if (tooltipBox) tooltipBox.classList.remove('visible');
         }
 
         // --- Share/Import Settings Modal Functions (now integrated into Manage Layouts) ---
         const manageLayoutsModal = document.getElementById('manageLayoutsModal');
-        const savedLayoutsTabButton = manageLayoutsModal.querySelector('[data-layout-tab="saved"]');
-        const shareImportLayoutTabButton = manageLayoutsModal.querySelector('[data-layout-tab="share-import"]');
-        const defaultLayoutTabButton = manageLayoutsModal.querySelector('[data-layout-tab="default"]');
+        const savedLayoutsTabButton = manageLayoutsModal ? manageLayoutsModal.querySelector('[data-layout-tab="saved"]') : null;
+        const shareImportLayoutTabButton = manageLayoutsModal ? manageLayoutsModal.querySelector('[data-layout-tab="share-import"]') : null;
+        const defaultLayoutTabButton = manageLayoutsModal ? manageLayoutsModal.querySelector('[data-layout-tab="default"]') : null;
 
         const savedLayoutsTabContent = document.getElementById('savedLayoutsTab');
         const shareImportLayoutTabContent = document.getElementById('shareImportLayoutTab');
         const defaultLayoutTabContent = document.getElementById('defaultLayoutTab');
 
-        const exportSubTabButton = shareImportLayoutTabContent.querySelector('[data-sub-tab="export"]');
-        const importSubTabButton = shareImportLayoutTabContent.querySelector('[data-sub-tab="import"]');
+        const exportSubTabButton = shareImportLayoutTabContent ? shareImportLayoutTabContent.querySelector('[data-sub-tab="export"]') : null;
+        const importSubTabButton = shareImportLayoutTabContent ? shareImportLayoutTabContent.querySelector('[data-sub-tab="import"]') : null;
         const exportSubTabContent = document.getElementById('exportSubTab');
         const importSubTabContent = document.getElementById('importSubTab');
 
 
         function openManageLayoutsModal() {
+            if (!manageLayoutsModal) return; // Defensive check
             manageLayoutsModal.classList.remove('hidden');
             showLayoutTab('saved'); 
             
             // Re-attach listeners for sub-tabs within Share/Import
-            exportSubTabButton.removeEventListener('click', handleExportSubTabClick); 
-            importSubTabButton.removeEventListener('click', handleImportSubTabClick); 
-            exportSubTabButton.addEventListener('click', handleExportSubTabClick);
-            importSubTabButton.addEventListener('click', handleImportSubTabClick);
+            if (exportSubTabButton) {
+                exportSubTabButton.removeEventListener('click', handleExportSubTabClick); 
+                exportSubTabButton.addEventListener('click', handleExportSubTabClick);
+            }
+            if (importSubTabButton) {
+                importSubTabButton.removeEventListener('click', handleImportSubTabClick); 
+                importSubTabButton.addEventListener('click', handleImportSubTabClick);
+            }
             
             // Re-attach listeners for main tabs
-            savedLayoutsTabButton.removeEventListener('click', () => showLayoutTab('saved'));
-            shareImportLayoutTabButton.removeEventListener('click', () => showLayoutTab('share-import'));
-            defaultLayoutTabButton.removeEventListener('click', () => showLayoutTab('default'));
-
-            savedLayoutsTabButton.addEventListener('click', () => showLayoutTab('saved'));
-            shareImportLayoutTabButton.addEventListener('click', () => showLayoutTab('share-import'));
-            defaultLayoutTabButton.addEventListener('click', () => showLayoutTab('default'));
+            if (savedLayoutsTabButton) {
+                savedLayoutsTabButton.removeEventListener('click', () => showLayoutTab('saved'));
+                savedLayoutsTabButton.addEventListener('click', () => showLayoutTab('saved'));
+            }
+            if (shareImportLayoutTabButton) {
+                shareImportLayoutTabButton.removeEventListener('click', () => showLayoutTab('share-import'));
+                shareImportLayoutTabButton.addEventListener('click', () => showLayoutTab('share-import'));
+            }
+            if (defaultLayoutTabButton) {
+                defaultLayoutTabButton.removeEventListener('click', () => showLayoutTab('default'));
+                defaultLayoutTabButton.addEventListener('click', () => showLayoutTab('default'));
+            }
 
             showSubTab('export'); // Default to export sub-tab when opening Share/Import
         }
@@ -3206,7 +3423,7 @@
 
 
         function closeManageLayoutsModal() {
-            manageLayoutsModal.classList.add('hidden');
+            if (manageLayoutsModal) manageLayoutsModal.classList.add('hidden');
             const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
             const importCodeInputLayout = document.getElementById('importCodeInputLayout');
             if(shareCodeOutputLayout) shareCodeOutputLayout.value = ''; 
@@ -3214,13 +3431,15 @@
         }
 
         function showLayoutTab(tabName) {
-            manageLayoutsModal.querySelectorAll('[data-layout-tab]').forEach(btn => btn.classList.remove('active'));
-            manageLayoutsModal.querySelectorAll('.tab-content').forEach(content => {
+            if (manageLayoutsModal) { // Defensive check
+                manageLayoutsModal.querySelectorAll('[data-layout-tab]').forEach(btn => btn.classList.remove('active'));
+            }
+            document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
                 content.style.display = 'none'; // Ensure it's hidden
             });
 
-            const selectedButton = manageLayoutsModal.querySelector(`[data-layout-tab="${tabName}"]`);
+            const selectedButton = manageLayoutsModal ? manageLayoutsModal.querySelector(`[data-layout-tab="${tabName}"]`) : null;
             let selectedContent;
             if (tabName === 'saved') selectedContent = document.getElementById('savedLayoutsTab');
             else if (tabName === 'share-import') selectedContent = document.getElementById('shareImportLayoutTab');
@@ -3237,13 +3456,15 @@
         }
 
         function showSubTab(tabName) {
-            shareImportLayoutTabContent.querySelectorAll('[data-sub-tab]').forEach(btn => btn.classList.remove('active'));
-            shareImportLayoutTabContent.querySelectorAll('.sub-tab-content').forEach(content => {
+            if (shareImportLayoutTabContent) { // Defensive check
+                shareImportLayoutTabContent.querySelectorAll('[data-sub-tab]').forEach(btn => btn.classList.remove('active'));
+            }
+            document.querySelectorAll('.sub-tab-content').forEach(content => {
                 content.classList.remove('active');
                 content.style.display = 'none'; // Ensure it's hidden
             });
 
-            const selectedButton = shareImportLayoutTabContent.querySelector(`[data-sub-tab="${tabName}"]`);
+            const selectedButton = shareImportLayoutTabContent ? shareImportLayoutTabContent.querySelector(`[data-sub-tab="${tabName}"]`) : null;
             const selectedContent = document.getElementById(`${tabName}SubTab`);
 
             if (selectedButton) selectedButton.classList.add('active');
@@ -3265,6 +3486,10 @@
             const jsonString = JSON.stringify(shareableState);
             const compressed = LZString.compressToBase64(jsonString);
             const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
+            if (!shareCodeOutputLayout) {
+                showModal("Error", "Share code output area not found.", null, null, false, true);
+                return;
+            }
             shareCodeOutputLayout.value = compressed; // Use correct ID
             shareCodeOutputLayout.select(); 
             shareCodeOutputLayout.setSelectionRange(0, 99999); 
@@ -3273,18 +3498,27 @@
 
         function copyShareCode() {
             const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
+            if (!shareCodeOutputLayout) {
+                showModal("Error", "Share code output area not found.", null, null, false, true);
+                return;
+            }
             shareCodeOutputLayout.select(); // Use correct ID
             shareCodeOutputLayout.setSelectionRange(0, 99999); 
             try {
                 document.execCommand('copy');
                 showModal("Copied!", "Share code copied to clipboard.", null, null, false, true);
             } catch (err) {
+                console.error("Failed to copy text:", err);
                 showModal("Error", "Failed to copy code. Please copy manually.", null, null, false, true);
             }
         }
 
         function triggerImportSettings() {
             const importCodeInputLayout = document.getElementById('importCodeInputLayout');
+            if (!importCodeInputLayout) {
+                showModal("Error", "Import code input area not found.", null, null, false, true);
+                return;
+            }
             const encodedString = importCodeInputLayout.value.trim(); // Use correct ID
             if (!encodedString) {
                 showModal("No Code", "Please paste a share code to import.", null, null, false, true);
@@ -3323,6 +3557,7 @@
         // New: Layout Management Functions
         function populateSavedLayoutsList() {
             const layoutListContainer = document.getElementById('layoutListContainer');
+            if (!layoutListContainer) return; // Defensive check
             layoutListContainer.innerHTML = ''; 
 
             if (Object.keys(savedLayouts).length === 0) {
@@ -3345,6 +3580,12 @@
         }
 
         function saveCurrentLayout() {
+            const tradeNotesElement = document.getElementById('trade-notes');
+            const tradeSizeElement = document.getElementById('tradeSize');
+            const tickValueElement = document.getElementById('tickValue');
+            const futuresTickSizeElement = document.getElementById('futuresTickSize');
+            const entryPriceElement = document.getElementById('entryPrice');
+
             showModal(
                 "Save Layout",
                 "Enter a name for your current layout:",
@@ -3355,12 +3596,12 @@
                             customStrategies: customStrategies,
                             customCriteria: customCriteria,
                             deletedDefaultCriteria: deletedDefaultCriteria, 
-                            notes: document.getElementById('trade-notes').value,
+                            notes: tradeNotesElement ? tradeNotesElement.value : '',
                             darkMode: document.body.classList.contains('dark-mode'),
-                            tradeSize: document.getElementById('tradeSize').value,
-                            tickValue: document.getElementById('tickValue').value,
-                            futuresTickSize: document.getElementById('futuresTickSize').value,
-                            entryPrice: document.getElementById('entryPrice').value,
+                            tradeSize: tradeSizeElement ? tradeSizeElement.value : '1',
+                            tickValue: tickValueElement ? tickValueElement.value : '5.00',
+                            futuresTickSize: futuresTickSizeElement ? futuresTickSizeElement.value : '0.25',
+                            entryPrice: entryPriceElement ? entryPriceElement.value : '0.00',
                             categories: categories, 
                             categoryOrder: categoryOrder // Save category order with layout
                         };
@@ -3425,9 +3666,11 @@
          */
         function loadDefaultLayout(isInitialLoad = false) {
             const performLoad = () => {
+                // Re-initialize all mutable global data structures
                 customStrategies = {}; 
                 customCriteria = {}; 
                 deletedDefaultCriteria = []; 
+                savedLayouts = {}; // Clear saved layouts when loading default
                 
                 // Reset categories to their immutable default state
                 categories = {
@@ -3467,6 +3710,7 @@
         // --- New Category Management Functions ---
         function openManageCategoriesModal() {
             const categoryListContainer = document.getElementById('categoryListContainer');
+            if (!categoryListContainer) return; // Defensive check
             categoryListContainer.innerHTML = ''; 
 
             // Use categoryOrder to display categories in their current order
@@ -3484,24 +3728,38 @@
                     categoryListContainer.appendChild(categoryDiv);
                 }
             });
-            document.getElementById('manageCategoriesModal').classList.remove('hidden');
+            const manageCategoriesModal = document.getElementById('manageCategoriesModal');
+            if (manageCategoriesModal) manageCategoriesModal.classList.remove('hidden');
         }
 
 
         function closeManageCategoriesModal() {
-            document.getElementById('manageCategoriesModal').classList.add('hidden');
+            const manageCategoriesModal = document.getElementById('manageCategoriesModal');
+            if (manageCategoriesModal) manageCategoriesModal.classList.add('hidden');
             recreateAllCriteriaElements(); 
             updateChecklistState();
         }
 
         function openAddCategoryModal() {
-            document.getElementById('addEditCategoryTitle').textContent = 'Add New Category';
-            document.getElementById('categoryIdInput').value = '';
-            document.getElementById('categoryIdInput').readOnly = false;
-            document.getElementById('categoryNameInput').value = '';
-            document.getElementById('categoryIconInput').value = '✨'; 
-            document.getElementById('saveCategoryBtn').onclick = saveNewCategory;
-            document.getElementById('addEditCategoryModal').classList.remove('hidden');
+            const addEditCategoryTitle = document.getElementById('addEditCategoryTitle');
+            const categoryIdInput = document.getElementById('categoryIdInput');
+            const categoryNameInput = document.getElementById('categoryNameInput');
+            const categoryIconInput = document.getElementById('categoryIconInput');
+            const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+            const addEditCategoryModal = document.getElementById('addEditCategoryModal');
+
+            if (!addEditCategoryTitle || !categoryIdInput || !categoryNameInput || !categoryIconInput || !saveCategoryBtn || !addEditCategoryModal) {
+                console.error("One or more add category modal elements not found.");
+                return;
+            }
+
+            addEditCategoryTitle.textContent = 'Add New Category';
+            categoryIdInput.value = '';
+            categoryIdInput.readOnly = false;
+            categoryNameInput.value = '';
+            categoryIconInput.value = '✨'; 
+            saveCategoryBtn.onclick = saveNewCategory;
+            addEditCategoryModal.classList.remove('hidden');
         }
 
         function openEditCategoryModal(categoryId) {
@@ -3512,25 +3770,47 @@
             }
             currentEditingCategoryId = categoryId;
 
-            document.getElementById('addEditCategoryTitle').textContent = `Edit Category: ${category.name}`;
-            document.getElementById('categoryIdInput').value = categoryId;
-            document.getElementById('categoryIdInput').readOnly = true; 
-            document.getElementById('categoryNameInput').value = category.name;
-            document.getElementById('categoryIconInput').value = category.icon;
-            document.getElementById('saveCategoryBtn').onclick = saveEditedCategory;
-            document.getElementById('addEditCategoryModal').classList.remove('hidden');
+            const addEditCategoryTitle = document.getElementById('addEditCategoryTitle');
+            const categoryIdInput = document.getElementById('categoryIdInput');
+            const categoryNameInput = document.getElementById('categoryNameInput');
+            const categoryIconInput = document.getElementById('categoryIconInput');
+            const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+            const addEditCategoryModal = document.getElementById('addEditCategoryModal');
+
+            if (!addEditCategoryTitle || !categoryIdInput || !categoryNameInput || !categoryIconInput || !saveCategoryBtn || !addEditCategoryModal) {
+                console.error("One or more edit category modal elements not found.");
+                return;
+            }
+
+            addEditCategoryTitle.textContent = `Edit Category: ${category.name}`;
+            categoryIdInput.value = categoryId;
+            categoryIdInput.readOnly = true; 
+            categoryNameInput.value = category.name;
+            categoryIconInput.value = category.icon;
+            saveCategoryBtn.onclick = saveEditedCategory;
+            addEditCategoryModal.classList.remove('hidden');
         }
 
         function closeAddEditCategoryModal() {
-            document.getElementById('addEditCategoryModal').classList.add('hidden');
+            const addEditCategoryModal = document.getElementById('addEditCategoryModal');
+            if (addEditCategoryModal) addEditCategoryModal.classList.add('hidden');
             currentEditingCategoryId = null;
             openManageCategoriesModal(); 
         }
 
         function saveNewCategory() {
-            const id = document.getElementById('categoryIdInput').value.trim().toLowerCase().replace(/\s+/g, '');
-            const name = document.getElementById('categoryNameInput').value.trim();
-            const icon = document.getElementById('categoryIconInput').value.trim();
+            const categoryIdInput = document.getElementById('categoryIdInput');
+            const categoryNameInput = document.getElementById('categoryNameInput');
+            const categoryIconInput = document.getElementById('categoryIconInput');
+
+            if (!categoryIdInput || !categoryNameInput || !categoryIconInput) {
+                showModal("Error", "One or more new category input elements not found.", null, null, false, true);
+                return;
+            }
+
+            const id = categoryIdInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            const name = categoryNameInput.value.trim();
+            const icon = categoryIconInput.value.trim();
 
             if (!id || !name) {
                 showModal("Validation Error", "Category ID and Display Name are required.", null, null, false, true);
@@ -3553,8 +3833,16 @@
 
         function saveEditedCategory() {
             const id = currentEditingCategoryId;
-            const name = document.getElementById('categoryNameInput').value.trim();
-            const icon = document.getElementById('categoryIconInput').value.trim();
+            const categoryNameInput = document.getElementById('categoryNameInput');
+            const categoryIconInput = document.getElementById('categoryIconInput');
+
+            if (!categoryNameInput || !categoryIconInput) {
+                showModal("Error", "One or more edited category input elements not found.", null, null, false, true);
+                return;
+            }
+
+            const name = categoryNameInput.value.trim();
+            const icon = categoryIconInput.value.trim();
 
             if (!name) {
                 showModal("Validation Error", "Display Name is required.", null, null, false, true);
@@ -3603,9 +3891,9 @@
             );
         }
 
-        // --- Drag and Drop Handlers for Categories ---
+        // --- Drag and Drop Handlers for Categories --- REMOVED
+        /*
         function handleDragStart(e) {
-            // Ensure the target is the category div itself, not a child element
             const categoryElement = e.target.closest('.category');
             if (!categoryElement) return;
 
@@ -3637,33 +3925,31 @@
         
         function handleDragOverContainer(e) {
             e.preventDefault(); 
-            if (!draggedCategoryId) return; // Only proceed if an item is being dragged
+            if (!draggedCategoryId) return;
 
             const draggedElement = document.querySelector(`.category[data-group="${draggedCategoryId}"]`);
             if (!draggedElement) return;
 
             const afterElement = getDragAfterElement(e.clientY);
             const container = document.querySelector('#main-checklist-page .checklist-container');
-            const actionButtons = container.querySelector('.action-buttons'); // Get action buttons to ensure placeholder isn't inserted before them
-            const filterDetails = container.querySelector('.filter-details'); // Get filter details
+            if (!container) return;
+            const actionButtons = container.querySelector('.action-buttons');
+            const filterDetails = container.querySelector('.filter-details');
 
-            // Determine insertion point
             let insertBeforeElement = null;
             if (afterElement) {
                 insertBeforeElement = afterElement;
             } else {
-                // If no specific element to drop after, try to append at the end of categories
                 const lastCategory = container.querySelector('.category:last-of-type');
                 if (lastCategory) {
                     insertBeforeElement = lastCategory.nextSibling;
                 } else if (filterDetails) {
-                    insertBeforeElement = filterDetails.nextSibling; // After filters if no categories exist
+                    insertBeforeElement = filterDetails.nextSibling;
                 } else if (actionButtons) {
-                    insertBeforeElement = actionButtons.nextSibling; // After action buttons if no filters/categories exist
+                    insertBeforeElement = actionButtons.nextSibling;
                 }
             }
 
-            // Ensure placeholder is not inserted before action buttons or filter details
             if (actionButtons && insertBeforeElement && (actionButtons === insertBeforeElement || actionButtons.contains(insertBeforeElement))) {
                 insertBeforeElement = actionButtons.nextSibling;
             }
@@ -3678,7 +3964,6 @@
         }
         
         function getDragAfterElement(y) {
-            // Only consider .category elements for reordering, excluding the one being dragged and non-category elements like action buttons
             const draggableElements = [...document.querySelectorAll('#main-checklist-page .checklist-container > .category:not(.dragging)')];
             return draggableElements.reduce((closest, child) => {
                 const box = child.getBoundingClientRect();
@@ -3693,7 +3978,7 @@
 
         function handleDropOnContainer(e) {
             e.preventDefault();
-            if (!draggedCategoryId) return; // Only proceed if an item was being dragged
+            if (!draggedCategoryId) return;
 
             const draggedElement = document.querySelector(`.category[data-group="${draggedCategoryId}"]`);
             if (!draggedElement) return;
@@ -3703,16 +3988,16 @@
             }
             
             const newOrder = [];
-            // Select only direct children categories to get the new order
             const categoryElements = document.querySelectorAll('#main-checklist-page .checklist-container > .category'); 
             categoryElements.forEach(catEl => {
                 newOrder.push(catEl.dataset.group);
             });
             categoryOrder = newOrder;
             console.log('handleDropOnContainer: New category order after drop:', categoryOrder);
-            recreateAllCriteriaElements(); // Recreate to ensure correct order is reflected and listeners are re-attached
-            saveState(); // Save the new order
+            recreateAllCriteriaElements();
+            saveState();
         }
+        */
 
         // --- Page Navigation Functions ---
         function showPage(pageId) {
@@ -3724,14 +4009,20 @@
                 button.classList.remove('active');
             });
 
-            document.getElementById(pageId).classList.add('active-page');
-            document.getElementById(pageId).style.display = 'block';
+            const targetPage = document.getElementById(pageId);
+            const targetButton = document.getElementById(`${pageId.replace('-page', 'NavBtn')}`);
+
+            if (targetPage) {
+                targetPage.classList.add('active-page');
+                targetPage.style.display = 'block';
+            }
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
 
             if (pageId === 'main-checklist-page') {
-                document.getElementById('mainChecklistNavBtn').classList.add('active');
                 updateChecklistState(); // Call update here when main page is shown
             } else if (pageId === 'trading-docs-page') {
-                document.getElementById('tradingDocsNavBtn').classList.add('active');
                 updateDocsSectionCompletion(); // Update completion status when showing this page
             }
             saveState(); // Save the current page view
@@ -3743,18 +4034,19 @@
 
             sectionsToTrack.forEach(sectionId => {
                 const sectionDiv = document.querySelector(`#trading-docs-page .category[data-group="${sectionId}"]`);
-                if (!sectionDiv) return;
+                if (!sectionDiv) return; // Defensive check
 
                 const checkboxes = sectionDiv.querySelectorAll('.docs-input');
                 const textInputs = sectionDiv.querySelectorAll('.docs-text-input');
                 const heading = sectionDiv.querySelector('h3');
 
-                let completionIndicator = heading.querySelector('.completion-indicator');
-                if (!completionIndicator) {
+                let completionIndicator = heading ? heading.querySelector('.completion-indicator') : null;
+                if (!completionIndicator && heading) { // Only create if heading exists
                     completionIndicator = document.createElement('span');
                     completionIndicator.className = 'completion-indicator';
                     heading.appendChild(completionIndicator);
                 }
+                if (!completionIndicator) return; // Defensive check
 
                 let allCheckboxesChecked = checkboxes.length > 0 && Array.from(checkboxes).every(input => input.checked);
                 let allTextInputsFilled = textInputs.length > 0 && Array.from(textInputs).every(input => input.value.trim() !== '');
@@ -3863,12 +4155,17 @@
         document.addEventListener("DOMContentLoaded", function () {
             loadState();
 
-            document.getElementById('trade-notes').addEventListener('input', saveState);
-            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            const tradeNotesElement = document.getElementById('trade-notes');
+            if (tradeNotesElement) tradeNotesElement.addEventListener('input', saveState);
+            
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (darkModeToggle) darkModeToggle.addEventListener('click', toggleDarkMode);
 
             // Event listeners for main checklist page navigation
-            document.getElementById('mainChecklistNavBtn').addEventListener('click', () => showPage('main-checklist-page'));
-            document.getElementById('tradingDocsNavBtn').addEventListener('click', () => showPage('trading-docs-page'));
+            const mainChecklistNavBtn = document.getElementById('mainChecklistNavBtn');
+            const tradingDocsNavBtn = document.getElementById('tradingDocsNavBtn');
+            if (mainChecklistNavBtn) mainChecklistNavBtn.addEventListener('click', () => showPage('main-checklist-page'));
+            if (tradingDocsNavBtn) tradingDocsNavBtn.addEventListener('click', () => showPage('trading-docs-page'));
 
             // Event listeners for layout share/import buttons
             const generateCodeBtnLayout = document.getElementById('generateCodeBtnLayout');
@@ -3879,7 +4176,8 @@
             if(copyCodeBtnLayout) copyCodeBtnLayout.addEventListener('click', copyShareCode);
             if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings); 
 
-            // Add dragover and drop to the main checklist container for category reordering
+            // Add dragover and drop to the main checklist container for category reordering - REMOVED
+            /*
             const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
             if (checklistContainer) { // Ensure container exists before adding listeners
                 checklistContainer.addEventListener('dragover', handleDragOverContainer);
@@ -3887,6 +4185,7 @@
             } else {
                 console.error("Checklist container not found on DOMContentLoaded.");
             }
+            */
 
             // Initial page display (default to main checklist)
             showPage('main-checklist-page');
