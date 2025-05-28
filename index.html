@@ -202,16 +202,6 @@
             min-height: 100px; /* Example to ensure drop area exists */
         }
         
-        .category {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: linear-gradient(145deg, var(--category-bg-gradient-start), var(--category-bg-gradient-end));
-            border: 1px solid var(--category-border);
-            border-radius: 12px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease, border-color 0.3s ease;
-            cursor: grab; /* Indicate draggable */
-        }
-        
         .category:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px var(--container-shadow);
@@ -291,7 +281,7 @@
             background-color: var(--checklist-item-hover-bg);
         }
         
-        .checklist-item input {
+        .checklist-item input[type="checkbox"] {
             margin-right: 12px;
             transform: scale(1.2);
             accent-color: var(--input-accent-color);
@@ -1122,9 +1112,25 @@
         .docs-two-column .checklist-item {
             margin: 0; /* Remove default margin from checklist-item */
             padding: 0; /* Remove default padding */
+            flex-direction: column; /* Stack checkbox/label and input vertically */
+            align-items: flex-start; /* Align content to the start */
         }
         .docs-two-column .checklist-item label {
             line-height: 1.3; /* Adjust line height for better readability */
+            margin-bottom: 5px; /* Space between label and input */
+        }
+        .docs-two-column .checklist-item input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--notes-border);
+            border-radius: 8px;
+            background-color: transparent;
+            color: var(--text-color);
+            transition: border-color 0.2s ease;
+        }
+        .docs-two-column .checklist-item input[type="text"]:focus {
+            outline: none;
+            border-color: var(--notes-focus-border);
         }
 
     </style>
@@ -1165,24 +1171,6 @@
 
             <div class="risk-management">
                 <h2>🎯 Risk Management</h2>
-                <div class="risk-info">
-                    <div class="risk-card">
-                        <h4>Calculated Risk (Sum of Checked Criteria)</h4>
-                        <p id="calculated-risk" data-info="This is the sum of the 'Risk Value' for all checked criteria. It represents the total relative risk points for your trade setup.">N/A</p>
-                    </div>
-                    <div class="risk-card">
-                        <h4>Calculated Reward (Sum of Checked Criteria)</h4>
-                        <p id="calculated-reward" data-info="This is the sum of the 'Reward Value' for all checked criteria. It represents the total relative reward points for your trade setup.">N/A</p>
-                    </div>
-                    <div class="risk-card">
-                        <h4>Suggested Stop (Dominant Strategy)</h4>
-                        <p id="suggested-stop">Based on selected criteria</p>
-                    </div>
-                    <div class="risk-card">
-                        <h4>Suggested Target (Dominant Strategy)</h4>
-                        <p id="suggested-target">Based on selected criteria</p>
-                    </div>
-                </div>
                 <div class="notes-section" style="padding: 20px; margin-top: 20px;">
                     <h2>💵 P&L Calculation</h2>
                     <div class="modal-form-grid">
@@ -1217,7 +1205,7 @@
         </div>
         
         <div id="trading-docs-page">
-            <h2>📚 Trading Checklists</h2>
+            <h2>📚 Daily Prep Checklists</h2>
             <div class="action-buttons" style="margin-bottom: 20px;">
                 <button class="add-criteria-btn" onclick="clearDocsChecklist()" style="background: linear-gradient(145deg, #f56565, #e53e3e);">🔄 Clear All Docs Checks</button>
             </div>
@@ -1265,70 +1253,70 @@
                 <div class="docs-two-column">
                     <div class="category-section">
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-market">
-                            <label for="docs-market">Market: What market are you trading?</label>
+                            <label for="docs-market-notes">Market: What market are you trading?</label>
+                            <input type="text" class="docs-text-input" id="docs-market-notes" placeholder="e.g., ES, NQ, CL" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-trend">
-                            <label for="docs-trend">Trend: What direction is the underlying trend of the market?</label>
+                            <label for="docs-trend-notes">Trend: What direction is the underlying trend of the market?</label>
+                            <input type="text" class="docs-text-input" id="docs-trend-notes" placeholder="e.g., Up, Down, Sideways" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-day-settlement">
-                            <label for="docs-previous-day-settlement">Previous Day Settlement: What was yesterday's closing cost?</label>
+                            <label for="docs-previous-day-settlement-notes">Previous Day Settlement: What was yesterday's closing cost?</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-day-settlement-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-day-net-change">
-                            <label for="docs-previous-day-net-change">Previous Day Net Change: How much higher/lower was the market yesterday?</label>
+                            <label for="docs-previous-day-net-change-notes">Previous Day Net Change: How much higher/lower was the market yesterday?</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-day-net-change-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-volume">
-                            <label for="docs-volume">Volume</label>
+                            <label for="docs-volume-notes">Volume</label>
+                            <input type="text" class="docs-text-input" id="docs-volume-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-open-interest">
-                            <label for="docs-open-interest">Open Interest</label>
+                            <label for="docs-open-interest-notes">Open Interest</label>
+                            <input type="text" class="docs-text-input" id="docs-open-interest-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                     </div>
                     <div class="category-section">
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-week-high">
-                            <label for="docs-previous-week-high">Previous Week High</label>
+                            <label for="docs-previous-week-high-notes">Previous Week High</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-week-high-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-week-low">
-                            <label for="docs-previous-week-low">Previous Week Low</label>
+                            <label for="docs-previous-week-low-notes">Previous Week Low</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-week-low-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-3-day-high">
-                            <label for="docs-3-day-high">3-Day High</label>
+                            <label for="docs-3-day-high-notes">3-Day High</label>
+                            <input type="text" class="docs-text-input" id="docs-3-day-high-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-3-day-low">
-                            <label for="docs-3-day-low">3-Day Low</label>
+                            <label for="docs-3-day-low-notes">3-Day Low</label>
+                            <input type="text" class="docs-text-input" id="docs-3-day-low-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-day-high">
-                            <label for="docs-previous-day-high">Previous Day High</label>
+                            <label for="docs-previous-day-high-notes">Previous Day High</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-day-high-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-previous-day-low">
-                            <label for="docs-previous-day-low">Previous Day Low</label>
+                            <label for="docs-previous-day-low-notes">Previous Day Low</label>
+                            <input type="text" class="docs-text-input" id="docs-previous-day-low-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-10-day-moving-avg">
-                            <label for="docs-10-day-moving-avg">10-Day Moving Avg</label>
+                            <label for="docs-10-day-moving-avg-notes">10-Day Moving Avg</label>
+                            <input type="text" class="docs-text-input" id="docs-10-day-moving-avg-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-20-day-moving-avg">
-                            <label for="docs-20-day-moving-avg">20-Day Moving Avg</label>
+                            <label for="docs-20-day-moving-avg-notes">20-Day Moving Avg</label>
+                            <input type="text" class="docs-text-input" id="docs-20-day-moving-avg-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-50-day-moving-avg">
-                            <label for="docs-50-day-moving-avg">50-Day Moving Avg</label>
+                            <label for="docs-50-day-moving-avg-notes">50-Day Moving Avg</label>
+                            <input type="text" class="docs-text-input" id="docs-50-day-moving-avg-notes" placeholder="Value" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                         <div class="checklist-item">
-                            <input type="checkbox" class="docs-input" id="docs-identify-chart-patterns">
-                            <label for="docs-identify-chart-patterns">Identify Chart Patterns</label>
+                            <label for="docs-identify-chart-patterns-notes">Identify Chart Patterns</label>
+                            <input type="text" class="docs-text-input" id="docs-identify-chart-patterns-notes" placeholder="e.g., Flags, Triangles, Head & Shoulders" oninput="saveState(); updateDocsSectionCompletion();">
                         </div>
                     </div>
                 </div>
@@ -1613,7 +1601,7 @@
         let strategies = {
             'reversal': { name: 'Reversal', color: '#e53e3e', icon: '🔄', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Price action failure at level', defaultTarget: 'Previous swing low/high' },
             'momentum': { name: 'Momentum', color: '#38a169', icon: '🚀', defaultRisk: 0.5, defaultReward: 1.5, defaultStop: 'Bar trail / VWAP break', defaultTarget: 'Gas out (L2/T&S slowdown)' },
-            'both': { name: 'Both', color: 'linear-gradient(45deg, #e53e3e, #38a169)', icon: '⚖️', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Hybrid approach (consider tightest stop)', defaultTarget: 'Hybrid approach (consider nearest target)' },
+            // 'both': { name: 'Both', color: 'linear-gradient(45deg, #e53e3e, #38a169)', icon: '⚖️', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Hybrid approach (consider tightest stop)', defaultTarget: 'Hybrid approach (consider nearest target)' }, // Removed 'both' strategy
             'scalping': { name: 'Scalping', color: '#9F7AEA', icon: '⚡', defaultRisk: 0.3, defaultReward: 0.6, defaultStop: 'Tick-based / Immediate invalidation', defaultTarget: 'Few ticks profit / L2 fill' },
             'swing': { name: 'Swing', color: '#3182CE', icon: '📈', defaultRisk: 1.5, defaultReward: 3.0, defaultStop: 'Key structural break / Daily close below', defaultTarget: 'Major resistance / Multi-day move' },
             'breakout': { name: 'Breakout', color: '#DD6B20', icon: '💥', defaultRisk: 0.7, defaultReward: 1.8, defaultStop: 'Retest failure / Volume exhaustion', defaultTarget: 'Measured move / Next major level' }
@@ -1635,38 +1623,38 @@
         // New: Default criteria data (immutable)
         const defaultCriteriaData = {
             'levels': [
-                { id: 'sr-level', name: 'Price at major S/R, VAH/VAL, or IB range', strategies: ['both'], risk: 1, reward: 1, info: 'S/R (Support/Resistance) levels are price points where the price trend is expected to pause or reverse. VAH/VAL (Value Area High/Low) are key levels from volume profile. IB (Initial Balance) refers to the first hour\'s trading range.' },
-                { id: 'vah-val', name: 'At VAH/VAL key level', strategies: ['reversal'], risk: 0.8, reward: 1.2, info: 'VAH (Value Area High) and VAL (Value Area Low) are derived from Volume Profile, representing the upper and lower boundaries of where the majority of trading volume occurred.' },
-                { id: 'ib-range', name: 'Within IB Range boundary', strategies: ['both'], risk: 1, reward: 1, info: 'IB (Initial Balance) is the trading range established during the first hour of a trading session, often used to gauge initial market sentiment and potential range expansion.' }
+                { id: 'sr-level', name: 'Price at major S/R, VAH/VAL, or IB range', strategies: ['reversal', 'momentum'], risk: 1, reward: 1, info: 'S/R (Support/Resistance) levels are price points where the price trend is expected to pause or reverse. VAH/VAL (Value Area High/Low) are key levels from volume profile. IB (Initial Balance) refers to the first hour\'s trading range.' },
+                // { id: 'vah-val', name: 'At VAH/VAL key level', strategies: ['reversal'], risk: 0.8, reward: 1.2, info: 'VAH (Value Area High) and VAL (Value Area Low) are derived from Volume Profile, representing the upper and lower boundaries of where the majority of trading volume occurred.' }, // Removed redundant criteria
+                { id: 'ib-range', name: 'Within IB Range boundary', strategies: ['reversal', 'momentum'], risk: 1, reward: 1, info: 'IB (Initial Balance) is the trading range established during the first hour of a trading session, often used to gauge initial market sentiment and potential range expansion.' }
             ],
             'volume': [
                 { id: 'weak-volume', name: 'Volume weakening into level', strategies: ['reversal'], risk: 1.5, reward: 0.7, info: 'Weakening volume into a level suggests that the current price movement is losing conviction, often preceding a reversal.' },
                 { id: 'volume-spike', name: 'Volume spike confirms push', strategies: ['momentum'], risk: 0.7, reward: 1.3, info: 'A sudden increase in volume (volume spike) often confirms the strength of a price move, indicating strong participation.' },
                 { id: 'breakout-volume', name: 'Breakout above IBH/VAL/VAH with volume', strategies: ['momentum', 'breakout'], risk: 0.6, reward: 1.4, info: 'A breakout with significant volume indicates strong conviction behind the move, increasing the likelihood of continuation.' },
-                { id: 'scalping-volume-confirm', name: 'High volume confirms scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, high volume at entry/exit points confirms liquidity and order flow, crucial for quick trades.' },
+                // { id: 'scalping-volume-confirm', name: 'High volume confirms scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, high volume at entry/exit points confirms liquidity and order flow, crucial for quick trades.' }, // Removed redundant criteria
                 { id: 'swing-volume-confirmation', name: 'Volume confirmation on swing lows/highs', strategies: ['swing'], risk: 1.0, reward: 1.5, info: 'Volume confirmation at swing lows/highs indicates strong support or resistance, validating potential swing trade entries.' }
             ],
             'timeframe': [
                 { id: 'trend-align', name: 'Trend aligns (VWAP, EMA, 200EMA support)', strategies: ['momentum', 'swing'], risk: 0.7, reward: 1.3, info: 'VWAP (Volume Weighted Average Price) and EMAs (Exponential Moving Averages) are indicators used to confirm trend direction and dynamic support/resistance.' },
-                { id: 'micro-pullback', name: 'Micro pullback to VWAP/EMA/VAL', strategies: ['momentum', 'scalping'], risk: 0.8, reward: 1.2, info: 'A micro pullback is a small, temporary reversal within a strong trend, offering an opportunity to join the trend at a better price.' },
+                { id: 'micro-pullback', name: 'Micro pullback to VWAP/EMA/VAL', strategies: ['momentum', 'scalping'], risk: 0.8, reward: 1.2, info: 'A micro pullback is a small, temporary reversal within a strong trend, offering anきたい opportunity to join the trend at a better price.' },
                 { id: 'stall-curl', name: '15s shows stall/curl or failed push', strategies: ['reversal'], risk: 1.2, reward: 0.8, info: 'A stall or curl on a lower timeframe (e.g., 15s) indicates a loss of momentum in the current move, often preceding a reversal.' },
                 { id: 'swing-daily-chart', name: 'Daily chart confirms broader trend for swing', strategies: ['swing'], risk: 0.9, reward: 1.5, info: 'For swing trades, confirming the broader trend on a daily chart helps align with larger market movements, improving trade probability.' }
             ],
             'oscillators': [
                 { id: 'oscillator-divergence', name: 'Oscillator divergence or flattening', strategies: ['reversal', 'swing'], risk: 1.1, reward: 0.9, info: 'Divergence occurs when price makes a new high/low, but an oscillator (like MACD or RSI) does not, often signaling a potential reversal. ' },
                 { id: 'oscillator-trend', name: 'Oscillator confirms trend direction', strategies: ['momentum', 'breakout'], risk: 0.8, reward: 1.2, info: 'An oscillator confirming the trend (e.g., staying above 0 for MACD in an uptrend) indicates sustained momentum.' },
-                { id: 'rsi-overbought-oversold', name: 'RSI Overbought/Oversold signal', strategies: ['reversal'], risk: 1.0, reward: 1.0, info: 'RSI (Relative Strength Index) measures the speed and change of price movements. Overbought (above 70) or oversold (below 30) signals can indicate potential reversals.' }
+                // { id: 'rsi-overbought-oversold', name: 'RSI Overbought/Oversold signal', strategies: ['reversal'], risk: 1.0, reward: 1.0, info: 'RSI (Relative Strength Index) measures the speed and change of price movements. Overbought (above 70) or oversold (below 30) signals can indicate potential reversals.' } // Removed redundant criteria
             ],
             'tape': [
                 { id: 'absorption', name: 'Large passive order + absorption', strategies: ['reversal'], risk: 1.2, reward: 0.8, info: 'Absorption occurs when large orders are being filled by aggressive buyers/sellers without significant price movement, indicating strong supply/demand at a level.' },
                 { id: 'aggressive-orders', name: 'Aggressive orders pushing', strategies: ['momentum', 'scalping', 'breakout'], risk: 0.7, reward: 1.3, info: 'Aggressive orders (market orders) indicate strong conviction and can drive price quickly in a particular direction. ' },
                 { id: 'slowed-prints', name: 'T&S: Slowed prints, lack of aggression', strategies: ['reversal'], risk: 1.3, reward: 0.7, info: 'T&S (Time & Sales) shows individual trades. Slowed prints and lack of aggression indicate waning momentum, often preceding a reversal.' },
-                { id: 'speed-increasing', name: 'T&S: Speed + size increasing', strategies: ['momentum', 'scalping', 'breakout'], risk: 0.6, reward: 1.4, info: 'Increasing speed and size of prints on Time & Sales indicates strong order flow and momentum.' }
+                // { id: 'speed-increasing', name: 'T&S: Speed + size increasing', strategies: ['momentum', 'scalping', 'breakout'], risk: 0.6, reward: 1.4, info: 'Increasing speed and size of prints on Time & Sales indicates strong order flow and momentum.' } // Removed redundant criteria
             ],
             'l2': [
                 { id: 'thin-liquidity', name: 'L2: Thin liquidity in breakout path', strategies: ['momentum', 'breakout'], risk: 0.9, reward: 1.1, info: 'L2 (Level 2) shows the order book depth. Thin liquidity in the direction of a breakout means less resistance for price to move.' },
                 { id: 'no-gaps', name: 'L2: No major liquidity gaps behind you', strategies: ['reversal'], risk: 0.8, reward: 1.2, info: 'Liquidity gaps on Level 2 mean there are no large orders to absorb selling/buying pressure, which can lead to rapid price movement. ' },
-                { id: 'scalping-l2-depth', name: 'L2: Sufficient depth for scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, sufficient depth on Level 2 ensures there are enough orders to fill your entry and exit quickly without significant slippage.' }
+                // { id: 'scalping-l2-depth', name: 'L2: Sufficient depth for scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, sufficient depth on Level 2 ensures there are enough orders to fill your entry and exit quickly without significant slippage.' } // Removed redundant criteria
             ],
             'strategy-specific': [
                 { id: 'scalping-tight-stop', name: 'Scalping: Tight stop-loss and quick profit target', strategies: ['scalping'], risk: 0.5, reward: 0.5, info: 'Scalping involves taking very small profits with tight stop-losses, requiring precise entries and exits.' },
@@ -1801,6 +1789,15 @@
             });
             localStorage.setItem('tradingDocsChecklistState', JSON.stringify(docsChecklistState));
             console.log('Trading Docs Checklist state saved to localStorage:', docsChecklistState);
+
+            // Save state for pre-market research notes
+            const preMarketResearchNotesState = {};
+            document.querySelectorAll('#trading-docs-page .docs-text-input').forEach(input => {
+                preMarketResearchNotesState[input.id] = input.value;
+            });
+            localStorage.setItem('preMarketResearchNotesState', JSON.stringify(preMarketResearchNotesState));
+            console.log('Pre-Market Research Notes state saved to localStorage:', preMarketResearchNotesState);
+            console.log('Current categoryOrder in saveState:', categoryOrder); // Log current order
         }
 
         /**
@@ -1837,6 +1834,7 @@
                         categoryOrder.push(id);
                     }
                 });
+                console.log('loadState: Initial category order after loading from localStorage:', categoryOrder);
 
 
                 applyLoadedState(state, false); 
@@ -1853,7 +1851,7 @@
                 futuresTickSize: document.getElementById('futuresTickSize').value, 
                 entryPrice: document.getElementById('entryPrice').value,
             });
-            updateChecklistState(); 
+            // updateChecklistState(); // Removed from here, called by showPage()
             applyStrategyFilter(currentFilter);
 
             // Load state for the Trading Docs Checklist
@@ -1876,6 +1874,24 @@
                 });
             });
             updateDocsSectionCompletion(); // Initial call to set completion status
+
+            // Load state for pre-market research notes
+            const savedPreMarketResearchNotesState = localStorage.getItem('preMarketResearchNotesState');
+            if (savedPreMarketResearchNotesState) {
+                const preMarketNotesState = JSON.parse(savedPreMarketResearchNotesState);
+                document.querySelectorAll('#trading-docs-page .docs-text-input').forEach(input => {
+                    if (preMarketNotesState[input.id]) {
+                        input.value = preMarketNotesState[input.id];
+                    }
+                });
+            }
+            // Add event listeners for pre-market research notes
+            document.querySelectorAll('#trading-docs-page .docs-text-input').forEach(input => {
+                input.addEventListener('input', () => { // Call updateDocsSectionCompletion on input
+                    saveState();
+                    updateDocsSectionCompletion();
+                });
+            });
         }
 
 
@@ -1903,23 +1919,16 @@
                 };
                 categories = { ...defaultCats }; 
                 categoryOrder = state.categoryOrder || Object.keys(categories); // Reset or load order
+                console.log('applyLoadedState: After clearExistingData, categoryOrder:', categoryOrder);
 
-                document.querySelectorAll('.category').forEach(el => {
-                    if (!defaultCats.hasOwnProperty(el.getAttribute('data-group'))) {
-                        el.remove(); 
-                    }
-                });
-                document.querySelectorAll('.checklist-item').forEach(el => el.remove()); 
-                document.querySelectorAll('.input').forEach(input => {
-                    input.checked = false;
-                });
+                // No need to remove individual category divs here, recreateAllCriteriaElements will handle it.
             }
 
             if (state.categories) {
                 for (const id in state.categories) {
                     if (!categories[id]) { 
                         categories[id] = state.categories[id];
-                    } else if (!categories[id].isDefault) { 
+                    } else { 
                         categories[id] = { ...categories[id], ...state.categories[id] };
                     }
                 }
@@ -1928,8 +1937,10 @@
             // Update categoryOrder from the loaded state or ensure it's initialized
             if (state.categoryOrder) {
                 categoryOrder = state.categoryOrder;
+                console.log('applyLoadedState: Applying loaded category order:', categoryOrder);
             } else if (clearExistingData || categoryOrder.length === 0) { // If clearing data or order is empty
                 categoryOrder = Object.keys(categories);
+                console.log('applyLoadedState: Resetting category order to default:', categoryOrder);
             }
             // Ensure all current categories are in the order, adding new ones to the end if necessary
             const currentCategoryIds = Object.keys(categories);
@@ -1946,22 +1957,17 @@
                 addStrategyCSS(id, customStrategies[id].color);
             }
 
-            for (const category in state.customCriteria) {
-                if (!customCriteria[category]) {
-                    customCriteria[category] = [];
-                }
-                state.customCriteria[category].forEach(item => {
-                    if (!document.getElementById(item.id)) {
-                        customCriteria[category].push(item);
-                        addCategoryDivToDOM(category, categories[category]?.name, categories[category]?.icon, categories[category]?.isDefault); 
-                        createCustomCriteriaElement(category, item.id, item.name, item.strategies, item.risk || 1.0, item.reward || 1.0, item.info || '');
-                    }
-                });
+            // Custom criteria are handled by recreateAllCriteriaElements now
+            if (state.customCriteria) {
+                customCriteria = state.customCriteria; // Overwrite or set custom criteria
+            } else if (clearExistingData) {
+                customCriteria = {}; // Ensure it's empty if clearing
             }
 
             createFilterButtons();
-            recreateAllCriteriaElements(); // This will respect the categoryOrder
+            recreateAllCriteriaElements(); // This will respect the categoryOrder and populate all criteria
 
+            // Check previously checked inputs after all elements are recreated
             document.querySelectorAll('#main-checklist-page .input').forEach(input => {
                 input.checked = false; 
             });
@@ -1986,12 +1992,11 @@
                 document.getElementById('darkModeToggle').textContent = '☀️ Light Mode';
             }
             
-            document.querySelectorAll("#main-checklist-page .input").forEach(input => {
-                input.removeEventListener("change", updateChecklistState); 
-                input.removeEventListener("change", saveState);
-                input.addEventListener("change", updateChecklistState);
-                input.addEventListener("change", saveState);
-            });
+            // Re-attach event listeners for P&L inputs (already done in loadState, but good to ensure)
+            document.getElementById('tradeSize').addEventListener('input', () => { saveState(); updateChecklistState(); });
+            document.getElementById('tickValue').addEventListener('input', () => { saveState(); updateChecklistState(); });
+            document.getElementById('futuresTickSize').addEventListener('input', () => { saveState(); updateChecklistState(); });
+            document.getElementById('entryPrice').addEventListener('input', () => { saveState(); updateChecklistState(); });
 
             document.querySelectorAll('label[data-info]').forEach(label => {
                 label.removeEventListener('mouseover', showTooltip);
@@ -1999,17 +2004,6 @@
                 label.addEventListener('mouseover', showTooltip);
                 label.addEventListener('mouseout', hideTooltip);
             });
-
-            const potentialLossElement = document.getElementById('potentialLoss');
-            const potentialProfitElement = document.getElementById('potentialProfit');
-            potentialLossElement.removeEventListener('mouseover', showTooltip);
-            potentialLossElement.removeEventListener('mouseout', hideTooltip);
-            potentialProfitElement.removeEventListener('mouseover', showTooltip);
-            potentialProfitElement.removeEventListener('mouseout', hideTooltip);
-            potentialLossElement.addEventListener('mouseover', showTooltip);
-            potentialLossElement.addEventListener('mouseout', hideTooltip);
-            potentialProfitElement.addEventListener('mouseover', showTooltip);
-            potentialProfitElement.addEventListener('mouseout', hideTooltip);
 
             const calculatedRiskElement = document.getElementById('calculated-risk');
             const calculatedRewardElement = document.getElementById('calculated-reward');
@@ -2022,7 +2016,7 @@
             calculatedRewardElement.addEventListener('mouseover', showTooltip);
             calculatedRewardElement.addEventListener('mouseout', hideTooltip);
 
-            updateChecklistState(); 
+            // updateChecklistState(); // Removed from here, called by showPage() or loadDefaultLayout()
             applyStrategyFilter(currentFilter); 
         }
 
@@ -2376,7 +2370,7 @@
                 customCriteria[category] = [];
             }
             customCriteria[category].push({ id: itemId, name, strategies: validStrategies, risk, reward, info });
-            createCustomCriteriaElement(category, itemId, name, validStrategies, risk, reward, info);
+            recreateAllCriteriaElements(); // Recreate to ensure new item is placed correctly
             saveState();
             updateChecklistState();
             closeAddEditCriteriaModal();
@@ -2419,7 +2413,7 @@
                 customCriteria[criteriaCategory] = [];
             }
             customCriteria[criteriaCategory].push({ id: itemId, name: criteriaName, strategies: validStrategies, risk: criteriaRisk, reward: criteriaReward, info: criteriaInfo });
-            createCustomCriteriaElement(criteriaCategory, itemId, criteriaName, validStrategies, criteriaRisk, criteriaReward, info);
+            recreateAllCriteriaElements(); // Recreate to ensure new item is placed correctly
             saveState();
             updateChecklistState();
             closeAddEditStrategyModal(); 
@@ -2471,66 +2465,26 @@
                 return;
             }
 
-            const inputElement = document.getElementById(itemId);
-            const labelElement = inputElement.nextElementSibling;
-            const badgesContainer = inputElement.parentElement.querySelector('.strategy-badges');
-
-            labelElement.textContent = name;
-            inputElement.setAttribute('data-strategies', validStrategies.join(','));
-            inputElement.setAttribute('data-risk', risk);
-            inputElement.setAttribute('data-reward', reward);
-            if (info) {
-                labelElement.setAttribute('data-info', info);
-            } else {
-                labelElement.removeAttribute('data-info');
-            }
-            updateBadgeDisplay(badgesContainer, validStrategies);
-
+            // Update the data in customCriteria object
             if (category !== newCategory) {
+                // Remove from old category
                 if (customCriteria[category]) {
                     customCriteria[category] = customCriteria[category].filter(item => item.id !== itemId);
-                    if (customCriteria[category].length === 0 && !categories[category].isDefault) {
-                        delete customCriteria[category];
-                        const oldCategoryDiv = document.querySelector(`.category[data-group="${category}"]`);
-                        if (oldCategoryDiv) oldCategoryDiv.remove();
-                    }
                 }
+                // Add to new category
                 if (!customCriteria[newCategory]) {
                     customCriteria[newCategory] = [];
                 }
                 customCriteria[newCategory].push({ id: itemId, name, strategies: validStrategies, risk, reward, info });
-                inputElement.parentElement.remove(); 
-                createCustomCriteriaElement(newCategory, itemId, name, validStrategies, risk, reward, info);
             } else {
-                // Check if the criteria is default or custom to decide where to update
-                const isDefaultCriteria = Object.values(defaultCriteriaData).flat().some(item => item.id === itemId);
-                if (isDefaultCriteria && !deletedDefaultCriteria.includes(itemId)) {
-                    // This case should ideally not allow editing of default criteria's core properties
-                    // other than perhaps checked state. For now, we assume it's a custom one if being edited.
-                    // Or, if we allow editing default ones, we need a different update mechanism.
-                    // For simplicity, assume if it's being saved via this flow, it's treated as custom or an override.
-                    // This part might need refinement based on how "editing default criteria" is handled.
-                     const itemIndex = (customCriteria[category] || []).findIndex(item => item.id === itemId);
-                    if (itemIndex !== -1) {
-                        customCriteria[category][itemIndex] = { id: itemId, name, strategies: validStrategies, risk, reward, info };
-                    } else { // If not in custom, it might be a default one being "customized"
-                        if (!customCriteria[category]) customCriteria[category] = [];
-                        customCriteria[category].push({ id: itemId, name, strategies: validStrategies, risk, reward, info });
-                        // If it was a default one, mark it as "deleted" from default to avoid duplication if we reset
-                        if (!deletedDefaultCriteria.includes(itemId)) deletedDefaultCriteria.push(itemId);
-                    }
-                } else {
-                    const itemIndex = (customCriteria[category] || []).findIndex(item => item.id === itemId);
-                    if (itemIndex !== -1) {
-                        customCriteria[category][itemIndex] = { id: itemId, name, strategies: validStrategies, risk, reward, info };
-                    } else { // If not found, it's a new custom criteria being added via "edit" somehow (should not happen)
-                         if (!customCriteria[category]) customCriteria[category] = [];
-                         customCriteria[category].push({ id: itemId, name, strategies: validStrategies, risk, reward, info });
-                    }
+                // Update in the same category
+                const itemIndex = (customCriteria[category] || []).findIndex(item => item.id === itemId);
+                if (itemIndex !== -1) {
+                    customCriteria[category][itemIndex] = { id: itemId, name, strategies: validStrategies, risk, reward, info };
                 }
             }
 
-
+            recreateAllCriteriaElements(); // Recreate to ensure changes are reflected in DOM
             saveState();
             updateChecklistState();
             closeAddEditCriteriaModal();
@@ -2570,17 +2524,7 @@
                     delete customCriteria[category];
                 }
             }
-
-            document.querySelectorAll(`.checklist-item input[data-strategies*="${deletedStrategyId}"]`).forEach(input => {
-                const currentStrategies = input.getAttribute('data-strategies').split(',').filter(s => s !== deletedStrategyId);
-                if (currentStrategies.length > 0) {
-                    input.setAttribute('data-strategies', currentStrategies.join(','));
-                    const badges = input.parentElement.querySelector('.strategy-badges');
-                    updateBadgeDisplay(badges, currentStrategies);
-                } else {
-                    input.parentElement.remove();
-                }
-            });
+            recreateAllCriteriaElements(); // Recreate all elements to reflect changes
             updateChecklistState();
         }
         
@@ -2614,45 +2558,64 @@
             const checkedIds = Array.from(document.querySelectorAll('#main-checklist-page .input:checked')).map(input => input.id);
             const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
             
-            // Temporarily detach action buttons and filter details to re-append them later
+            // Temporarily store action buttons and filter details
             const actionButtons = checklistContainer.querySelector('.action-buttons');
             const filterDetails = checklistContainer.querySelector('.filter-details');
-            if(actionButtons) actionButtons.remove();
-            if(filterDetails) filterDetails.remove();
-
-            // Remove all existing category divs
-            checklistContainer.querySelectorAll('.category').forEach(item => item.remove());
-
-            // Re-add categories based on the categoryOrder array
-            categoryOrder.forEach(categoryId => {
-                if (categories[categoryId]) { 
-                    const categoryData = categories[categoryId];
-                    addCategoryDivToDOM(categoryId, categoryData.name, categoryData.icon, categoryData.isDefault);
-                }
-            });
             
-            // Re-append action buttons and filter details at the top
-            if(filterDetails) checklistContainer.prepend(filterDetails); // Filters below actions
-            if(actionButtons) checklistContainer.prepend(actionButtons); // Actions at the very top
+            // Create a document fragment to build the new structure efficiently
+            const fragment = document.createDocumentFragment();
 
+            // Append action buttons and filter details to the fragment first
+            if (actionButtons) fragment.appendChild(actionButtons);
+            if (filterDetails) fragment.appendChild(filterDetails);
 
-            // Populate categories with their criteria (default and custom)
+            // Create and append category divs in the specified order
             categoryOrder.forEach(categoryId => {
-                if (defaultCriteriaData[categoryId]) {
-                    defaultCriteriaData[categoryId].forEach(item => {
-                        if (!deletedDefaultCriteria.includes(item.id)) {
-                            createCustomCriteriaElement(categoryId, item.id, item.name, item.strategies, item.risk, item.reward, item.info);
-                        }
-                    });
-                }
-                if (customCriteria[categoryId]) {
-                    customCriteria[categoryId].forEach(item => {
-                        createCustomCriteriaElement(categoryId, item.id, item.name, item.strategies, item.risk, item.reward, item.info);
-                    }
-                );
+                if (categories[categoryId]) { // Only create if the category still exists
+                    const categoryData = categories[categoryId];
+                    // Create a new category div 
+                    let categoryDiv = document.createElement('div');
+                    categoryDiv.className = `category ${categoryData.isDefault ? '' : 'custom-criteria'}`;
+                    categoryDiv.setAttribute('data-group', categoryId);
+                    categoryDiv.setAttribute('draggable', true);
+                    categoryDiv.innerHTML = `
+                        <h3>
+                            <div class="category-header">
+                                <span class="category-icon">${categoryData.icon}</span>${categoryData.name}
+                            </div>
+                            <button class="add-criteria-mini" onclick="openAddCriteriaModal('${categoryId}')" title="Add criteria to ${categoryData.name}">+</button>
+                        </h3>
+                    `;
+                    categoryDiv.addEventListener('dragstart', handleDragStart);
+                    categoryDiv.addEventListener('dragend', handleDragEnd);
+                    fragment.appendChild(categoryDiv);
                 }
             });
 
+            // Clear the existing content of the checklist container before re-appending
+            checklistContainer.innerHTML = '';
+            checklistContainer.appendChild(fragment); // Append the entire fragment
+
+            // Now populate the categories with their criteria (default and custom)
+            categoryOrder.forEach(categoryId => {
+                const currentCategoryDiv = document.querySelector(`#main-checklist-page .category[data-group="${categoryId}"]`);
+                if (currentCategoryDiv) { // Ensure the category div exists (it might have been deleted)
+                    if (defaultCriteriaData[categoryId]) {
+                        defaultCriteriaData[categoryId].forEach(item => {
+                            if (!deletedDefaultCriteria.includes(item.id)) {
+                                createCriteriaElementInDiv(currentCategoryDiv, item.id, item.name, item.strategies, item.risk, item.reward, item.info, true); // Pass isDefault = true
+                            }
+                        });
+                    }
+                    if (customCriteria[categoryId]) {
+                        customCriteria[categoryId].forEach(item => {
+                            createCriteriaElementInDiv(currentCategoryDiv, item.id, item.name, item.strategies, item.risk, item.reward, item.info, false); // Pass isDefault = false
+                        });
+                    }
+                }
+            });
+
+            // Re-check previously checked items
             checkedIds.forEach(id => {
                 const input = document.getElementById(id);
                 if (input) {
@@ -2660,6 +2623,7 @@
                 }
             });
 
+            // Re-attach all necessary event listeners for dynamically created/recreated elements
             document.querySelectorAll("#main-checklist-page .input").forEach(input => {
                 input.removeEventListener("change", updateChecklistState);
                 input.removeEventListener("change", saveState);
@@ -2672,104 +2636,63 @@
                 label.addEventListener('mouseover', showTooltip);
                 label.addEventListener('mouseout', hideTooltip);
             });
-        }
-
-
-        /**
-         * Creates a new category div in the DOM if it doesn't exist, or updates its header.
-         * Appends it to the main checklist container.
-         * @param {string} categoryId The ID of the category.
-         * @param {string} name The display name of the category.
-         * @param {string} icon The emoji icon for the category.
-         * @param {boolean} isDefault Whether this is a default category.
-         * @returns {HTMLElement} The created or existing category div.
-         */
-        function addCategoryDivToDOM(categoryId, name, icon, isDefault) {
-            let categoryDiv = document.querySelector(`#main-checklist-page .category[data-group="${categoryId}"]`);
-            const checklistContainer = document.querySelector('#main-checklist-page .checklist-container'); 
-
-            if (!categoryDiv) {
-                categoryDiv = document.createElement('div');
-                categoryDiv.className = `category ${isDefault ? '' : 'custom-criteria'}`; 
-                categoryDiv.setAttribute('data-group', categoryId);
-                categoryDiv.setAttribute('draggable', true); 
-
-                categoryDiv.innerHTML = `
-                    <h3>
-                        <div class="category-header">
-                            <span class="category-icon">${icon}</span>${name}
-                        </div>
-                        <button class="add-criteria-mini" onclick="openAddCriteriaModal('${categoryId}')" title="Add criteria to ${name}">+</button>
-                    </h3>
-                `;
-                
-                categoryDiv.addEventListener('dragstart', handleDragStart);
-                categoryDiv.addEventListener('dragend', handleDragEnd);
-                
-                // Find the correct place to insert based on categoryOrder, if possible,
-                // or just append if it's a new category not yet in order (will be fixed on next save/load).
-                // For simplicity during initial creation, we append. Order is primarily enforced by recreateAll.
-                checklistContainer.appendChild(categoryDiv);
-
-            } else {
-                const header = categoryDiv.querySelector('.category-header');
-                if (header) {
-                    header.innerHTML = `<span class="category-icon">${icon}</span>${name}`;
+            // Re-attach edit/delete buttons for custom criteria (only for custom criteria)
+            document.querySelectorAll('#main-checklist-page .checklist-item').forEach(itemDiv => {
+                const input = itemDiv.querySelector('input[type="checkbox"]');
+                // Check if it's a custom criteria based on its ID prefix
+                if (input && input.id.startsWith('custom-')) { 
+                    const categoryId = itemDiv.closest('.category').dataset.group; // Get category from parent
+                    let editBtn = itemDiv.querySelector('.edit-criteria-btn');
+                    let deleteBtn = itemDiv.querySelector('.delete-criteria-btn');
+                    
+                    // Ensure buttons exist, if not, create them (should be rare with recreateAllCriteriaElements)
+                    if (!editBtn) {
+                        editBtn = document.createElement('button');
+                        editBtn.className = 'edit-criteria-btn';
+                        editBtn.textContent = '✏️';
+                        editBtn.title = 'Edit this criteria';
+                        itemDiv.appendChild(editBtn);
+                    }
+                    if (!deleteBtn) {
+                        deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'delete-criteria-btn';
+                        deleteBtn.textContent = 'x';
+                        deleteBtn.title = 'Delete this criteria';
+                        itemDiv.appendChild(deleteBtn);
+                    }
+                    editBtn.onclick = () => openEditCriteriaModal(input.id, categoryId);
+                    deleteBtn.onclick = () => deleteCriteria(input.id, categoryId);
                 }
-                categoryDiv.setAttribute('draggable', true); 
-            }
-            return categoryDiv;
+            });
+            console.log('recreateAllCriteriaElements: DOM updated, categoryOrder:', categoryOrder);
         }
 
-
         /**
-         * Creates a custom criteria element and appends it to the correct category div.
-         * @param {string} categoryId The ID of the category to append to.
+         * Creates a criteria element and appends it to a specific category div.
+         * This function is now used for both default and custom criteria during recreation.
+         * @param {HTMLElement} parentDiv The category div element to append to.
          * @param {string} itemId The unique ID for the criteria input.
          * @param {string} name The display name of the criteria.
-         * @param {Array<string>} strategiesAn An array of strategy IDs.
+         * @param {Array<string>} strategies An array of strategy IDs.
          * @param {number} risk The risk value.
          * @param {number} reward The reward value.
          * @param {string} info The tooltip information.
+         * @param {boolean} isDefault Whether this is a default criteria (determines if edit/delete buttons are shown).
          */
-        function createCustomCriteriaElement(categoryId, itemId, name, itemStrategies, risk, reward, info) { // Renamed strategies to itemStrategies
-            let categoryDiv = document.querySelector(`#main-checklist-page .category[data-group="${categoryId}"]`);
-            if (!categoryDiv) {
-                const categoryData = categories[categoryId] || { name: categoryId.charAt(0).toUpperCase() + categoryId.slice(1).replace('-', ' '), icon: '❓', isDefault: false };
-                categoryDiv = addCategoryDivToDOM(categoryId, categoryData.name, categoryData.icon, categoryData.isDefault);
-            }
-
-            const existingItem = document.getElementById(itemId);
-            if (existingItem) {
-                const labelElement = existingItem.nextElementSibling;
-                const badgesContainer = existingItem.parentElement.querySelector('.strategy-badges');
-                labelElement.textContent = name;
-                existingItem.setAttribute('data-strategies', itemStrategies.join(','));
-                existingItem.setAttribute('data-risk', risk);
-                existingItem.setAttribute('data-reward', reward);
-                if (info) {
-                    labelElement.setAttribute('data-info', info);
-                } else {
-                    labelElement.removeAttribute('data-info');
-                }
-                updateBadgeDisplay(badgesContainer, itemStrategies);
-                return;
-            }
-
+        function createCriteriaElementInDiv(parentDiv, itemId, name, strategies, risk, reward, info, isDefault) { 
             const itemDiv = document.createElement('div');
             itemDiv.className = 'checklist-item';
             itemDiv.innerHTML = `
-                <input type="checkbox" class="input" data-tag="${categoryId}" id="${itemId}" data-strategies="${itemStrategies.join(',')}" data-risk="${risk}" data-reward="${reward}">
+                <input type="checkbox" class="input" data-tag="${parentDiv.dataset.group}" id="${itemId}" data-strategies="${strategies.join(',')}" data-risk="${risk}" data-reward="${reward}">
                 <label for="${itemId}" ${info ? `data-info="${info}"` : ''}>${name}</label>
                 <div class="strategy-badges"></div>
-                <button class="edit-criteria-btn" onclick="openEditCriteriaModal('${itemId}', '${categoryId}')" title="Edit this criteria">✏️</button>
-                <button class="delete-criteria-btn" onclick="deleteCriteria('${itemId}', '${categoryId}')" title="Delete this criteria">x</button>
+                ${!isDefault ? `<button class="edit-criteria-btn" onclick="openEditCriteriaModal('${itemId}', '${parentDiv.dataset.group}')" title="Edit this criteria">✏️</button>` : ''}
+                ${!isDefault ? `<button class="delete-criteria-btn" onclick="deleteCriteria('${itemId}', '${parentDiv.dataset.group}')" title="Delete this criteria">x</button>` : ''}
             `;
-            // Append to the category div, not the main checklist container
-            categoryDiv.appendChild(itemDiv);
+            parentDiv.appendChild(itemDiv);
 
 
-            updateBadgeDisplay(itemDiv.querySelector('.strategy-badges'), itemStrategies);
+            updateBadgeDisplay(itemDiv.querySelector('.strategy-badges'), strategies);
 
             const newCheckbox = itemDiv.querySelector(`#${itemId}`);
             newCheckbox.addEventListener('change', updateChecklistState);
@@ -2795,8 +2718,6 @@
                 () => { // onConfirm
                     const itemElement = document.getElementById(itemId);
                     if (itemElement && itemElement.parentElement) {
-                        itemElement.parentElement.remove(); 
-
                         const isDefault = Object.values(defaultCriteriaData).flat().some(item => item.id === itemId);
                         if (isDefault) {
                             if (!deletedDefaultCriteria.includes(itemId)) {
@@ -2805,16 +2726,13 @@
                         } else {
                             if (customCriteria[categoryId]) {
                                 customCriteria[categoryId] = customCriteria[categoryId].filter(item => item.id !== itemId);
-                                if (customCriteria[categoryId].length === 0 && categories[categoryId] && !categories[categoryId].isDefault) { // Check if category exists before accessing isDefault
-                                    // No need to delete from `categories` here, only from `customCriteria`
-                                    // The category div removal is handled by recreateAllCriteriaElements if it becomes truly empty
-                                    // For now, just ensure customCriteria[categoryId] is cleaned up.
-                                    // If it's an empty custom category, it might visually disappear if it has no criteria.
-                                    // The actual category definition in `categories` persists until explicitly deleted via Manage Categories.
-                                    // delete customCriteria[categoryId]; // This was too aggressive, let recreate handle visual emptiness
+                                if (customCriteria[categoryId].length === 0 && categories[categoryId] && !categories[categoryId].isDefault) { 
+                                    // If a custom category becomes empty of custom criteria, it will visually disappear
+                                    // when recreateAllCriteriaElements is called next.
                                 }
                             }
                         }
+                        recreateAllCriteriaElements(); // Recreate all elements to reflect deletion
                         saveState();
                         updateChecklistState();
                         showModal("Success", "Criteria deleted successfully!", null, null, false, true);
@@ -2843,11 +2761,13 @@
 
             const morningCheckboxes = morningChecklistDiv ? morningChecklistDiv.querySelectorAll('.docs-input') : [];
             const checkedMorningCheckboxes = morningChecklistDiv ? morningChecklistDiv.querySelectorAll('.docs-input:checked') : [];
-            const preMarketCheckboxes = preMarketResearchDiv ? preMarketResearchDiv.querySelectorAll('.docs-input') : [];
-            const checkedPreMarketCheckboxes = preMarketResearchDiv ? preMarketResearchDiv.querySelectorAll('.docs-input:checked') : [];
+            
+            // For pre-market research, check if all text inputs are filled
+            const preMarketTextInputs = preMarketResearchDiv ? preMarketResearchDiv.querySelectorAll('.docs-text-input') : [];
+            const allPreMarketTextInputsFilled = Array.from(preMarketTextInputs).every(input => input.value.trim() !== '');
 
             const isMorningChecklistComplete = morningCheckboxes.length > 0 && morningCheckboxes.length === checkedMorningCheckboxes.length;
-            const isPreMarketResearchComplete = preMarketCheckboxes.length > 0 && preMarketCheckboxes.length === checkedPreMarketCheckboxes.length;
+            const isPreMarketResearchComplete = preMarketTextInputs.length > 0 && allPreMarketTextInputsFilled; // Check text inputs for completion
 
             if (isMorningChecklistComplete && isPreMarketResearchComplete) {
                 preparationBonusActive = true;
@@ -2855,12 +2775,19 @@
 
 
             if (checkedItems.length === 0) {
+                // Ensure elements exist before trying to set their textContent
+                const calculatedRiskElement = document.getElementById('calculated-risk');
+                const calculatedRewardElement = document.getElementById('calculated-reward');
+                const suggestedStopElement = document.getElementById('suggested-stop');
+                const suggestedTargetElement = document.getElementById('suggested-target');
+
+                if (calculatedRiskElement) calculatedRiskElement.textContent = 'N/A';
+                if (calculatedRewardElement) calculatedRewardElement.textContent = 'N/A';
+                if (suggestedStopElement) suggestedStopElement.textContent = 'Based on selected criteria';
+                if (suggestedTargetElement) suggestedTargetElement.textContent = 'Based on selected criteria';
+
                 updateResult("Select criteria to identify your trade setup...", "waiting");
                 updateRiskRewardDisplay(0, 0); 
-                document.getElementById('calculated-risk').textContent = 'N/A';
-                document.getElementById('calculated-reward').textContent = 'N/A';
-                document.getElementById('suggested-stop').textContent = 'Based on selected criteria';
-                document.getElementById('suggested-target').textContent = 'Based on selected criteria';
                 updatePnLDisplay(0, 0); 
                 return;
             }
@@ -2924,14 +2851,14 @@
                 return;
             }
 
-            if (ties.length > 1 && !ties.includes('both')) {
+            if (ties.length > 1) { // Removed check for !ties.includes('both')
                 const tiedNames = ties.map(s => {
                     const strategy = strategies[s] || customStrategies[s];
                     return `${strategy.icon} ${strategy.name}`;
                 }).join(' + ');
                 tradeType = `⚖️ Mixed Setup: ${tiedNames}`;
                 resultClass = "warning";
-            } else if (dominantStrategy && dominantStrategy !== 'both') {
+            } else if (dominantStrategy) { // Simplified condition
                 const strategy = strategies[dominantStrategy] || customStrategies[dominantStrategy];
                 tradeType = `${strategy.icon} ${strategy.name} Setup Ready`;
             } else {
@@ -2974,20 +2901,20 @@
             const suggestedStopElement = document.getElementById('suggested-stop');
             const suggestedTargetElement = document.getElementById('suggested-target');
 
-            calculatedRiskElement.textContent = totalRisk.toFixed(2);
-            calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
+            if (calculatedRiskElement) calculatedRiskElement.textContent = totalRisk.toFixed(2);
+            if (calculatedRewardElement) calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
 
-            calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
-            calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
+            if (calculatedRiskElement) calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
+            if (calculatedRewardElement) calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
 
 
             if (dominantStrategy) {
                 const strategyObj = strategies[dominantStrategy] || customStrategies[dominantStrategy];
-                suggestedStopElement.textContent = strategyObj.defaultStop;
-                suggestedTargetElement.textContent = strategyObj.defaultTarget;
+                if (suggestedStopElement) suggestedStopElement.textContent = strategyObj.defaultStop;
+                if (suggestedTargetElement) suggestedTargetElement.textContent = strategyObj.defaultTarget;
             } else {
-                suggestedStopElement.textContent = 'Based on selected criteria';
-                suggestedTargetElement.textContent = 'Based on selected criteria';
+                if (suggestedStopElement) suggestedStopElement.textContent = 'Based on selected criteria';
+                if (suggestedTargetElement) suggestedTargetElement.textContent = 'Based on selected criteria';
             }
 
             calculatePnL(totalRisk, displayReward); // Use displayReward here
@@ -3045,38 +2972,42 @@
 
             console.log('updatePnLDisplay called with (final values):', { loss, profit });
 
-            potentialLossElement.textContent = loss > 0 ? `-$${loss.toFixed(2)}` : 'N/A';
-            potentialProfitElement.textContent = profit > 0 ? `+$${profit.toFixed(2)}` : 'N/A';
+            if (potentialLossElement) potentialLossElement.textContent = loss > 0 ? `-$${loss.toFixed(2)}` : 'N/A';
+            if (potentialProfitElement) potentialProfitElement.textContent = profit > 0 ? `+$${profit.toFixed(2)}` : 'N/A';
 
-            potentialLossElement.className = loss > 0 ? 'loss' : '';
-            potentialProfitElement.className = profit > 0 ? 'profit' : '';
+            if (potentialLossElement) potentialLossElement.className = loss > 0 ? 'loss' : '';
+            if (potentialProfitElement) potentialProfitElement.className = profit > 0 ? 'profit' : '';
 
             // The data-info for potentialLoss and potentialProfit should reflect the *actual* totalRisk and totalReward values passed in
             // which for totalReward, will now be the bonus-adjusted value.
             if (loss > 0) {
-                potentialLossElement.setAttribute('data-info', `Calculation: (Total Risk / Futures Tick Size) * Tick Value * Trade Size\n= (${totalRisk.toFixed(2)} / ${futuresTickSize.toFixed(2)}) * ${tickValue.toFixed(2)} * ${tradeSize.toFixed(2)}\n= $${loss.toFixed(2)}`);
+                if (potentialLossElement) potentialLossElement.setAttribute('data-info', `Calculation: (Total Risk / Futures Tick Size) * Tick Value * Trade Size\n= (${totalRisk.toFixed(2)} / ${futuresTickSize.toFixed(2)}) * ${tickValue.toFixed(2)} * ${tradeSize.toFixed(2)}\n= $${loss.toFixed(2)}`);
             } else {
-                potentialLossElement.removeAttribute('data-info');
+                if (potentialLossElement) potentialLossElement.removeAttribute('data-info');
             }
 
             if (profit > 0) {
-                potentialProfitElement.setAttribute('data-info', `Calculation: (Total Reward / Futures Tick Size) * Tick Value * Trade Size\n= (${totalReward.toFixed(2)} / ${futuresTickSize.toFixed(2)}) * ${tickValue.toFixed(2)} * ${tradeSize.toFixed(2)}\n= $${profit.toFixed(2)}`);
+                if (potentialProfitElement) potentialProfitElement.setAttribute('data-info', `Calculation: (Total Reward / Futures Tick Size) * Tick Value * Trade Size\n= (${totalReward.toFixed(2)} / ${futuresTickSize.toFixed(2)}) * ${tickValue.toFixed(2)} * ${tradeSize.toFixed(2)}\n= $${profit.toFixed(2)}`);
             } else {
-                potentialProfitElement.removeAttribute('data-info');
+                if (potentialProfitElement) potentialProfitElement.removeAttribute('data-info');
             }
 
-            potentialLossElement.removeEventListener('mouseover', showTooltip);
-            potentialLossElement.removeEventListener('mouseout', hideTooltip);
-            potentialProfitElement.removeEventListener('mouseover', showTooltip);
-            potentialProfitElement.removeEventListener('mouseout', hideTooltip);
+            if (potentialLossElement) {
+                potentialLossElement.removeEventListener('mouseover', showTooltip);
+                potentialLossElement.removeEventListener('mouseout', hideTooltip);
+            }
+            if (potentialProfitElement) {
+                potentialProfitElement.removeEventListener('mouseover', showTooltip);
+                potentialProfitElement.removeEventListener('mouseout', hideTooltip);
+            }
 
             if (loss > 0) {
-                potentialLossElement.addEventListener('mouseover', showTooltip);
-                potentialLossElement.addEventListener('mouseout', hideTooltip);
+                if (potentialLossElement) potentialLossElement.addEventListener('mouseover', showTooltip);
+                if (potentialLossElement) potentialLossElement.addEventListener('mouseout', hideTooltip);
             }
             if (profit > 0) {
-                potentialProfitElement.addEventListener('mouseover', showTooltip);
-                potentialProfitElement.addEventListener('mouseout', hideTooltip);
+                if (potentialProfitElement) potentialProfitElement.addEventListener('mouseover', showTooltip);
+                if (potentialProfitElement) potentialProfitElement.addEventListener('mouseout', hideTooltip);
             }
         }
 
@@ -3088,8 +3019,10 @@
          */
         function updateResult(text, className) {
             const result = document.getElementById("result");
-            result.textContent = text;
-            result.className = `result ${className}`;
+            if (result) {
+                result.textContent = text;
+                result.className = `result ${className}`;
+            }
         }
 
         /**
@@ -3099,7 +3032,9 @@
          */
         function updateRiskRewardDisplay(totalRisk, totalReward) { // totalReward here is already the potentially bonus-adjusted value
             const rrDisplay = document.getElementById('risk-reward-display');
-            const rrSpan = rrDisplay.querySelector('span');
+            const rrSpan = rrDisplay ? rrDisplay.querySelector('span') : null;
+
+            if (!rrDisplay || !rrSpan) return;
 
             if (totalRisk === 0 && totalReward === 0) {
                 rrSpan.textContent = 'N/A';
@@ -3124,6 +3059,8 @@
          */
         function createFilterButtons() {
             const filterContainer = document.getElementById('strategy-filters');
+            if (!filterContainer) return; // Ensure container exists
+
             filterContainer.innerHTML = ''; 
 
             const allButton = document.createElement('button');
@@ -3133,13 +3070,13 @@
             filterContainer.appendChild(allButton);
 
             for (const id in strategies) {
-                if (id !== 'both') { 
+                // if (id !== 'both') { // 'both' strategy is now removed from the main strategies object
                     const button = document.createElement('button');
                     button.className = `filter-button ${currentFilter === id ? 'active' : ''}`;
                     button.textContent = `${strategies[id].icon} ${strategies[id].name}`;
                     button.onclick = () => applyStrategyFilter(id);
                     filterContainer.appendChild(button);
-                }
+                // }
             }
 
             for (const id in customStrategies) {
@@ -3169,7 +3106,7 @@
                 if (filterStrategyId === 'all') {
                     item.style.display = 'flex'; 
                 } else {
-                    if (itemStrategies.includes(filterStrategyId) || itemStrategies.includes('both')) {
+                    if (itemStrategies.includes(filterStrategyId)) { // Removed '|| itemStrategies.includes('both')'
                         item.style.display = 'flex'; 
                     } else {
                         item.style.display = 'none'; 
@@ -3241,23 +3178,27 @@
         const exportSubTabContent = document.getElementById('exportSubTab');
         const importSubTabContent = document.getElementById('importSubTab');
 
-        const generateCodeBtnLayout = document.getElementById('generateCodeBtnLayout'); // Corrected ID
-        const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout'); // Corrected ID
-        const copyCodeBtnLayout = document.getElementById('copyCodeBtnLayout');       // Corrected ID
-        const importCodeInputLayout = document.getElementById('importCodeInputLayout'); // Corrected ID
-        const importCodeBtnLayout = document.getElementById('importCodeBtnLayout');   // Corrected ID
-
 
         function openManageLayoutsModal() {
             manageLayoutsModal.classList.remove('hidden');
             showLayoutTab('saved'); 
             
+            // Re-attach listeners for sub-tabs within Share/Import
             exportSubTabButton.removeEventListener('click', handleExportSubTabClick); 
             importSubTabButton.removeEventListener('click', handleImportSubTabClick); 
             exportSubTabButton.addEventListener('click', handleExportSubTabClick);
             importSubTabButton.addEventListener('click', handleImportSubTabClick);
             
-            showSubTab('export'); 
+            // Re-attach listeners for main tabs
+            savedLayoutsTabButton.removeEventListener('click', () => showLayoutTab('saved'));
+            shareImportLayoutTabButton.removeEventListener('click', () => showLayoutTab('share-import'));
+            defaultLayoutTabButton.removeEventListener('click', () => showLayoutTab('default'));
+
+            savedLayoutsTabButton.addEventListener('click', () => showLayoutTab('saved'));
+            shareImportLayoutTabButton.addEventListener('click', () => showLayoutTab('share-import'));
+            defaultLayoutTabButton.addEventListener('click', () => showLayoutTab('default'));
+
+            showSubTab('export'); // Default to export sub-tab when opening Share/Import
         }
         // Helper functions to avoid anonymous functions for removal
         function handleExportSubTabClick() { showSubTab('export'); }
@@ -3266,6 +3207,8 @@
 
         function closeManageLayoutsModal() {
             manageLayoutsModal.classList.add('hidden');
+            const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
+            const importCodeInputLayout = document.getElementById('importCodeInputLayout');
             if(shareCodeOutputLayout) shareCodeOutputLayout.value = ''; 
             if(importCodeInputLayout) importCodeInputLayout.value = ''; 
         }
@@ -3274,7 +3217,7 @@
             manageLayoutsModal.querySelectorAll('[data-layout-tab]').forEach(btn => btn.classList.remove('active'));
             manageLayoutsModal.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
-                content.style.display = 'none'; 
+                content.style.display = 'none'; // Ensure it's hidden
             });
 
             const selectedButton = manageLayoutsModal.querySelector(`[data-layout-tab="${tabName}"]`);
@@ -3286,7 +3229,7 @@
             if (selectedButton) selectedButton.classList.add('active');
             if (selectedContent) {
                 selectedContent.classList.add('active');
-                selectedContent.style.display = 'block'; 
+                selectedContent.style.display = 'block'; // Ensure it's displayed
             }
 
             if (tabName === 'saved') populateSavedLayoutsList();
@@ -3297,7 +3240,7 @@
             shareImportLayoutTabContent.querySelectorAll('[data-sub-tab]').forEach(btn => btn.classList.remove('active'));
             shareImportLayoutTabContent.querySelectorAll('.sub-tab-content').forEach(content => {
                 content.classList.remove('active');
-                content.style.display = 'none'; 
+                content.style.display = 'none'; // Ensure it's hidden
             });
 
             const selectedButton = shareImportLayoutTabContent.querySelector(`[data-sub-tab="${tabName}"]`);
@@ -3306,7 +3249,7 @@
             if (selectedButton) selectedButton.classList.add('active');
             if (selectedContent) {
                 selectedContent.classList.add('active');
-                selectedContent.style.display = 'block'; 
+                selectedContent.style.display = 'block'; // Ensure it's displayed
             }
         }
 
@@ -3321,6 +3264,7 @@
             };
             const jsonString = JSON.stringify(shareableState);
             const compressed = LZString.compressToBase64(jsonString);
+            const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
             shareCodeOutputLayout.value = compressed; // Use correct ID
             shareCodeOutputLayout.select(); 
             shareCodeOutputLayout.setSelectionRange(0, 99999); 
@@ -3328,6 +3272,7 @@
         }
 
         function copyShareCode() {
+            const shareCodeOutputLayout = document.getElementById('shareCodeOutputLayout');
             shareCodeOutputLayout.select(); // Use correct ID
             shareCodeOutputLayout.setSelectionRange(0, 99999); 
             try {
@@ -3339,6 +3284,7 @@
         }
 
         function triggerImportSettings() {
+            const importCodeInputLayout = document.getElementById('importCodeInputLayout');
             const encodedString = importCodeInputLayout.value.trim(); // Use correct ID
             if (!encodedString) {
                 showModal("No Code", "Please paste a share code to import.", null, null, false, true);
@@ -3483,6 +3429,7 @@
                 customCriteria = {}; 
                 deletedDefaultCriteria = []; 
                 
+                // Reset categories to their immutable default state
                 categories = {
                     'levels': { name: 'Levels', icon: '📊', isDefault: true },
                     'volume': { name: 'Volume Analysis', icon: '📈', isDefault: true },
@@ -3494,10 +3441,11 @@
                     'chart-patterns': { name: 'Chart Patterns', icon: '📈', isDefault: true }
                 };
                 categoryOrder = Object.keys(categories); // Reset order to default
+                console.log('loadDefaultLayout: Resetting category order to default:', categoryOrder);
 
                 recreateAllCriteriaElements(); 
                 saveState(); 
-                updateChecklistState();
+                updateChecklistState(); // Call update after default load
                 if (!isInitialLoad) { 
                     showModal("Success", "Default layout loaded!", null, null, false, true);
                 }
@@ -3531,7 +3479,7 @@
                         <span class="category-icon">${category.icon}</span>
                         <label style="flex-grow: 1;">${category.name} (${id}) ${category.isDefault ? '(Built-in)' : '(Custom)'}</label>
                         <button class="edit-criteria-btn" onclick="openEditCategoryModal('${id}')" title="Edit this category">✏️</button>
-                        ${!category.isDefault ? `<button class="delete-criteria-btn" onclick="confirmDeleteCategory('${id}')" title="Delete this category">x</button>` : ''}
+                        <button class="delete-criteria-btn" onclick="confirmDeleteCategory('${id}')" title="Delete this category">x</button>
                     `;
                     categoryListContainer.appendChild(categoryDiv);
                 }
@@ -3596,6 +3544,7 @@
             categories[id] = { name, icon, isDefault: false };
             if (!categoryOrder.includes(id)) { // Add to order if not already there
                 categoryOrder.push(id);
+                console.log('saveNewCategory: Added new category to order:', categoryOrder);
             }
             saveState();
             closeAddEditCategoryModal();
@@ -3621,20 +3570,30 @@
 
         function confirmDeleteCategory(categoryId) {
             const category = categories[categoryId];
-            if (!category || category.isDefault) { // Also check if category exists
-                showModal("Error", "Built-in categories cannot be deleted or category not found.", null, null, false, true);
+            if (!category) { // Check if category exists
+                showModal("Error", "Category not found.", null, null, false, true);
                 return;
             }
 
             showModal(
                 "Confirm Deletion",
-                `Are you sure you want to delete the custom category "${category.name}"? This will also delete all custom criteria within this category. This cannot be undone.`,
+                `Are you sure you want to delete the category "${category.name}"? This will also delete all custom criteria within this category. This cannot be undone.`,
                 () => { // onConfirm
+                    // If it's a default category, mark its criteria as deleted
+                    if (category.isDefault && defaultCriteriaData[categoryId]) {
+                        defaultCriteriaData[categoryId].forEach(item => {
+                            if (!deletedDefaultCriteria.includes(item.id)) {
+                                deletedDefaultCriteria.push(item.id);
+                            }
+                        });
+                    }
+
                     delete categories[categoryId]; 
                     if (customCriteria[categoryId]) {
                         delete customCriteria[categoryId]; 
                     }
                     categoryOrder = categoryOrder.filter(id => id !== categoryId); // Remove from order
+                    console.log('confirmDeleteCategory: New category order after deletion:', categoryOrder);
                     saveState();
                     closeManageCategoriesModal(); 
                     showModal("Success", `Category "${category.name}" and its criteria deleted!`, null, null, false, true);
@@ -3686,24 +3645,35 @@
             const afterElement = getDragAfterElement(e.clientY);
             const container = document.querySelector('#main-checklist-page .checklist-container');
             const actionButtons = container.querySelector('.action-buttons'); // Get action buttons to ensure placeholder isn't inserted before them
+            const filterDetails = container.querySelector('.filter-details'); // Get filter details
 
-            if (afterElement == null) { // Dropping at the end
-                // Ensure placeholder is not inserted before action buttons if they are at the top
-                if (!container.contains(placeholder) || container.lastChild !== placeholder) {
-                     container.appendChild(placeholder);
+            // Determine insertion point
+            let insertBeforeElement = null;
+            if (afterElement) {
+                insertBeforeElement = afterElement;
+            } else {
+                // If no specific element to drop after, try to append at the end of categories
+                const lastCategory = container.querySelector('.category:last-of-type');
+                if (lastCategory) {
+                    insertBeforeElement = lastCategory.nextSibling;
+                } else if (filterDetails) {
+                    insertBeforeElement = filterDetails.nextSibling; // After filters if no categories exist
+                } else if (actionButtons) {
+                    insertBeforeElement = actionButtons.nextSibling; // After action buttons if no filters/categories exist
                 }
-            } else { // Dropping before 'afterElement'
-                // Ensure placeholder is not inserted before action buttons
-                if (afterElement === actionButtons || (actionButtons && actionButtons.contains(afterElement))) {
-                    // If trying to drop before action buttons, append after them or at the start of categories
-                    if (actionButtons && actionButtons.nextSibling) {
-                        container.insertBefore(placeholder, actionButtons.nextSibling);
-                    } else {
-                        container.appendChild(placeholder); // Fallback
-                    }
-                } else if (!container.contains(placeholder) || placeholder.nextSibling !== afterElement) {
-                    container.insertBefore(placeholder, afterElement);
-                }
+            }
+
+            // Ensure placeholder is not inserted before action buttons or filter details
+            if (actionButtons && insertBeforeElement && (actionButtons === insertBeforeElement || actionButtons.contains(insertBeforeElement))) {
+                insertBeforeElement = actionButtons.nextSibling;
+            }
+            if (filterDetails && insertBeforeElement && (filterDetails === insertBeforeElement || filterDetails.contains(insertBeforeElement))) {
+                insertBeforeElement = filterDetails.nextSibling;
+            }
+
+
+            if (!container.contains(placeholder) || placeholder.nextSibling !== insertBeforeElement) {
+                container.insertBefore(placeholder, insertBeforeElement);
             }
         }
         
@@ -3733,12 +3703,15 @@
             }
             
             const newOrder = [];
-            const categoryElements = document.querySelectorAll('#main-checklist-page .checklist-container > .category'); // Select only direct children categories
+            // Select only direct children categories to get the new order
+            const categoryElements = document.querySelectorAll('#main-checklist-page .checklist-container > .category'); 
             categoryElements.forEach(catEl => {
                 newOrder.push(catEl.dataset.group);
             });
             categoryOrder = newOrder;
-            saveState(); 
+            console.log('handleDropOnContainer: New category order after drop:', categoryOrder);
+            recreateAllCriteriaElements(); // Recreate to ensure correct order is reflected and listeners are re-attached
+            saveState(); // Save the new order
         }
 
         // --- Page Navigation Functions ---
@@ -3756,6 +3729,7 @@
 
             if (pageId === 'main-checklist-page') {
                 document.getElementById('mainChecklistNavBtn').classList.add('active');
+                updateChecklistState(); // Call update here when main page is shown
             } else if (pageId === 'trading-docs-page') {
                 document.getElementById('tradingDocsNavBtn').classList.add('active');
                 updateDocsSectionCompletion(); // Update completion status when showing this page
@@ -3772,7 +3746,7 @@
                 if (!sectionDiv) return;
 
                 const checkboxes = sectionDiv.querySelectorAll('.docs-input');
-                const checkedCheckboxes = sectionDiv.querySelectorAll('.docs-input:checked');
+                const textInputs = sectionDiv.querySelectorAll('.docs-text-input');
                 const heading = sectionDiv.querySelector('h3');
 
                 let completionIndicator = heading.querySelector('.completion-indicator');
@@ -3782,7 +3756,21 @@
                     heading.appendChild(completionIndicator);
                 }
 
-                if (checkboxes.length > 0 && checkboxes.length === checkedCheckboxes.length) {
+                let allCheckboxesChecked = checkboxes.length > 0 && Array.from(checkboxes).every(input => input.checked);
+                let allTextInputsFilled = textInputs.length > 0 && Array.from(textInputs).every(input => input.value.trim() !== '');
+
+                // Determine completion based on the presence of checkboxes OR text inputs
+                let isSectionComplete = false;
+                if (checkboxes.length > 0 && textInputs.length > 0) {
+                    // If both are present, assume both must be complete (or adjust logic as needed)
+                    isSectionComplete = allCheckboxesChecked && allTextInputsFilled;
+                } else if (checkboxes.length > 0) {
+                    isSectionComplete = allCheckboxesChecked;
+                } else if (textInputs.length > 0) {
+                    isSectionComplete = allTextInputsFilled;
+                }
+
+                if (isSectionComplete) {
                     completionIndicator.textContent = ' ✅ (Completed)';
                     completionIndicator.style.color = 'var(--good-ratio-color)'; // Green color for completion
                 } else {
@@ -3799,6 +3787,9 @@
                 () => { // onConfirm
                     document.querySelectorAll('#trading-docs-page .docs-input').forEach(input => {
                         input.checked = false;
+                    });
+                    document.querySelectorAll('#trading-docs-page .docs-text-input').forEach(input => {
+                        input.value = ''; // Clear text inputs as well
                     });
                     saveState(); // Save the cleared checks for docs
                     updateDocsSectionCompletion(); // Update completion status
@@ -3880,9 +3871,13 @@
             document.getElementById('tradingDocsNavBtn').addEventListener('click', () => showPage('trading-docs-page'));
 
             // Event listeners for layout share/import buttons
+            const generateCodeBtnLayout = document.getElementById('generateCodeBtnLayout');
+            const copyCodeBtnLayout = document.getElementById('copyCodeBtnLayout');
+            const importCodeBtnLayout = document.getElementById('importCodeBtnLayout');
+
             if(generateCodeBtnLayout) generateCodeBtnLayout.addEventListener('click', generateShareCode);
             if(copyCodeBtnLayout) copyCodeBtnLayout.addEventListener('click', copyShareCode);
-            if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings); /* FIX: Corrected typo from importCodeCodeBtnLayout */
+            if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings); 
 
             // Add dragover and drop to the main checklist container for category reordering
             const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
