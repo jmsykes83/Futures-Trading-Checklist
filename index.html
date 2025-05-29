@@ -1174,7 +1174,7 @@
                     </div>
                 </details>
                 
-                </div>
+            </div>
 
             <div class="result waiting" id="result">Select criteria to identify your trade setup...</div>
             <div class="risk-reward-display" id="risk-reward-display">Risk:Reward Ratio: <span>N/A</span></div>
@@ -1589,9 +1589,8 @@
         let currentEditingStrategyId = null;
         let currentEditingCategoryId = null; // New: For category editing
 
-        // New: For Drag and Drop - REMOVED
-        // let draggedCategoryId = null;
-        // let placeholder = null;
+        // Explicitly declare categoryOrder at the top level
+        let categoryOrder = [];
 
         // Built-in categories and their properties (name, icon, isDefault flag)
         let categories = {
@@ -1610,7 +1609,6 @@
         let strategies = {
             'reversal': { name: 'Reversal', color: '#e53e3e', icon: '🔄', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Price action failure at level', defaultTarget: 'Previous swing low/high' },
             'momentum': { name: 'Momentum', color: '#38a169', icon: '🚀', defaultRisk: 0.5, defaultReward: 1.5, defaultStop: 'Bar trail / VWAP break', defaultTarget: 'Gas out (L2/T&S slowdown)' },
-            // 'both': { name: 'Both', color: 'linear-gradient(45deg, #e53e3e, #38a169)', icon: '⚖️', defaultRisk: 1.0, defaultReward: 1.0, defaultStop: 'Hybrid approach (consider tightest stop)', defaultTarget: 'Hybrid approach (consider nearest target)' }, // Removed 'both' strategy
             'scalping': { name: 'Scalping', color: '#9F7AEA', icon: '⚡', defaultRisk: 0.3, defaultReward: 0.6, defaultStop: 'Tick-based / Immediate invalidation', defaultTarget: 'Few ticks profit / L2 fill' },
             'swing': { name: 'Swing', color: '#3182CE', icon: '📈', defaultRisk: 1.5, defaultReward: 3.0, defaultStop: 'Key structural break / Daily close below', defaultTarget: 'Major resistance / Multi-day move' },
             'breakout': { name: 'Breakout', color: '#DD6B20', icon: '💥', defaultRisk: 0.7, defaultReward: 1.8, defaultStop: 'Retest failure / Volume exhaustion', defaultTarget: 'Measured move / Next major level' }
@@ -1633,37 +1631,32 @@
         const defaultCriteriaData = {
             'levels': [
                 { id: 'sr-level', name: 'Price at major S/R, VAH/VAL, or IB range', strategies: ['reversal', 'momentum'], risk: 1, reward: 1, info: 'S/R (Support/Resistance) levels are price points where the price trend is expected to pause or reverse. VAH/VAL (Value Area High/Low) are key levels from volume profile. IB (Initial Balance) refers to the first hour\'s trading range.' },
-                // { id: 'vah-val', name: 'At VAH/VAL key level', strategies: ['reversal'], risk: 0.8, reward: 1.2, info: 'VAH (Value Area High) and VAL (Value Area Low) are derived from Volume Profile, representing the upper and lower boundaries of where the majority of trading volume occurred.' }, // Removed redundant criteria
                 { id: 'ib-range', name: 'Within IB Range boundary', strategies: ['reversal', 'momentum'], risk: 1, reward: 1, info: 'IB (Initial Balance) is the trading range established during the first hour of a trading session, often used to gauge initial market sentiment and potential range expansion.' }
             ],
             'volume': [
                 { id: 'weak-volume', name: 'Volume weakening into level', strategies: ['reversal'], risk: 1.5, reward: 0.7, info: 'Weakening volume into a level suggests that the current price movement is losing conviction, often preceding a reversal.' },
                 { id: 'volume-spike', name: 'Volume spike confirms push', strategies: ['momentum'], risk: 0.7, reward: 1.3, info: 'A sudden increase in volume (volume spike) often confirms the strength of a price move, indicating strong participation.' },
                 { id: 'breakout-volume', name: 'Breakout above IBH/VAL/VAH with volume', strategies: ['momentum', 'breakout'], risk: 0.6, reward: 1.4, info: 'A breakout with significant volume indicates strong conviction behind the move, increasing the likelihood of continuation.' },
-                // { id: 'scalping-volume-confirm', name: 'High volume confirms scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, high volume at entry/exit points confirms liquidity and order flow, crucial for quick trades.' }, // Removed redundant criteria
                 { id: 'swing-volume-confirmation', name: 'Volume confirmation on swing lows/highs', strategies: ['swing'], risk: 1.0, reward: 1.5, info: 'Volume confirmation at swing lows/highs indicates strong support or resistance, validating potential swing trade entries.' }
             ],
             'timeframe': [
                 { id: 'trend-align', name: 'Trend aligns (VWAP, EMA, 200EMA support)', strategies: ['momentum', 'swing'], risk: 0.7, reward: 1.3, info: 'VWAP (Volume Weighted Average Price) and EMAs (Exponential Moving Averages) are indicators used to confirm trend direction and dynamic support/resistance.' },
-                { id: 'micro-pullback', name: 'Micro pullback to VWAP/EMA/VAL', strategies: ['momentum', 'scalping'], risk: 0.8, reward: 1.2, info: 'A micro pullback is a small, temporary reversal within a strong trend, offering anきたい opportunity to join the trend at a better price.' },
+                { id: 'micro-pullback', name: 'Micro pullback to VWAP/EMA/VAL', strategies: ['momentum', 'scalping'], risk: 0.8, reward: 1.2, info: 'A micro pullback is a small, temporary reversal within a strong trend, offering an opportunity to join the trend at a better price.' },
                 { id: 'stall-curl', name: '15s shows stall/curl or failed push', strategies: ['reversal'], risk: 1.2, reward: 0.8, info: 'A stall or curl on a lower timeframe (e.g., 15s) indicates a loss of momentum in the current move, often preceding a reversal.' },
                 { id: 'swing-daily-chart', name: 'Daily chart confirms broader trend for swing', strategies: ['swing'], risk: 0.9, reward: 1.5, info: 'For swing trades, confirming the broader trend on a daily chart helps align with larger market movements, improving trade probability.' }
             ],
             'oscillators': [
                 { id: 'oscillator-divergence', name: 'Oscillator divergence or flattening', strategies: ['reversal', 'swing'], risk: 1.1, reward: 0.9, info: 'Divergence occurs when price makes a new high/low, but an oscillator (like MACD or RSI) does not, often signaling a potential reversal. ' },
                 { id: 'oscillator-trend', name: 'Oscillator confirms trend direction', strategies: ['momentum', 'breakout'], risk: 0.8, reward: 1.2, info: 'An oscillator confirming the trend (e.g., staying above 0 for MACD in an uptrend) indicates sustained momentum.' },
-                // { id: 'rsi-overbought-oversold', name: 'RSI Overbought/Oversold signal', strategies: ['reversal'], risk: 1.0, reward: 1.0, info: 'RSI (Relative Strength Index) measures the speed and change of price movements. Overbought (above 70) or oversold (below 30) signals can indicate potential reversals.' } // Removed redundant criteria
             ],
             'tape': [
                 { id: 'absorption', name: 'Large passive order + absorption', strategies: ['reversal'], risk: 1.2, reward: 0.8, info: 'Absorption occurs when large orders are being filled by aggressive buyers/sellers without significant price movement, indicating strong supply/demand at a level.' },
                 { id: 'aggressive-orders', name: 'Aggressive orders pushing', strategies: ['momentum', 'scalping', 'breakout'], risk: 0.7, reward: 1.3, info: 'Aggressive orders (market orders) indicate strong conviction and can drive price quickly in a particular direction. ' },
                 { id: 'slowed-prints', name: 'T&S: Slowed prints, lack of aggression', strategies: ['reversal'], risk: 1.3, reward: 0.7, info: 'T&S (Time & Sales) shows individual trades. Slowed prints and lack of aggression indicate waning momentum, often preceding a reversal.' },
-                // { id: 'speed-increasing', name: 'T&S: Speed + size increasing', strategies: ['momentum', 'scalping', 'breakout'], risk: 0.6, reward: 1.4, info: 'Increasing speed and size of prints on Time & Sales indicates strong order flow and momentum.' } // Removed redundant criteria
             ],
             'l2': [
                 { id: 'thin-liquidity', name: 'L2: Thin liquidity in breakout path', strategies: ['momentum', 'breakout'], risk: 0.9, reward: 1.1, info: 'L2 (Level 2) shows the order book depth. Thin liquidity in the direction of a breakout means less resistance for price to move.' },
                 { id: 'no-gaps', name: 'L2: No major liquidity gaps behind you', strategies: ['reversal'], risk: 0.8, reward: 1.2, info: 'Liquidity gaps on Level 2 mean there are no large orders to absorb selling/buying pressure, which can lead to rapid price movement. ' },
-                // { id: 'scalping-l2-depth', name: 'L2: Sufficient depth for scalping entry/exit', strategies: ['scalping'], risk: 0.9, reward: 1.1, info: 'For scalping, sufficient depth on Level 2 ensures there are enough orders to fill your entry and exit quickly without significant slippage.' } // Removed redundant criteria
             ],
             'strategy-specific': [
                 { id: 'scalping-tight-stop', name: 'Scalping: Tight stop-loss and quick profit target', strategies: ['scalping'], risk: 0.5, reward: 0.5, info: 'Scalping involves taking very small profits with tight stop-losses, requiring precise entries and exits.' },
@@ -1849,10 +1842,10 @@
                     'strategy-specific': { name: 'Strategy Specific', icon: '⭐', isDefault: true },
                     'chart-patterns': { name: 'Chart Patterns', icon: '📈', isDefault: true }
                 };
+                // Merge loaded categories with default ones, prioritizing loaded for custom ones
                 categories = { ...defaultCats, ...(state.categories || {}) };
 
                 // Load category order
-                // Ensure all current categories are in the order, adding new ones to the end if necessary
                 const loadedOrder = state.categoryOrder || Object.keys(categories);
                 const currentCategoryIds = Object.keys(categories);
                 categoryOrder = loadedOrder.filter(id => currentCategoryIds.includes(id)); // Keep only existing
@@ -1862,7 +1855,6 @@
                     }
                 });
                 console.log('loadState: Initial category order after loading from localStorage:', categoryOrder);
-
 
                 applyLoadedState(state, false); 
             } else {
@@ -1886,8 +1878,7 @@
                 futuresTickSize: futuresTickSizeElement ? futuresTickSizeElement.value : 'N/A', 
                 entryPrice: entryPriceElement ? entryPriceElement.value : 'N/A',
             });
-            // updateChecklistState(); // Removed from here, called by showPage()
-            applyStrategyFilter(currentFilter);
+            applyStrategyFilter(currentFilter); // Apply filter after elements are rendered
 
             // Load state for the Trading Docs Checklist
             const savedDocsState = localStorage.getItem('tradingDocsChecklistState');
@@ -1905,7 +1896,6 @@
                 input.addEventListener('change', () => {
                     saveState();
                     updateDocsSectionCompletion(); // Call new function on change
-                    // updateChecklistState(); // Removed from here, called by showPage()
                 });
             });
             updateDocsSectionCompletion(); // Initial call to set completion status
@@ -2047,22 +2037,15 @@
                 label.addEventListener('mouseout', hideTooltip);
             });
 
-            const calculatedRiskElement = document.getElementById('calculated-risk');
-            const calculatedRewardElement = document.getElementById('calculated-reward');
-            if (calculatedRiskElement) {
-                calculatedRiskElement.removeEventListener('mouseover', showTooltip);
-                calculatedRiskElement.removeEventListener('mouseout', hideTooltip);
-                calculatedRiskElement.addEventListener('mouseover', showTooltip);
-                calculatedRiskElement.addEventListener('mouseout', hideTooltip);
-            }
-            if (calculatedRewardElement) {
-                calculatedRewardElement.removeEventListener('mouseover', showTooltip);
-                calculatedRewardElement.removeEventListener('mouseout', hideTooltip);
-                calculatedRewardElement.addEventListener('mouseover', showTooltip);
-                calculatedRewardElement.addEventListener('mouseout', hideTooltip);
-            }
+            // The calculated risk/reward elements are dynamically created in risk-management section
+            // and don't exist in the initial HTML. They are updated by updateChecklistState().
+            // So, adding event listeners for them here is not necessary as they are not permanent elements.
+            // The tooltip logic for them should be handled within updatePnLDisplay.
 
-            // updateChecklistState(); // Removed from here, called by showPage() or loadDefaultLayout()
+            // Only call updateChecklistState if the main checklist page is currently active
+            if (document.getElementById('main-checklist-page').classList.contains('active-page')) {
+                updateChecklistState(); 
+            }
             applyStrategyFilter(currentFilter); 
         }
 
@@ -2105,7 +2088,7 @@
                 const strategyDiv = document.createElement('div');
                 strategyDiv.className = 'checklist-item'; 
                 strategyDiv.innerHTML = `
-                    <span class="strategy-icon">${strategy.icon}</span>
+                    <span class="category-icon">${strategy.icon}</span>
                     <label style="flex-grow: 1;">${strategy.name} (${id}) ${isCustom ? '(Custom)' : '(Built-in)'}</label>
                     <div class="strategy-badges"></div> ${isCustom ? `<button class="edit-criteria-btn" onclick="openEditStrategyModal('${id}')" title="Edit this strategy">✏️</button>` : ''}
                     ${isCustom ? `<button class="delete-criteria-btn" onclick="confirmDeleteStrategy('${id}')" title="Delete this strategy">x</button>` : ''}
@@ -2426,13 +2409,16 @@
             if (!select) return; // Defensive check
             select.innerHTML = ''; 
 
-            for (const id in categories) {
-                const category = categories[id];
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = `${category.icon} ${category.name}`;
-                select.appendChild(option);
-            }
+            // Populate select in the order of categoryOrder
+            categoryOrder.forEach(id => {
+                if (categories[id]) {
+                    const category = categories[id];
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = `${category.icon} ${category.name}`;
+                    select.appendChild(option);
+                }
+            });
 
             if (selectedCategory) {
                 select.value = selectedCategory;
@@ -2760,7 +2746,6 @@
                     let categoryDiv = document.createElement('div');
                     categoryDiv.className = `category ${categoryData.isDefault ? '' : 'custom-criteria'}`;
                     categoryDiv.setAttribute('data-group', categoryId);
-                    // categoryDiv.setAttribute('draggable', true); // REMOVED DRAGGABLE
                     categoryDiv.innerHTML = `
                         <h3>
                             <div class="category-header">
@@ -2769,9 +2754,6 @@
                             <button class="add-criteria-mini" onclick="openAddCriteriaModal('${categoryId}')" title="Add criteria to ${categoryData.name}">+</button>
                         </h3>
                     `;
-                    // Removed dragstart and dragend listeners
-                    // categoryDiv.addEventListener('dragstart', handleDragStart);
-                    // categoryDiv.addEventListener('dragend', handleDragEnd);
                     fragment.appendChild(categoryDiv);
                 }
             });
@@ -2937,15 +2919,12 @@
             // Defensive checks for elements that might not be present on all pages or immediately
             const resultElement = document.getElementById("result");
             const riskRewardDisplayElement = document.getElementById('risk-reward-display');
-            const calculatedRiskElement = document.getElementById('calculated-risk');
-            const calculatedRewardElement = document.getElementById('calculated-reward');
-            const suggestedStopElement = document.getElementById('suggested-stop');
-            const suggestedTargetElement = document.getElementById('suggested-target');
             const potentialLossElement = document.getElementById('potentialLoss');
             const potentialProfitElement = document.getElementById('potentialProfit');
 
             // If the main checklist display elements aren't present (e.g., on Daily Prep page), just return.
-            if (!resultElement || !riskRewardDisplayElement || !calculatedRiskElement || !calculatedRewardElement || !suggestedStopElement || !suggestedTargetElement || !potentialLossElement || !potentialProfitElement) {
+            // This prevents errors when navigating to the Daily Prep page.
+            if (!resultElement || !riskRewardDisplayElement || !potentialLossElement || !potentialProfitElement) {
                 console.log("updateChecklistState: Main checklist display elements not found, skipping update.");
                 return;
             }
@@ -2979,10 +2958,8 @@
             if (checkedItems.length === 0) {
                 updateResult("Select criteria to identify your trade setup...", "waiting");
                 updateRiskRewardDisplay(0, 0); 
-                calculatedRiskElement.textContent = 'N/A';
-                calculatedRewardElement.textContent = 'N/A';
-                suggestedStopElement.textContent = 'Based on selected criteria';
-                suggestedTargetElement.textContent = 'Based on selected criteria';
+                // These elements are not directly in the HTML, they are dynamically created/updated in updatePnLDisplay.
+                // So, we don't need to get them here and set textContent.
                 updatePnLDisplay(0, 0); 
                 return;
             }
@@ -3046,14 +3023,14 @@
                 return;
             }
 
-            if (ties.length > 1) { // Removed check for !ties.includes('both')
+            if (ties.length > 1) { 
                 const tiedNames = ties.map(s => {
                     const strategy = strategies[s] || customStrategies[s];
                     return `${strategy.icon} ${strategy.name}`;
                 }).join(' + ');
                 tradeType = `⚖️ Mixed Setup: ${tiedNames}`;
                 resultClass = "warning";
-            } else if (dominantStrategy) { // Simplified condition
+            } else if (dominantStrategy) { 
                 const strategy = strategies[dominantStrategy] || customStrategies[dominantStrategy];
                 tradeType = `${strategy.icon} ${strategy.name} Setup Ready`;
             } else {
@@ -3091,20 +3068,44 @@
             updateResult(`✅ ${tradeType}${bonusMessage}`, resultClass);
             updateRiskRewardDisplay(totalRisk, displayReward); // Use displayReward here
 
-            calculatedRiskElement.textContent = totalRisk.toFixed(2);
-            calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
+            // Update suggested stop/target descriptions
+            const suggestedStopElement = document.getElementById('suggested-stop');
+            const suggestedTargetElement = document.getElementById('suggested-target');
 
-            calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
-            calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
+            if (suggestedStopElement && suggestedTargetElement) {
+                if (dominantStrategy) {
+                    const strategyObj = strategies[dominantStrategy] || customStrategies[dominantStrategy];
+                    suggestedStopElement.textContent = strategyObj.defaultStop;
+                    suggestedTargetElement.textContent = strategyObj.defaultTarget;
+                } else {
+                    suggestedStopElement.textContent = 'Based on selected criteria';
+                    suggestedTargetElement.textContent = 'Based on selected criteria';
+                }
+            }
 
+            // Update the calculated risk/reward in the risk management section
+            // These elements are not directly in the HTML, they are dynamically created/updated in updatePnLDisplay.
+            // We need to ensure they exist before trying to set textContent and attributes.
+            const calculatedRiskElement = document.getElementById('calculated-risk');
+            const calculatedRewardElement = document.getElementById('calculated-reward');
 
-            if (dominantStrategy) {
-                const strategyObj = strategies[dominantStrategy] || customStrategies[dominantStrategy];
-                suggestedStopElement.textContent = strategyObj.defaultStop;
-                suggestedTargetElement.textContent = strategyObj.defaultTarget;
-            } else {
-                suggestedStopElement.textContent = 'Based on selected criteria';
-                suggestedTargetElement.textContent = 'Based on selected criteria';
+            if (calculatedRiskElement && calculatedRewardElement) {
+                calculatedRiskElement.textContent = totalRisk.toFixed(2);
+                calculatedRewardElement.textContent = displayReward.toFixed(2); // Use displayReward here
+
+                calculatedRiskElement.setAttribute('data-info', `Sum of 'Risk Value' from all checked criteria.`);
+                calculatedRewardElement.setAttribute('data-info', `Sum of 'Reward Value' from all checked criteria.${preparationBonusActive ? '\n(Includes 10% preparation bonus)' : ''}`);
+
+                // Re-attach tooltip listeners for these elements
+                calculatedRiskElement.removeEventListener('mouseover', showTooltip);
+                calculatedRiskElement.removeEventListener('mouseout', hideTooltip);
+                calculatedRiskElement.addEventListener('mouseover', showTooltip);
+                calculatedRiskElement.addEventListener('mouseout', hideTooltip);
+
+                calculatedRewardElement.removeEventListener('mouseover', showTooltip);
+                calculatedRewardElement.removeEventListener('mouseout', hideTooltip);
+                calculatedRewardElement.addEventListener('mouseover', showTooltip);
+                calculatedRewardElement.addEventListener('mouseout', hideTooltip);
             }
 
             calculatePnL(totalRisk, displayReward); // Use displayReward here
@@ -3119,10 +3120,10 @@
             const tradeSizeInput = document.getElementById('tradeSize');
             const tickValueInput = document.getElementById('tickValue');
             const futuresTickSizeInput = document.getElementById('futuresTickSize');
-            const entryPriceInput = document.getElementById('entryPrice');
+            const entryPriceInput = document.getElementById('entryPrice'); // entryPrice is for context, not calculation
 
             // Defensive checks for P&L input elements
-            if (!tradeSizeInput || !tickValueInput || !futuresTickSizeInput || !entryPriceInput) {
+            if (!tradeSizeInput || !tickValueInput || !futuresTickSizeInput) {
                 console.log('calculatePnL: P&L input elements not found, skipping calculation.');
                 updatePnLDisplay(0, 0); // Reset display if inputs are missing
                 return;
@@ -3131,9 +3132,8 @@
             const tradeSize = parseFloat(tradeSizeInput.value);
             const tickValue = parseFloat(tickValueInput.value);
             const futuresTickSize = parseFloat(futuresTickSizeInput.value); 
-            const entryPrice = parseFloat(entryPriceInput.value); 
 
-            console.log('PNL Inputs (in calculatePnL):', { tradeSize, tickValue, futuresTickSize, entryPrice, totalRisk, totalReward });
+            console.log('PNL Inputs (in calculatePnL):', { tradeSize, tickValue, futuresTickSize, totalRisk, totalReward });
 
             let potentialLoss = 0;
             let potentialProfit = 0;
@@ -3162,11 +3162,11 @@
          * Updates the P&L display elements.
          * @param {number} loss The calculated potential loss.
          * @param {number} profit The calculated potential profit.
-         * @param {number} totalRisk The total risk points from checklist.
-         * @param {number} totalReward The total reward points from checklist.
-         * @param {number} tradeSize The trade size.
-         * @param {number} tickValue The tick value.
-         * @param {number} futuresTickSize The futures tick size.
+         * @param {number} totalRisk The total risk points from checklist (for tooltip).
+         * @param {number} totalReward The total reward points from checklist (for tooltip).
+         * @param {number} tradeSize The trade size (for tooltip).
+         * @param {number} tickValue The tick value (for tooltip).
+         * @param {number} futuresTickSize The futures tick size (for tooltip).
          */
         function updatePnLDisplay(loss, profit, totalRisk = 0, totalReward = 0, tradeSize = 0, tickValue = 0, futuresTickSize = 0) {
             const potentialLossElement = document.getElementById('potentialLoss');
@@ -3194,6 +3194,7 @@
                 if (potentialProfitElement) potentialProfitElement.removeAttribute('data-info');
             }
 
+            // Re-attach tooltip listeners for P&L elements
             if (potentialLossElement) {
                 potentialLossElement.removeEventListener('mouseover', showTooltip);
                 potentialLossElement.removeEventListener('mouseout', hideTooltip);
@@ -3272,13 +3273,11 @@
             filterContainer.appendChild(allButton);
 
             for (const id in strategies) {
-                // if (id !== 'both') { // 'both' strategy is now removed from the main strategies object
-                    const button = document.createElement('button');
-                    button.className = `filter-button ${currentFilter === id ? 'active' : ''}`;
-                    button.textContent = `${strategies[id].icon} ${strategies[id].name}`;
-                    button.onclick = () => applyStrategyFilter(id);
-                    filterContainer.appendChild(button);
-                // }
+                const button = document.createElement('button');
+                button.className = `filter-button ${currentFilter === id ? 'active' : ''}`;
+                button.textContent = `${strategies[id].icon} ${strategies[id].name}`;
+                button.onclick = () => applyStrategyFilter(id);
+                filterContainer.appendChild(button);
             }
 
             for (const id in customStrategies) {
@@ -3308,7 +3307,7 @@
                 if (filterStrategyId === 'all') {
                     item.style.display = 'flex'; 
                 } else {
-                    if (itemStrategies.includes(filterStrategyId)) { // Removed '|| itemStrategies.includes('both')'
+                    if (itemStrategies.includes(filterStrategyId)) { 
                         item.style.display = 'flex'; 
                     } else {
                         item.style.display = 'none'; 
@@ -3348,18 +3347,19 @@
                 let top = elementRect.bottom + window.scrollY + 10; 
                 let left = elementRect.left + window.scrollX;
 
+                // Adjust if tooltip goes off screen right
                 if (left + tooltipBox.offsetWidth > containerRect.right) {
                     left = containerRect.right - tooltipBox.offsetWidth - 20; 
                 }
+                // Adjust if tooltip goes off screen left
                 if (left < containerRect.left) {
                     left = containerRect.left + 20; 
                 }
                  // Adjust if tooltip goes off screen bottom
                 if (top + tooltipBox.offsetHeight > window.innerHeight + window.scrollY) {
-                    top = element.top + window.scrollY - tooltipBox.offsetHeight - 10; // Position above
-                     // Adjust arrow for above positioning (optional, more complex)
+                    top = elementRect.top + window.scrollY - tooltipBox.offsetHeight - 10; // Position above
+                    // Adjust arrow for above positioning (optional, more complex)
                 }
-
 
                 tooltipBox.style.top = `${top}px`;
                 tooltipBox.style.left = `${left}px`;
@@ -3891,114 +3891,6 @@
             );
         }
 
-        // --- Drag and Drop Handlers for Categories --- REMOVED
-        /*
-        function handleDragStart(e) {
-            const categoryElement = e.target.closest('.category');
-            if (!categoryElement) return;
-
-            draggedCategoryId = categoryElement.dataset.group;
-            e.dataTransfer.setData('text/plain', draggedCategoryId);
-            categoryElement.classList.add('dragging'); 
-
-            if (!placeholder) {
-                placeholder = document.createElement('div');
-                placeholder.className = 'category-placeholder';
-                placeholder.style.height = categoryElement.offsetHeight + 'px';
-                placeholder.style.backgroundColor = 'rgba(0,0,0,0.1)';
-                placeholder.style.border = '2px dashed #ccc';
-                placeholder.style.margin = getComputedStyle(categoryElement).margin; 
-                placeholder.style.borderRadius = getComputedStyle(categoryElement).borderRadius; 
-            }
-        }
-
-        function handleDragEnd(e) {
-            const categoryElement = e.target.closest('.category');
-            if (categoryElement) {
-                categoryElement.classList.remove('dragging');
-            }
-            if (placeholder && placeholder.parentNode) {
-                placeholder.parentNode.removeChild(placeholder);
-            }
-            draggedCategoryId = null;
-        }
-        
-        function handleDragOverContainer(e) {
-            e.preventDefault(); 
-            if (!draggedCategoryId) return;
-
-            const draggedElement = document.querySelector(`.category[data-group="${draggedCategoryId}"]`);
-            if (!draggedElement) return;
-
-            const afterElement = getDragAfterElement(e.clientY);
-            const container = document.querySelector('#main-checklist-page .checklist-container');
-            if (!container) return;
-            const actionButtons = container.querySelector('.action-buttons');
-            const filterDetails = container.querySelector('.filter-details');
-
-            let insertBeforeElement = null;
-            if (afterElement) {
-                insertBeforeElement = afterElement;
-            } else {
-                const lastCategory = container.querySelector('.category:last-of-type');
-                if (lastCategory) {
-                    insertBeforeElement = lastCategory.nextSibling;
-                } else if (filterDetails) {
-                    insertBeforeElement = filterDetails.nextSibling;
-                } else if (actionButtons) {
-                    insertBeforeElement = actionButtons.nextSibling;
-                }
-            }
-
-            if (actionButtons && insertBeforeElement && (actionButtons === insertBeforeElement || actionButtons.contains(insertBeforeElement))) {
-                insertBeforeElement = actionButtons.nextSibling;
-            }
-            if (filterDetails && insertBeforeElement && (filterDetails === insertBeforeElement || filterDetails.contains(insertBeforeElement))) {
-                insertBeforeElement = filterDetails.nextSibling;
-            }
-
-
-            if (!container.contains(placeholder) || placeholder.nextSibling !== insertBeforeElement) {
-                container.insertBefore(placeholder, insertBeforeElement);
-            }
-        }
-        
-        function getDragAfterElement(y) {
-            const draggableElements = [...document.querySelectorAll('#main-checklist-page .checklist-container > .category:not(.dragging)')];
-            return draggableElements.reduce((closest, child) => {
-                const box = child.getBoundingClientRect();
-                const offset = y - box.top - box.height / 2;
-                if (offset < 0 && offset > closest.offset) {
-                    return { offset: offset, element: child };
-                } else {
-                    return closest;
-                }
-            }, { offset: Number.NEGATIVE_INFINITY }).element;
-        }
-
-        function handleDropOnContainer(e) {
-            e.preventDefault();
-            if (!draggedCategoryId) return;
-
-            const draggedElement = document.querySelector(`.category[data-group="${draggedCategoryId}"]`);
-            if (!draggedElement) return;
-
-            if (placeholder && placeholder.parentNode) {
-                placeholder.parentNode.replaceChild(draggedElement, placeholder);
-            }
-            
-            const newOrder = [];
-            const categoryElements = document.querySelectorAll('#main-checklist-page .checklist-container > .category'); 
-            categoryElements.forEach(catEl => {
-                newOrder.push(catEl.dataset.group);
-            });
-            categoryOrder = newOrder;
-            console.log('handleDropOnContainer: New category order after drop:', categoryOrder);
-            recreateAllCriteriaElements();
-            saveState();
-        }
-        */
-
         // --- Page Navigation Functions ---
         function showPage(pageId) {
             document.querySelectorAll('.active-page').forEach(page => {
@@ -4060,6 +3952,8 @@
                     isSectionComplete = allCheckboxesChecked;
                 } else if (textInputs.length > 0) {
                     isSectionComplete = allTextInputsFilled;
+                } else { // If no checkboxes or text inputs, consider it complete by default
+                    isSectionComplete = true;
                 }
 
                 if (isSectionComplete) {
@@ -4175,17 +4069,6 @@
             if(generateCodeBtnLayout) generateCodeBtnLayout.addEventListener('click', generateShareCode);
             if(copyCodeBtnLayout) copyCodeBtnLayout.addEventListener('click', copyShareCode);
             if(importCodeBtnLayout) importCodeBtnLayout.addEventListener('click', triggerImportSettings); 
-
-            // Add dragover and drop to the main checklist container for category reordering - REMOVED
-            /*
-            const checklistContainer = document.querySelector('#main-checklist-page .checklist-container');
-            if (checklistContainer) { // Ensure container exists before adding listeners
-                checklistContainer.addEventListener('dragover', handleDragOverContainer);
-                checklistContainer.addEventListener('drop', handleDropOnContainer);
-            } else {
-                console.error("Checklist container not found on DOMContentLoaded.");
-            }
-            */
 
             // Initial page display (default to main checklist)
             showPage('main-checklist-page');
